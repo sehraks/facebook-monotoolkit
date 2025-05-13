@@ -67,20 +67,15 @@ class Utils:
         print(f"{Fore.CYAN}{'='*40}{Style.RESET_ALL}\n")
 
     @staticmethod
-    def print_menu(options: Dict[str, str], 
-                  title: str = "Menu Options") -> None:
-        """
-        Print a formatted menu with numbered options.
-        
-        Args:
-            options (Dict[str, str]): Dictionary of option numbers and descriptions
-            title (str): Menu title
-        """
-        print(f"\n{Fore.CYAN}{title}")
-        print(f"{Fore.CYAN}{'-' * len(title)}")
-        for key, value in options.items():
-            print(f"{Fore.YELLOW}[{key}] {Fore.CYAN}{value}")
-        print()
+    def print_menu(options: Dict[str, str], title: str = "") -> None:
+        """Print a menu with numbered options in order."""
+    if title:
+        print(f"{title}:\n")
+    
+    # Print options in numerical order
+    for key in sorted(options.keys()):
+        print(f"{Fore.YELLOW}[{key}]{Fore.CYAN} {options[key]}")
+    print()
 
     @staticmethod
     def get_menu_choice(options: Dict[str, str]) -> str:
