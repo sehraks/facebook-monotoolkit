@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/spam_sharing.py
-# Last Modified: 2025-05-13 15:38:25 UTC
+# Last Modified: 2025-05-13 15:57:24 UTC
 # Author: sehraks
 
 import aiohttp
@@ -10,12 +10,15 @@ import re
 import os
 from datetime import datetime
 from typing import Dict, Tuple, Optional
-from colorama import Fore, Style
+from rich.console import Console
+from rich.panel import Panel
+
+console = Console()
 
 class SpamSharing:
     def __init__(self):
         """Initialize SpamSharing with necessary configurations."""
-        self.last_update = "2025-05-13 15:38:25"  # Current UTC time
+        self.last_update = "2025-05-13 15:57:24"  # Current UTC time
         self.current_user = "sehraks"  # Current user's login
         self.share_api_url = "https://b-graph.facebook.com/me/feed"
         self.max_shares_per_day = 200000
@@ -51,7 +54,10 @@ class SpamSharing:
             with open(log_file, 'a', encoding='utf-8') as f:
                 f.write(f"[{timestamp}] User: {user_id} | Success: {success} | Message: {message}\n")
         except Exception as e:
-            print(f"{Fore.RED}Failed to log activity: {str(e)}{Style.RESET_ALL}")
+            console.print(Panel(
+                f"[bold red]❌ Failed to log activity: {str(e)}[/]",
+                style="bold red"
+            ))
 
     async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str) -> Tuple[Optional[str], str]:
         """Get Facebook access token from business.facebook.com."""
@@ -94,7 +100,10 @@ class SpamSharing:
         c_user_match = re.search(r'c_user=(\d+)', cookie)
         user_id = c_user_match.group(1) if c_user_match else "unknown"
 
-        print(f"{Fore.CYAN}Starting share operation...{Style.RESET_ALL}")
+        console.print(Panel(
+            "[bold cyan]🚀 Starting share operation...[/]",
+            style="bold cyan"
+        ))
         
         for i in range(share_count):
             try:
@@ -108,7 +117,9 @@ class SpamSharing:
 
                     if "id" in data:
                         successful_shares += 1
-                        print(f"{Fore.GREEN}[{successful_shares}/{share_count}] Share successful{Style.RESET_ALL}")
+                        console.print(
+                            f"[bold green]✅ [{successful_shares}/{share_count}] Share successful[/]"
+                        )
                         self._log_share_activity(user_id, True, f"Share {successful_shares}/{share_count}")
                     else:
                         error_msg = data.get("error", {}).get("message", "Unknown error")
