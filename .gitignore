@@ -1,0 +1,9 @@
+# Ignore personal data and cache
+# Last updated: 2025-05-13 08:22:16
+# Updated by: sehraks
+
+cookies-storage/
+logs/
+__pycache__/
+modules/__pycache__/
+*.pyc
