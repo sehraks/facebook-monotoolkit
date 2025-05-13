@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# File: index.py
+# Last Modified: 2025-05-13 12:02:14 UTC
+# Author: sehraks
 
 import os
 import sys
@@ -11,6 +15,7 @@ from colorama import init, Fore, Style
 # Import local modules
 from modules.cookie_manager import CookieManager
 from modules.spam_sharing import SpamSharing
+from modules.profile_guard import ProfileGuard
 from modules.utils import Utils
 
 # Initialize colorama
@@ -26,6 +31,7 @@ class FacebookMonoToolkit:
         # Initialize components
         self.cookie_manager = CookieManager()
         self.spam_sharing = SpamSharing()
+        self.profile_guard = ProfileGuard()
         self.current_account: Optional[Dict] = None
         
         # Create necessary directories
@@ -57,8 +63,13 @@ class FacebookMonoToolkit:
             options = {
                 "1": "Manage Cookies",
                 "2": "Spam Sharing Post",
-                "3": "Quit"
+                "3": "Activate Profile Picture Guard",
+                "4": "Exit"
             }
+            
+            # Remove Profile Guard option if no account selected
+            if not self.current_account:
+                options.pop("3")
             
             Utils.print_menu(options, "Main Menu")
             choice = Utils.get_menu_choice(options)
@@ -71,7 +82,9 @@ class FacebookMonoToolkit:
                     input("\nPress Enter to continue...")
                     continue
                 self.spam_sharing_menu()
-            elif choice == "3":
+            elif choice == "3" and self.current_account:
+                self.profile_guard_menu()
+            elif choice == "4":
                 Utils.print_status(f"Thank you for using {self.TOOL_NAME}!", "success")
                 sys.exit(0)
 
@@ -225,6 +238,38 @@ class FacebookMonoToolkit:
             Utils.print_status(message, "error")
         
         Utils.log_activity("Share Post", success, message)
+        input("\nPress Enter to continue...")
+
+    def profile_guard_menu(self) -> None:
+        """Handle profile guard activation."""
+        self.display_banner()
+        print(f"{Fore.CYAN}=== Profile Picture Guard ===\n")
+
+        # Check current guard status
+        status_success, status_message = self.profile_guard.get_guard_status(
+            self.current_account['cookie']
+        )
+        
+        if status_success:
+            Utils.print_status("Profile Guard is already activated!", "warning")
+            input("\nPress Enter to continue...")
+            return
+        
+        if not Utils.confirm_action("Do you want to activate Profile Picture Guard?"):
+            return
+            
+        print(f"\n{Fore.CYAN}Activating Profile Picture Guard...{Style.RESET_ALL}")
+        
+        success, message = self.profile_guard.activate_guard(
+            self.current_account['cookie']
+        )
+        
+        if success:
+            Utils.print_status(message, "success")
+        else:
+            Utils.print_status(message, "error")
+        
+        Utils.log_activity("Profile Guard", success, message)
         input("\nPress Enter to continue...")
 
 def main():
