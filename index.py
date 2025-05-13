@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 16:53:50 UTC
+# Last Modified: 2025-05-13 17:03:46 UTC
 # Author: sehraks
 
 import os
@@ -23,10 +23,12 @@ console = Console()
 class FacebookMonoToolkit:
     def __init__(self):
         """Initialize the Facebook MonoToolkit."""
-        self.VERSION = "1.0.0"
-        self.AUTHOR = "sehraks"
-        self.TOOL_NAME = "Facebook MonoToolkit"
-        self.LAST_UPDATED = "2025-05-13 16:53:50 UTC"
+        self.VERSION = "3.50"
+        self.ORIGINAL_AUTHOR = "Greegmon"
+        self.MODIFIED_BY = "Cerax"
+        self.LAST_UPDATED = "May 13, 2025 +8 GMT"
+        self.CURRENT_TIME = "2025-05-13 17:03:46"
+        self.CURRENT_USER = "sehraks"
         
         # Initialize components
         self.cookie_manager = CookieManager()
@@ -50,12 +52,12 @@ class FacebookMonoToolkit:
         """Display the tool banner."""
         self.clear_screen()
         banner = Panel(
-            f"[bold cyan]🚀 {self.TOOL_NAME} 🚀[/]\n"
-            f"[bold cyan]Version: {self.VERSION}[/]\n"
-            f"[bold cyan]Author: {self.AUTHOR}[/]\n"
-            f"[bold cyan]Last Updated: {self.LAST_UPDATED}[/]",
+            f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
+            f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
+            f"[white]Version: {self.VERSION}[/]\n"
+            f"[white]Last Updated: {self.LAST_UPDATED}[/]",
             style="bold magenta",
-            title="[bold yellow]Welcome to Facebook MonoToolkit[/]"
+            title="[bold yellow]Facebook MonoToolkit[/]"
         )
         console.print(banner)
 
