@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/friend_scraper.py
-# Last Modified: 2025-05-13 14:00:41 UTC
+# Last Modified: 2025-05-13 14:21:33 UTC
 # Author: sehraks
-# Description: Advanced Friend Scraper for Facebook MonoToolkit
+# Description: Advanced friend scraper for Facebook MonoToolkit
 
 import os
 import sys
@@ -81,14 +81,23 @@ class FriendScraper:
             return None
 
     async def _extract_friend_data(self, html_content: str) -> List[Dict]:
-        """Extract friend information from HTML content."""
+        """
+        Extract friend information from HTML content.
+        
+        Args:
+            html_content (str): HTML content from Facebook page
+            
+        Returns:
+            List[Dict]: List of friend data dictionaries
+        """
         friends = []
         try:
             soup = BeautifulSoup(html_content, 'html.parser')
-            elements = soup.find_all(['table', 'div'], {'role': 'presentation'})
+            friend_elements = soup.find_all(['table', 'div'], {'role': 'presentation'})
 
-            for element in elements:
+            for element in friend_elements:
                 try:
+                    # Find friend link
                     link = element.find('a')
                     if not link:
                         continue
@@ -97,20 +106,22 @@ class FriendScraper:
                     if not href:
                         continue
 
+                    # Extract name
                     name = link.text.strip()
                     if not name:
                         continue
 
+                    # Extract UID or username
                     uid = None
                     profile_url = None
 
-                    # Extract numeric ID
+                    # Try numeric ID first
                     uid_match = re.search(r'(?:profile\.php\?id=|/profile/|\/?)(\d{6,})(?:\?|$|\/)', href)
                     if uid_match:
                         uid = uid_match.group(1)
                         profile_url = f"https://facebook.com/profile.php?id={uid}"
                     else:
-                        # Extract username
+                        # Try username
                         username_match = re.search(r'(?:\/|\?)([a-zA-Z0-9\._]+)(?:\?|$|\/)', href)
                         if username_match:
                             username = username_match.group(1)
@@ -130,6 +141,7 @@ class FriendScraper:
 
                 except Exception as e:
                     self.error_count += 1
+                    Utils.log_activity("Friend Data Extraction", False, str(e))
                     continue
 
         except Exception as e:
@@ -139,15 +151,30 @@ class FriendScraper:
         return friends
 
     async def _get_next_page(self, html_content: str) -> Optional[str]:
-        """Get URL for the next page of friends."""
+        """
+        Get URL for the next page of friends.
+        
+        Args:
+            html_content (str): Current page HTML content
+            
+        Returns:
+            Optional[str]: Next page URL or None if no more pages
+        """
         try:
             soup = BeautifulSoup(html_content, 'html.parser')
-            for link in soup.find_all('a'):
-                text = link.text.lower()
-                if any(phrase in text for phrase in ['see more', 'show more', 'view more', 'lihat lainnya', 'lihat selengkapnya']):
-                    href = link.get('href')
-                    if href:
-                        return self.base_url + href
+            
+            # Try multiple possible next page patterns
+            patterns = [
+                re.compile(r'See More|Show more|View more|Next|More', re.I),
+                re.compile(r'Lihat Teman Lainnya|Lihat Selengkapnya', re.I),
+                re.compile(r'Tampilkan lainnya', re.I)
+            ]
+            
+            for pattern in patterns:
+                next_link = soup.find('a', string=pattern)
+                if next_link and 'href' in next_link.attrs:
+                    return self.base_url + next_link['href']
+            
             return None
         except Exception:
             return None
