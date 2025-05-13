@@ -1,61 +1,81 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/utils.py
-# Last Modified: 2025-05-13 15:40:35 UTC
+# Last Modified: 2025-05-13 15:53:31 UTC
 # Author: sehraks
 
 import os
 import re
 from datetime import datetime
 from typing import Dict, Tuple, Any, Callable
-from colorama import Fore, Style
+from rich.console import Console
+from rich.panel import Panel
+
+console = Console()
 
 class Utils:
     @staticmethod
     def print_banner(title: str, version: str, author: str, last_updated: str) -> None:
         """Print a stylized banner with tool information."""
-        width = 50
-        print(f"{Fore.CYAN}{'='*width}")
-        print(f"{title} v{version}".center(width))
-        print(f"By: {author}".center(width))
-        print(f"Last Updated: {last_updated}".center(width))
-        print(f"{'='*width}{Style.RESET_ALL}\n")
+        banner = f"""[bold cyan]
+╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
+┃                   {title}                                      ┃
+┃━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┃
+┃              Version: {version}                           ┃
+┃              Author: {author}                             ┃
+┃              Last Updated: {last_updated}                           ┃
+╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯[/]
+        """
+        console.print(banner)
 
     @staticmethod
     def print_menu(options: Dict[str, str], title: str = "") -> None:
         """Print a menu with numbered options."""
+        menu_content = ""
         if title:
-            print(f"{Fore.YELLOW}{title}:")
+            menu_content += f"[bold yellow]{title}:[/]\n"
         for key, value in options.items():
-            print(f"{Fore.YELLOW}[{key}] {Style.RESET_ALL}{value}")
-        print()
+            menu_content += f"[bold cyan][{key}][/] {value}\n"
+        
+        console.print(Panel(
+            menu_content.strip(),
+            title="[bold yellow]📋 Menu[/]",
+            style="bold magenta"
+        ))
 
     @staticmethod
     def get_menu_choice(options: Dict[str, str]) -> str:
         """Get user's menu choice with validation."""
         while True:
-            choice = input(f"{Fore.YELLOW}Select an option: {Style.RESET_ALL}").strip()
+            choice = console.input("[bold yellow]Select an option: [/]").strip()
             if choice in options:
                 return choice
-            print(f"{Fore.RED}Invalid option. Please try again.{Style.RESET_ALL}")
+            console.print(Panel(
+                "[bold red]❌ Invalid option. Please try again.[/]",
+                style="bold red"
+            ))
 
     @staticmethod
     def print_status(message: str, status: str = "info") -> None:
         """Print a colored status message."""
-        colors = {
-            "success": Fore.GREEN,
-            "error": Fore.RED,
-            "warning": Fore.YELLOW,
-            "info": Fore.CYAN
+        status_styles = {
+            "success": ("[bold green]✅", "bold green"),
+            "error": ("[bold red]❌", "bold red"),
+            "warning": ("[bold yellow]⚠️", "bold yellow"),
+            "info": ("[bold cyan]ℹ️", "bold cyan")
         }
-        color = colors.get(status.lower(), Fore.WHITE)
-        print(f"\n{color}{message}{Style.RESET_ALL}")
+        
+        prefix, style = status_styles.get(status.lower(), ("[bold white]•", "bold white"))
+        console.print(Panel(
+            f"{prefix} {message}[/]",
+            style=style
+        ))
 
     @staticmethod
     def validate_input(prompt: str, type_cast: Callable, min_val: Any = None, max_val: Any = None) -> Tuple[bool, Any]:
         """Validate user input with type casting and range checking."""
         try:
-            value = type_cast(input(prompt))
+            value = type_cast(console.input(prompt).strip())
             if min_val is not None and value < min_val:
                 Utils.print_status(f"Value must be at least {min_val}", "error")
                 return False, None
@@ -70,7 +90,7 @@ class Utils:
     @staticmethod
     def confirm_action(prompt: str) -> bool:
         """Get user confirmation for an action."""
-        response = input(f"{prompt}[y/n]: ").lower().strip()
+        response = console.input(f"[bold yellow]{prompt}[y/n]: [/]").lower().strip()
         return response == 'y'
 
     @staticmethod
@@ -92,4 +112,12 @@ class Utils:
             with open(log_file, 'a', encoding='utf-8') as f:
                 f.write(f"[{timestamp}] {activity} | Success: {success} | Message: {message}\n")
         except Exception as e:
-            print(f"{Fore.RED}Failed to log activity: {str(e)}{Style.RESET_ALL}")
+            console.print(Panel(
+                f"[bold red]❌ Failed to log activity: {str(e)}[/]",
+                style="bold red"
+            ))
+
+    @staticmethod
+    def clear_screen() -> None:
+        """Clear the terminal screen."""
+        os.system('cls' if os.name == 'nt' else 'clear')
