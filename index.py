@@ -51,11 +51,11 @@ class FacebookMonoToolkit:
         self.clear_screen()
         banner = f"""[bold cyan]
 ╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-┃            🚀 {self.TOOL_NAME} 🚀             ┃
+┃              {self.TOOL_NAME}                             ┃
 ┃━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┃
-┃              Version: {self.VERSION}                     ┃
-┃              Author: {self.AUTHOR}                    ┃
-┃    Last Updated: {self.LAST_UPDATED}    ┃
+┃              Version: {self.VERSION}                      ┃
+┃              Author: {self.AUTHOR}                        ┃
+┃    Last Updated: {self.LAST_UPDATED}                      ┃
 ╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯[/]
         """
         console.print(banner)
