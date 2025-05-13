@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 14:19:28 UTC
+# Last Modified: 2025-05-13 14:32:21 UTC
 # Author: sehraks
 
 import os
@@ -28,7 +28,7 @@ class FacebookMonoToolkit:
         self.VERSION = "1.0.0"
         self.AUTHOR = "sehraks"
         self.TOOL_NAME = "Facebook MonoToolkit"
-        self.LAST_UPDATED = "2025-05-13 14:19:28 UTC"
+        self.LAST_UPDATED = "2025-05-13 14:32:21 UTC"
         
         # Initialize components
         self.cookie_manager = CookieManager()
@@ -42,7 +42,7 @@ class FacebookMonoToolkit:
 
     def _init_directories(self) -> None:
         """Initialize necessary directories."""
-        directories = ['cookies-storage', 'logs', 'data']
+        directories = ['cookies-storage', 'logs', 'data', 'data/friends']
         for directory in directories:
             os.makedirs(directory, exist_ok=True)
 
@@ -90,11 +90,11 @@ class FacebookMonoToolkit:
             elif choice == "2":
                 if not self.check_cookie_required():
                     continue
-                self.spam_sharing_menu()
+                await self.spam_sharing_menu()
             elif choice == "3":
                 if not self.check_cookie_required():
                     continue
-                self.profile_guard_menu()
+                await self.profile_guard_menu()
             elif choice == "4":
                 if not self.check_cookie_required():
                     continue
@@ -194,7 +194,7 @@ class FacebookMonoToolkit:
             
             input("\nPress Enter to continue...")
 
-    def spam_sharing_menu(self) -> None:
+    async def spam_sharing_menu(self) -> None:
         """Handle spam sharing functionality."""
         self.display_banner()
         print(f"{Fore.CYAN}=== Spam Sharing ===\n")
@@ -231,7 +231,7 @@ class FacebookMonoToolkit:
 
         print(f"\n{Fore.CYAN}Starting share operation...{Style.RESET_ALL}")
         
-        success, message = self.spam_sharing.share_post(
+        success, message = await self.spam_sharing.share_post(
             self.current_account['cookie'],
             post_url,
             share_count,
@@ -246,7 +246,7 @@ class FacebookMonoToolkit:
         Utils.log_activity("Share Post", success, message)
         input("\nPress Enter to continue...")
 
-    def profile_guard_menu(self) -> None:
+    async def profile_guard_menu(self) -> None:
         """Handle profile guard functionality."""
         self.display_banner()
         print(f"{Fore.CYAN}=== Profile Picture Guard ===\n")
@@ -257,7 +257,7 @@ class FacebookMonoToolkit:
             
         print(f"\n{Fore.CYAN}Activating Profile Picture Guard...{Style.RESET_ALL}")
         
-        success, message = self.profile_guard.activate_guard(
+        success, message = await self.profile_guard.activate_guard(
             self.current_account['cookie']
         )
         
