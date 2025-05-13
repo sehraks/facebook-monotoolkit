@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 18:20:53 UTC
+# Last Modified: 2025-05-13 18:24:33 UTC
 # Author: sehraks
 
 import os
@@ -27,7 +27,7 @@ class FacebookMonoToolkit:
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
         self.LAST_UPDATED = "May 13, 2025 +8 GMT"
-        self.CURRENT_TIME = "2025-05-13 18:20:53"
+        self.CURRENT_TIME = "2025-05-13 18:24:33"
         self.CURRENT_USER = "sehraks"
         
         # Initialize components
@@ -159,7 +159,36 @@ class FacebookMonoToolkit:
         console.print("\n[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
         console.print("[bold yellow]Note: Cookie must contain c_user and xs values[/]\n")
         
-        cookie = console.input("[bold greend storage menu."""
+        cookie = console.input("[bold green]Cookie: [/]").strip()
+        
+        if not cookie:
+            console.print(Panel(
+                "[bold red]❌ Cookie cannot be empty![/]",
+                style="bold red"
+            ))
+            console.input("\n[bold blue]Press Enter to continue...[/]")
+            return
+
+        success, message = self.cookie_manager.add_cookie(cookie)
+        
+        if success:
+            console.print(Panel(
+                f"[bold green]✅ {message}[/]",
+                style="bold green"
+            ))
+            if not self.current_account:
+                self.current_account = self.cookie_manager.get_all_accounts()[-1]
+        else:
+            console.print(Panel(
+                f"[bold red]❌ {message}[/]",
+                style="bold red"
+            ))
+        
+        Utils.log_activity("Add Cookie", success, message)
+        console.input("\n[bold blue]Press Enter to continue...[/]")
+
+    def cookie_settings_menu(self) -> None:
+        """Handle cookie settings and storage menu."""
         while True:
             self.display_banner()
             console.print(Panel(
@@ -251,8 +280,7 @@ class FacebookMonoToolkit:
         if not success:
             console.input("\n[bold blue]Press Enter to continue...[/]")
             return
-
-        # Removed duplicate "Starting share operation" message
+        
         success, message = self.spam_sharing.share_post(
             self.current_account['cookie'],
             post_url,
