@@ -69,13 +69,13 @@ class Utils:
     @staticmethod
     def print_menu(options: Dict[str, str], title: str = "") -> None:
         """Print a menu with numbered options in order."""
-    if title:
-        print(f"{title}:\n")
-    
-    # Print options in numerical order
-    for key in sorted(options.keys()):
-        print(f"{Fore.YELLOW}[{key}]{Fore.CYAN} {options[key]}")
-    print()
+        if title:
+            print(f"{title}:\n")
+        
+        # Print options in numerical order
+        for key in sorted(options.keys()):
+            print(f"{Fore.YELLOW}[{key}]{Fore.CYAN} {options[key]}")
+        print()
 
     @staticmethod
     def get_menu_choice(options: Dict[str, str]) -> str:
