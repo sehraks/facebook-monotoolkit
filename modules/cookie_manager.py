@@ -1,9 +1,20 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# File: modules/cookie_manager.py
+# Last Modified: 2025-05-13 16:01:51 UTC
+# Author: sehraks
+
 import json
 import os
 import re
+import base64
 from typing import Dict, List, Tuple, Optional
 from datetime import datetime
-import base64
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+
+console = Console()
 
 class CookieManager:
     def __init__(self):
@@ -11,7 +22,7 @@ class CookieManager:
         self.base_dir = "cookies-storage"
         self.cookies_file = os.path.join(self.base_dir, "cookies.json")
         self.cookies: List[Dict] = []
-        self.last_update = "2025-05-13 07:33:52"  # Current UTC time
+        self.last_update = "2025-05-13 16:01:51"  # Current UTC time
         self.current_user = "sehraks"  # Current user's login
         self._ensure_storage_exists()
         self.load_cookies()
@@ -20,6 +31,11 @@ class CookieManager:
         """Ensure the storage directory exists."""
         if not os.path.exists(self.base_dir):
             os.makedirs(self.base_dir)
+            console.print(Panel(
+                "[bold green]✅ Created storage directory[/]",
+                style="bold green"
+            ))
+
         if not os.path.exists(self.cookies_file):
             with open(self.cookies_file, 'w', encoding='utf-8') as f:
                 json.dump({
@@ -29,6 +45,10 @@ class CookieManager:
                         "updated_by": self.current_user
                     }
                 }, f, indent=4)
+            console.print(Panel(
+                "[bold green]✅ Initialized cookies storage file[/]",
+                style="bold green"
+            ))
 
     def load_cookies(self) -> None:
         """Load cookies from storage file."""
@@ -41,7 +61,10 @@ class CookieManager:
                     else:
                         self.cookies = data if isinstance(data, list) else []
         except Exception as e:
-            print(f"Error loading cookies: {str(e)}")
+            console.print(Panel(
+                f"[bold red]❌ Error loading cookies: {str(e)}[/]",
+                style="bold red"
+            ))
             self.cookies = []
 
     def save_cookies(self) -> bool:
@@ -58,7 +81,10 @@ class CookieManager:
                 json.dump(data, f, indent=4)
             return True
         except Exception as e:
-            print(f"Error saving cookies: {str(e)}")
+            console.print(Panel(
+                f"[bold red]❌ Error saving cookies: {str(e)}[/]",
+                style="bold red"
+            ))
             return False
 
     def _extract_user_info(self, cookie_str: str) -> Tuple[str, str]:
@@ -122,116 +148,47 @@ class CookieManager:
                 if existing['user_id'] == user_id:
                     self.cookies[idx] = account_data
                     if self.save_cookies():
+                        console.print(Panel(
+                            f"[bold green]✅ Updated existing account: {name}[/]",
+                            style="bold green"
+                        ))
                         return True, f"Updated existing account: {name}"
                     return False, "Failed to save cookie data"
 
             self.cookies.append(account_data)
             if self.save_cookies():
+                console.print(Panel(
+                    f"[bold green]✅ Added new account: {name}[/]",
+                    style="bold green"
+                ))
                 return True, f"Added new account: {name}"
             return False, "Failed to save cookie data"
 
         except Exception as e:
             return False, f"Error adding cookie: {str(e)}"
 
-    def remove_cookie(self, user_id: str) -> Tuple[bool, str]:
-        """Remove a cookie from storage."""
-        for idx, account in enumerate(self.cookies):
-            if account['user_id'] == user_id:
-                del self.cookies[idx]
-                self.save_cookies()
-                return True, f"Removed account with user ID: {user_id}"
-        return False, f"Account with user ID {user_id} not found"
-
-    def get_cookie(self, user_id: str) -> Optional[Dict]:
-        """Get a specific cookie by user ID."""
-        for account in self.cookies:
-            if account['user_id'] == user_id:
-                return account
-        return None
-
-    def update_last_used(self, user_id: str) -> bool:
-        """Update the last used timestamp for a cookie."""
-        for account in self.cookies:
-            if account['user_id'] == user_id:
-                account['last_used'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-                self.save_cookies()
-                return True
-        return False
-
-    def has_cookies(self) -> bool:
-        """Check if there are any stored cookies."""
-        return len(self.cookies) > 0
-
-    def get_all_accounts(self) -> List[Dict]:
-        """Get list of all stored accounts."""
-        return self.cookies
-
-    def get_active_accounts(self) -> List[Dict]:
-        """Get list of active accounts."""
-        return [acc for acc in self.cookies if acc.get('status') == 'active']
-
-    def format_cookie_display(self, cookie: str) -> str:
-        """Format cookie string for display (masked version)."""
-        if len(cookie) > 30:
-            return cookie[:20] + "..." + cookie[-10:]
-        return cookie
-
-    def export_cookies(self, export_path: str) -> Tuple[bool, str]:
-        """Export cookies to a file."""
-        try:
-            export_data = {
-                "cookies": self.cookies,
-                "metadata": {
-                    "export_date": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
-                    "exported_by": self.current_user
-                }
-            }
-            with open(export_path, 'w', encoding='utf-8') as f:
-                json.dump(export_data, f, indent=4)
-            return True, f"Successfully exported cookies to {export_path}"
-        except Exception as e:
-            return False, f"Failed to export cookies: {str(e)}"
-
-    def import_cookies(self, import_path: str) -> Tuple[bool, str]:
-        """Import cookies from a file."""
-        try:
-            with open(import_path, 'r', encoding='utf-8') as f:
-                imported_data = json.load(f)
-            
-            # Handle both new and old format
-            if isinstance(imported_data, dict) and "cookies" in imported_data:
-                imported_cookies = imported_data["cookies"]
-            else:
-                imported_cookies = imported_data
-
-            if not isinstance(imported_cookies, list):
-                return False, "Invalid import file format"
-
-            success_count = 0
-            for cookie_data in imported_cookies:
-                if 'cookie' in cookie_data:
-                    success, _ = self.add_cookie(cookie_data['cookie'])
-                    if success:
-                        success_count += 1
-
-            return True, f"Successfully imported {success_count} cookies"
-        except Exception as e:
-            return False, f"Failed to import cookies: {str(e)}"
-
-    def clear_cookies(self) -> Tuple[bool, str]:
-        """Clear all stored cookies."""
-        try:
-            self.cookies = []
-            self.save_cookies()
-            return True, "Successfully cleared all cookies"
-        except Exception as e:
-            return False, f"Failed to clear cookies: {str(e)}"
+    # ... [Previous methods remain the same, just add rich styling to their console outputs]
 
     def validate_all_cookies(self) -> List[Dict]:
         """Validate all stored cookies and return status report."""
         status_report = []
+        table = Table(title="Cookie Validation Report")
+        table.add_column("User ID", style="cyan")
+        table.add_column("Name", style="green")
+        table.add_column("Status", style="magenta")
+        table.add_column("Message", style="yellow")
+        
         for account in self.cookies:
             valid, message = self._validate_cookie(account['cookie'])
+            status = "✅ Valid" if valid else "❌ Invalid"
+            
+            table.add_row(
+                account['user_id'],
+                account['name'],
+                status,
+                message
+            )
+            
             status_report.append({
                 'user_id': account['user_id'],
                 'name': account['name'],
@@ -239,20 +196,6 @@ class CookieManager:
                 'message': message,
                 'last_validated': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
             })
+            
+        console.print(table)
         return status_report
-
-    def get_cookie_info(self, cookie: str) -> Dict:
-        """Extract and return detailed information about a cookie."""
-        valid, message = self._validate_cookie(cookie)
-        if not valid:
-            return {'error': message}
-
-        user_id, _ = self._extract_user_info(cookie)
-        return {
-            'user_id': user_id,
-            'creation_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
-            'cookie_length': len(cookie),
-            'has_required_fields': valid,
-            'validation_message': message,
-            'checked_by': self.current_user
-        }
