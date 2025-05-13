@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 14:56:28 UTC
+# Last Modified: 2025-05-13 15:37:05 UTC
 # Author: sehraks
 
 import os
 import sys
-import json
-import asyncio
 from datetime import datetime
 from typing import Dict, Optional
 from colorama import init, Fore, Style
@@ -15,8 +13,6 @@ from colorama import init, Fore, Style
 # Import local modules
 from modules.cookie_manager import CookieManager
 from modules.spam_sharing import SpamSharing
-from modules.profile_guard import ProfileGuard
-from modules.friend_scraper import FriendScraper
 from modules.utils import Utils
 
 # Initialize colorama
@@ -28,13 +24,11 @@ class FacebookMonoToolkit:
         self.VERSION = "1.0.0"
         self.AUTHOR = "sehraks"
         self.TOOL_NAME = "Facebook MonoToolkit"
-        self.LAST_UPDATED = "2025-05-13 14:56:28 UTC"
+        self.LAST_UPDATED = "2025-05-13 15:37:05 UTC"
         
         # Initialize components
         self.cookie_manager = CookieManager()
         self.spam_sharing = SpamSharing()
-        self.profile_guard = ProfileGuard()
-        self.friend_scraper = FriendScraper()
         self.current_account: Optional[Dict] = None
         
         # Create necessary directories
@@ -42,7 +36,7 @@ class FacebookMonoToolkit:
 
     def _init_directories(self) -> None:
         """Initialize necessary directories."""
-        directories = ['cookies-storage', 'logs', 'data', 'data/friends']
+        directories = ['cookies-storage', 'logs']
         for directory in directories:
             os.makedirs(directory, exist_ok=True)
 
@@ -66,7 +60,7 @@ class FacebookMonoToolkit:
             return False
         return True
 
-    async def main_menu(self) -> None:
+    def main_menu(self) -> None:
         """Display and handle the main menu."""
         while True:
             self.display_banner()
@@ -77,9 +71,7 @@ class FacebookMonoToolkit:
             options = {
                 "1": "Manage Cookies",
                 "2": "Spam Sharing Post",
-                "3": "Activate Profile Picture Guard",
-                "4": "Scrape your friend names and UIDs",
-                "5": "Exit"
+                "3": "Exit"
             }
             
             Utils.print_menu(options, "Main Menu")
@@ -90,16 +82,8 @@ class FacebookMonoToolkit:
             elif choice == "2":
                 if not self.check_cookie_required():
                     continue
-                await self.spam_sharing_menu()
+                self.spam_sharing_menu()
             elif choice == "3":
-                if not self.check_cookie_required():
-                    continue
-                await self.profile_guard_menu()
-            elif choice == "4":
-                if not self.check_cookie_required():
-                    continue
-                await self.friend_scraper_menu()
-            elif choice == "5":
                 Utils.print_status(f"Thank you for using {self.TOOL_NAME}!", "success")
                 sys.exit(0)
 
@@ -194,7 +178,7 @@ class FacebookMonoToolkit:
             
             input("\nPress Enter to continue...")
 
-    async def spam_sharing_menu(self) -> None:
+    def spam_sharing_menu(self) -> None:
         """Handle spam sharing functionality."""
         self.display_banner()
         print(f"{Fore.CYAN}=== Spam Sharing ===\n")
@@ -231,7 +215,7 @@ class FacebookMonoToolkit:
 
         print(f"\n{Fore.CYAN}Starting share operation...{Style.RESET_ALL}")
         
-        success, message = await self.spam_sharing.share_post(
+        success, message = self.spam_sharing.share_post(
             self.current_account['cookie'],
             post_url,
             share_count,
@@ -246,57 +230,11 @@ class FacebookMonoToolkit:
         Utils.log_activity("Share Post", success, message)
         input("\nPress Enter to continue...")
 
-    async def profile_guard_menu(self) -> None:
-        """Handle profile guard functionality."""
-        self.display_banner()
-        print(f"{Fore.CYAN}=== Profile Picture Guard ===\n")
-
-        print(f"{Fore.YELLOW}[!] Activate Profile Picture Guard? [y/n]")
-        if not Utils.confirm_action(""):
-            return
-            
-        print(f"\n{Fore.CYAN}Activating Profile Picture Guard...{Style.RESET_ALL}")
-        
-        success, message = await self.profile_guard.activate_guard(
-            self.current_account['cookie']
-        )
-        
-        if success:
-            Utils.print_status(message, "success")
-        else:
-            Utils.print_status(message, "error")
-        
-        Utils.log_activity("Profile Guard", success, message)
-        input("\nPress Enter to continue...")
-
-    async def friend_scraper_menu(self) -> None:
-        """Handle friend scraping functionality."""
-        self.display_banner()
-        print(f"{Fore.CYAN}=== Friend Scraper ===\n")
-
-        print(f"{Fore.YELLOW}[!] Scrape all of your friend names and UIDs [y/n]")
-        if not Utils.confirm_action(""):
-            return
-            
-        print(f"\n{Fore.CYAN}Starting friend data scraping...{Style.RESET_ALL}")
-        
-        success, message = await self.friend_scraper.scrape_friends(
-            self.current_account['cookie']
-        )
-        
-        if success:
-            Utils.print_status(message, "success")
-        else:
-            Utils.print_status(message, "error")
-        
-        Utils.log_activity("Friend Scraper", success, message)
-        input("\nPress Enter to continue...")
-
-async def main():
+def main():
     """Main entry point of the application."""
     try:
         tool = FacebookMonoToolkit()
-        await tool.main_menu()
+        tool.main_menu()
     except KeyboardInterrupt:
         print(f"\n{Fore.YELLOW}Program interrupted by user.{Style.RESET_ALL}")
         sys.exit(0)
@@ -306,4 +244,4 @@ async def main():
         sys.exit(1)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
