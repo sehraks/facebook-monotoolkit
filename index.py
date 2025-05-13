@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 14:02:51 UTC
+# Last Modified: 2025-05-13 14:19:28 UTC
 # Author: sehraks
 
 import os
@@ -28,7 +28,7 @@ class FacebookMonoToolkit:
         self.VERSION = "1.0.0"
         self.AUTHOR = "sehraks"
         self.TOOL_NAME = "Facebook MonoToolkit"
-        self.LAST_UPDATED = "2025-05-13 14:02:51 UTC"
+        self.LAST_UPDATED = "2025-05-13 14:19:28 UTC"
         
         # Initialize components
         self.cookie_manager = CookieManager()
@@ -66,16 +66,14 @@ class FacebookMonoToolkit:
             return False
         return True
 
-    def main_menu(self) -> None:
+    async def main_menu(self) -> None:
         """Display and handle the main menu."""
         while True:
             self.display_banner()
             
-            # Show current account if logged in
             if self.current_account:
                 print(f"{Fore.GREEN}Current Account: {self.current_account['name']}{Style.RESET_ALL}\n")
 
-            # Menu options
             options = {
                 "1": "Manage Cookies",
                 "2": "Spam Sharing Post",
@@ -100,7 +98,7 @@ class FacebookMonoToolkit:
             elif choice == "4":
                 if not self.check_cookie_required():
                     continue
-                self.friend_scraper_menu()
+                await self.friend_scraper_menu()
             elif choice == "5":
                 Utils.print_status(f"Thank you for using {self.TOOL_NAME}!", "success")
                 sys.exit(0)
@@ -117,7 +115,6 @@ class FacebookMonoToolkit:
                 "3": "Back to Main Menu"
             }
             
-            # Filter out None values
             options = {k: v for k, v in options.items() if v is not None}
             
             Utils.print_menu(options, "Cookie Management")
@@ -272,7 +269,7 @@ class FacebookMonoToolkit:
         Utils.log_activity("Profile Guard", success, message)
         input("\nPress Enter to continue...")
 
-    def friend_scraper_menu(self) -> None:
+    async def friend_scraper_menu(self) -> None:
         """Handle friend scraping functionality."""
         self.display_banner()
         print(f"{Fore.CYAN}=== Friend Scraper ===\n")
@@ -283,7 +280,7 @@ class FacebookMonoToolkit:
             
         print(f"\n{Fore.CYAN}Starting friend data scraping...{Style.RESET_ALL}")
         
-        success, message = self.friend_scraper.scrape_friends(
+        success, message = await self.friend_scraper.scrape_friends(
             self.current_account['cookie']
         )
         
@@ -295,11 +292,11 @@ class FacebookMonoToolkit:
         Utils.log_activity("Friend Scraper", success, message)
         input("\nPress Enter to continue...")
 
-def main():
+async def main():
     """Main entry point of the application."""
     try:
         tool = FacebookMonoToolkit()
-        tool.main_menu()
+        await tool.main_menu()
     except KeyboardInterrupt:
         print(f"\n{Fore.YELLOW}Program interrupted by user.{Style.RESET_ALL}")
         sys.exit(0)
@@ -309,4 +306,4 @@ def main():
         sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
