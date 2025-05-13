@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 18:24:33 UTC
+# Last Modified: 2025-05-13 18:29:03 UTC
 # Author: sehraks
 
 import os
@@ -27,7 +27,7 @@ class FacebookMonoToolkit:
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
         self.LAST_UPDATED = "May 13, 2025 +8 GMT"
-        self.CURRENT_TIME = "2025-05-13 18:24:33"
+        self.CURRENT_TIME = "2025-05-13 18:29:03"
         self.CURRENT_USER = "sehraks"
         
         # Initialize components
@@ -68,7 +68,7 @@ class FacebookMonoToolkit:
                 "[bold red]⚠️ Please login first using the Manage Cookies option.[/]",
                 style="bold red"
             ))
-            console.input("\n[bold blue]Press Enter to continue...[/]")
+            console.input("[bold blue]Press Enter to continue...[/]")
             return False
         return True
 
@@ -92,7 +92,8 @@ class FacebookMonoToolkit:
             )
             console.print(menu_panel)
 
-            choice = console.input("[bold yellow]Select an option (1-3): [/]").strip()
+            choice = console.input("[bold yellow]Select an option (1-3): [/]")
+            choice = choice.strip()
 
             if choice == "1":
                 self.cookie_management_menu()
@@ -134,7 +135,8 @@ class FacebookMonoToolkit:
             )
             console.print(menu_panel)
             
-            choice = console.input("[bold yellow]Select an option: [/]").strip()
+            choice = console.input("[bold yellow]Select an option: [/]")
+            choice = choice.strip()
 
             if choice == "1":
                 self.add_new_cookie()
@@ -159,14 +161,15 @@ class FacebookMonoToolkit:
         console.print("\n[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
         console.print("[bold yellow]Note: Cookie must contain c_user and xs values[/]\n")
         
-        cookie = console.input("[bold green]Cookie: [/]").strip()
+        cookie = console.input("[bold green]Cookie: [/]")
+        cookie = cookie.strip()
         
         if not cookie:
             console.print(Panel(
                 "[bold red]❌ Cookie cannot be empty![/]",
                 style="bold red"
             ))
-            console.input("\n[bold blue]Press Enter to continue...[/]")
+            console.input("[bold blue]Press Enter to continue...[/]")
             return
 
         success, message = self.cookie_manager.add_cookie(cookie)
@@ -185,7 +188,7 @@ class FacebookMonoToolkit:
             ))
         
         Utils.log_activity("Add Cookie", success, message)
-        console.input("\n[bold blue]Press Enter to continue...[/]")
+        console.input("[bold blue]Press Enter to continue...[/]")
 
     def cookie_settings_menu(self) -> None:
         """Handle cookie settings and storage menu."""
@@ -209,7 +212,8 @@ class FacebookMonoToolkit:
 
             console.print("[bold yellow][0] 🔙 Back[/]\n")
 
-            choice = console.input("[bold yellow]Select an option: [/]").strip()
+            choice = console.input("[bold yellow]Select an option: [/]")
+            choice = choice.strip()
             
             if choice == "0":
                 break
@@ -239,7 +243,7 @@ class FacebookMonoToolkit:
                     style="bold red"
                 ))
             
-            console.input("\n[bold blue]Press Enter to continue...[/]")
+            console.input("[bold blue]Press Enter to continue...[/]")
 
     def spam_sharing_menu(self) -> None:
         """Handle spam sharing functionality."""
@@ -249,14 +253,15 @@ class FacebookMonoToolkit:
             style="bold cyan"
         ))
         
-        post_url = console.input("\n[bold green]📌 Enter the Facebook post URL: [/]").strip()
+        post_url = console.input("[bold green]📌 Enter the Facebook post URL: [/]")
+        post_url = post_url.strip()
         
         if not Utils.validate_url(post_url):
             console.print(Panel(
                 "[bold red]❌ Invalid Facebook URL![/]",
                 style="bold red"
             ))
-            console.input("\n[bold blue]Press Enter to continue...[/]")
+            console.input("[bold blue]Press Enter to continue...[/]")
             return
 
         success, share_count = Utils.validate_input(
@@ -267,7 +272,7 @@ class FacebookMonoToolkit:
         )
         
         if not success:
-            console.input("\n[bold blue]Press Enter to continue...[/]")
+            console.input("[bold blue]Press Enter to continue...[/]")
             return
 
         success, delay = Utils.validate_input(
@@ -278,7 +283,7 @@ class FacebookMonoToolkit:
         )
         
         if not success:
-            console.input("\n[bold blue]Press Enter to continue...[/]")
+            console.input("[bold blue]Press Enter to continue...[/]")
             return
         
         success, message = self.spam_sharing.share_post(
@@ -300,7 +305,7 @@ class FacebookMonoToolkit:
             ))
         
         Utils.log_activity("Share Post", success, message)
-        console.input("\n[bold blue]Press Enter to continue...[/]")
+        console.input("[bold blue]Press Enter to continue...[/]")
 
 def main():
     """Main entry point of the application."""
