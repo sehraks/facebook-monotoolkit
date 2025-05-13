@@ -1,7 +1,14 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# File: modules/utils.py
+# Last Modified: 2025-05-13 12:03:41 UTC
+# Author: sehraks
+
 import os
 import sys
 import json
 import re
+import uuid
 from typing import Tuple, Any, Dict, Optional
 from datetime import datetime
 from colorama import init, Fore, Style, Back
@@ -118,6 +125,37 @@ class Utils:
         return "*" * len(cookie)
 
     @staticmethod
+    def clean_facebook_url(url: str) -> str:
+        """
+        Clean a Facebook URL by removing unnecessary query parameters.
+        
+        Args:
+            url (str): The Facebook URL to clean
+            
+        Returns:
+            str: Cleaned Facebook URL
+            
+        Example:
+            >>> url = "https://www.facebook.com/100036372766907/posts/1319684009254012/?mibextid=ClGUQ9kqrXgNGENK"
+            >>> Utils.clean_facebook_url(url)
+            "https://www.facebook.com/100036372766907/posts/1319684009254012"
+        """
+        try:
+            # Remove everything after the question mark
+            base_url = url.split('?')[0]
+            
+            # Remove trailing slashes if present
+            base_url = base_url.rstrip('/')
+            
+            # Handle mobile URLs
+            if 'm.facebook.com' in base_url:
+                base_url = base_url.replace('m.facebook.com', 'www.facebook.com')
+                
+            return base_url
+        except Exception:
+            return url
+
+    @staticmethod
     def validate_url(url: str) -> bool:
         """
         Validate if a URL is a valid Facebook URL.
@@ -127,9 +165,18 @@ class Utils:
             
         Returns:
             bool: True if valid Facebook URL
+            
+        Example:
+            >>> url = "https://www.facebook.com/100036372766907/posts/1319684009254012"
+            >>> Utils.validate_url(url)
+            True
         """
+        # First clean the URL
+        cleaned_url = Utils.clean_facebook_url(url)
+        
+        # Basic Facebook URL pattern
         pattern = r'^https?:\/\/(www\.|m\.)?facebook\.com\/'
-        return bool(re.match(pattern, url))
+        return bool(re.match(pattern, cleaned_url))
 
     @staticmethod
     def log_activity(action: str, status: bool, details: str) -> None:
@@ -278,3 +325,13 @@ class Utils:
         bar = '█' * filled + '░' * (width - filled)
         percent_str = f'{percentage:>3.0%}'
         return f'{bar} {percent_str}'
+
+    @staticmethod
+    def generate_mutation_id() -> str:
+        """
+        Generate a mutation ID for Facebook API requests.
+        
+        Returns:
+            str: UUID version 4 string
+        """
+        return str(uuid.uuid4())
