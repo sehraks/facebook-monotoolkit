@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/utils.py
-# Last Modified: 2025-05-13 12:03:41 UTC
+# Last Modified: 2025-05-13 14:09:08 UTC
 # Author: sehraks
 
 import os
@@ -9,7 +9,8 @@ import sys
 import json
 import re
 import uuid
-from typing import Tuple, Any, Dict, Optional
+import time
+from typing import Tuple, Any, Dict, Optional, List, Union
 from datetime import datetime
 from colorama import init, Fore, Style, Back
 
@@ -56,7 +57,8 @@ class Utils:
 
     @staticmethod
     def print_banner(title: str, version: str = "1.0", 
-                    author: str = "sehraks") -> None:
+                    author: str = "sehraks",
+                    last_updated: Optional[str] = None) -> None:
         """
         Print a formatted banner with tool information.
         
@@ -64,47 +66,56 @@ class Utils:
             title (str): The title to display
             version (str): Version number
             author (str): Author name
+            last_updated (str, optional): Last update timestamp
         """
         Utils.clear_screen()
-        print(f"{Fore.CYAN}{'='*40}")
-        print(f"{Fore.YELLOW}{Style.BRIGHT}{title.center(40)}")
-        print(f"{Fore.CYAN}{'-'*40}")
+        print(f"{Fore.CYAN}{'='*50}")
+        print(f"{Fore.YELLOW}{Style.BRIGHT}{title.center(50)}")
+        print(f"{Fore.CYAN}{'-'*50}")
         print(f"{Fore.GREEN}Version: {version}")
         print(f"{Fore.BLUE}Author: {author}")
-        print(f"{Fore.CYAN}{'='*40}{Style.RESET_ALL}\n")
+        if last_updated:
+            print(f"{Fore.MAGENTA}Last Updated: {last_updated}")
+        print(f"{Fore.CYAN}{'='*50}{Style.RESET_ALL}\n")
 
     @staticmethod
-    def print_menu(options: Dict[str, str], title: str = "") -> None:
-        """Print a menu with numbered options in order."""
-        if title:
-            print(f"{title}:\n")
+    def print_menu(options: Dict[str, Optional[str]], title: str = "") -> None:
+        """
+        Print a menu with numbered options in order.
         
-        # Print options in numerical order
-        for key in sorted(options.keys()):
-            print(f"{Fore.YELLOW}[{key}]{Fore.CYAN} {options[key]}")
+        Args:
+            options (Dict[str, Optional[str]]): Dictionary of menu options
+            title (str): Menu title
+        """
+        if title:
+            print(f"{Fore.CYAN}{title}:\n")
+        
+        for key, value in sorted(options.items()):
+            if value is not None:  # Only print non-None options
+                print(f"{Fore.YELLOW}[{key}]{Fore.CYAN} {value}")
         print()
 
     @staticmethod
-    def get_menu_choice(options: Dict[str, str]) -> str:
+    def get_menu_choice(options: Dict[str, Optional[str]]) -> str:
         """
         Get user's menu choice with validation.
         
         Args:
-            options (Dict[str, str]): Dictionary of valid options
+            options (Dict[str, Optional[str]]): Dictionary of valid options
             
         Returns:
             str: Selected option key
         """
         while True:
             choice = input(f"{Fore.YELLOW}Select an option: {Style.RESET_ALL}")
-            if choice in options:
+            if choice in options and options[choice] is not None:
                 return choice
             print(f"{Fore.RED}Invalid option. Please try again.{Style.RESET_ALL}")
 
     @staticmethod
     def format_cookie(cookie: str, mask: bool = True) -> str:
         """
-        Format cookie string for display, optionally masking sensitive parts.
+        Format cookie string for display or storage.
         
         Args:
             cookie (str): The cookie string to format
@@ -125,37 +136,6 @@ class Utils:
         return "*" * len(cookie)
 
     @staticmethod
-    def clean_facebook_url(url: str) -> str:
-        """
-        Clean a Facebook URL by removing unnecessary query parameters.
-        
-        Args:
-            url (str): The Facebook URL to clean
-            
-        Returns:
-            str: Cleaned Facebook URL
-            
-        Example:
-            >>> url = "https://www.facebook.com/100036372766907/posts/1319684009254012/?mibextid=ClGUQ9kqrXgNGENK"
-            >>> Utils.clean_facebook_url(url)
-            "https://www.facebook.com/100036372766907/posts/1319684009254012"
-        """
-        try:
-            # Remove everything after the question mark
-            base_url = url.split('?')[0]
-            
-            # Remove trailing slashes if present
-            base_url = base_url.rstrip('/')
-            
-            # Handle mobile URLs
-            if 'm.facebook.com' in base_url:
-                base_url = base_url.replace('m.facebook.com', 'www.facebook.com')
-                
-            return base_url
-        except Exception:
-            return url
-
-    @staticmethod
     def validate_url(url: str) -> bool:
         """
         Validate if a URL is a valid Facebook URL.
@@ -165,18 +145,44 @@ class Utils:
             
         Returns:
             bool: True if valid Facebook URL
-            
-        Example:
-            >>> url = "https://www.facebook.com/100036372766907/posts/1319684009254012"
-            >>> Utils.validate_url(url)
-            True
         """
-        # First clean the URL
+        # Clean URL first
         cleaned_url = Utils.clean_facebook_url(url)
         
-        # Basic Facebook URL pattern
-        pattern = r'^https?:\/\/(www\.|m\.)?facebook\.com\/'
-        return bool(re.match(pattern, cleaned_url))
+        # Facebook URL patterns
+        patterns = [
+            r'^https?:\/\/(www\.|m\.|mbasic\.)?facebook\.com\/',
+            r'^https?:\/\/(web\.|touch\.)?facebook\.com\/'
+        ]
+        
+        return any(bool(re.match(pattern, cleaned_url)) for pattern in patterns)
+
+    @staticmethod
+    def clean_facebook_url(url: str) -> str:
+        """
+        Clean a Facebook URL by removing unnecessary parameters.
+        
+        Args:
+            url (str): The Facebook URL to clean
+            
+        Returns:
+            str: Cleaned Facebook URL
+        """
+        try:
+            # Remove tracking parameters
+            base_url = url.split('?')[0]
+            
+            # Remove trailing slashes
+            base_url = base_url.rstrip('/')
+            
+            # Handle mobile URLs
+            if any(domain in base_url for domain in ['m.facebook.com', 'mbasic.facebook.com']):
+                base_url = base_url.replace('m.facebook.com', 'www.facebook.com')
+                base_url = base_url.replace('mbasic.facebook.com', 'www.facebook.com')
+                
+            return base_url
+        except Exception:
+            return url
 
     @staticmethod
     def log_activity(action: str, status: bool, details: str) -> None:
@@ -188,14 +194,14 @@ class Utils:
             status (bool): Success/failure status
             details (str): Additional details
         """
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S UTC')
         status_str = "SUCCESS" if status else "FAILURE"
         
         log_dir = "logs"
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
+        if not os.makedirs(log_dir, exist_ok=True):
+            return
             
-        log_file = os.path.join(log_dir, f"activity_{datetime.now().strftime('%Y%m')}.log")
+        log_file = os.path.join(log_dir, f"activity_{datetime.utcnow().strftime('%Y%m')}.log")
         
         log_entry = f"[{timestamp}] {action} - {status_str}: {details}\n"
         
@@ -238,36 +244,6 @@ class Utils:
         return response in ['y', 'yes']
 
     @staticmethod
-    def format_time_ago(timestamp: str) -> str:
-        """
-        Convert timestamp to "time ago" format.
-        
-        Args:
-            timestamp (str): ISO format timestamp
-            
-        Returns:
-            str: Formatted time ago string
-        """
-        try:
-            dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
-            now = datetime.now()
-            diff = now - dt
-
-            if diff.days > 365:
-                return f"{diff.days // 365}y ago"
-            if diff.days > 30:
-                return f"{diff.days // 30}mo ago"
-            if diff.days > 0:
-                return f"{diff.days}d ago"
-            if diff.seconds > 3600:
-                return f"{diff.seconds // 3600}h ago"
-            if diff.seconds > 60:
-                return f"{diff.seconds // 60}m ago"
-            return f"{diff.seconds}s ago"
-        except Exception:
-            return timestamp
-
-    @staticmethod
     def save_json(data: Any, filepath: str) -> bool:
         """
         Save data to a JSON file.
@@ -282,10 +258,10 @@ class Utils:
         try:
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
             with open(filepath, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=4)
+                json.dump(data, f, indent=4, ensure_ascii=False)
             return True
         except Exception as e:
-            print(f"{Fore.RED}Error saving file: {str(e)}{Style.RESET_ALL}")
+            Utils.print_status(f"Error saving file: {str(e)}", "error")
             return False
 
     @staticmethod
@@ -303,7 +279,7 @@ class Utils:
             with open(filepath, 'r', encoding='utf-8') as f:
                 return True, json.load(f)
         except Exception as e:
-            print(f"{Fore.RED}Error loading file: {str(e)}{Style.RESET_ALL}")
+            Utils.print_status(f"Error loading file: {str(e)}", "error")
             return False, None
 
     @staticmethod
@@ -329,9 +305,43 @@ class Utils:
     @staticmethod
     def generate_mutation_id() -> str:
         """
-        Generate a mutation ID for Facebook API requests.
+        Generate a mutation ID for Facebook requests.
         
         Returns:
             str: UUID version 4 string
         """
         return str(uuid.uuid4())
+
+    @staticmethod
+    def format_time_ago(timestamp: Union[str, datetime]) -> str:
+        """
+        Convert timestamp to "time ago" format.
+        
+        Args:
+            timestamp (Union[str, datetime]): Timestamp to format
+            
+        Returns:
+            str: Formatted time ago string
+        """
+        try:
+            if isinstance(timestamp, str):
+                dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
+            else:
+                dt = timestamp
+                
+            now = datetime.utcnow()
+            diff = now - dt
+
+            if diff.days > 365:
+                return f"{diff.days // 365}y ago"
+            if diff.days > 30:
+                return f"{diff.days // 30}mo ago"
+            if diff.days > 0:
+                return f"{diff.days}d ago"
+            if diff.seconds > 3600:
+                return f"{diff.seconds // 3600}h ago"
+            if diff.seconds > 60:
+                return f"{diff.seconds // 60}m ago"
+            return f"{diff.seconds}s ago"
+        except Exception:
+            return str(timestamp)
