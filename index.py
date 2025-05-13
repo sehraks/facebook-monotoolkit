@@ -76,33 +76,33 @@ class FacebookMonoToolkit:
                 sys.exit(0)
 
     def cookie_management_menu(self) -> None:
-    """Display and handle the cookie management menu."""
-    while True:
-        self.display_banner()
-        print(f"{Fore.CYAN}=== Cookie Management ===\n")
-        
-        # Create ordered menu options
-        menu_options = [
-            ("1", "Enter your cookie"),
-            ("2", "Cookie Settings and Storage" if self.cookie_manager.has_cookies() else None),
-            ("3", "Back to Main Menu")
-        ]
-        
-        # Filter out None values but maintain order
-        options = {}
-        for key, value in menu_options:
-            if value is not None:
-                options[key] = value
-        
-        Utils.print_menu(options, "Cookie Management")
-        choice = Utils.get_menu_choice(options)
+        """Display and handle the cookie management menu."""
+        while True:
+            self.display_banner()
+            print(f"{Fore.CYAN}=== Cookie Management ===\n")
+            
+            # Create ordered menu options
+            menu_options = [
+                ("1", "Enter your cookie"),
+                ("2", "Cookie Settings and Storage" if self.cookie_manager.has_cookies() else None),
+                ("3", "Back to Main Menu")
+            ]
+            
+            # Filter out None values but maintain order
+            options = {}
+            for key, value in menu_options:
+                if value is not None:
+                    options[key] = value
+            
+            Utils.print_menu(options, "Cookie Management")
+            choice = Utils.get_menu_choice(options)
 
-        if choice == "1":
-            self.add_new_cookie()
-        elif choice == "2" and self.cookie_manager.has_cookies():
-            self.cookie_settings_menu()
-        elif choice == "3":
-            break
+            if choice == "1":
+                self.add_new_cookie()
+            elif choice == "2" and self.cookie_manager.has_cookies():
+                self.cookie_settings_menu()
+            elif choice == "3":
+                break
 
     def add_new_cookie(self) -> None:
         """Handle adding a new cookie."""
