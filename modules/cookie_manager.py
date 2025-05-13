@@ -44,30 +44,28 @@ class CookieManager:
 
     def _extract_user_info(self, cookie_str: str) -> Tuple[str, str]:
         """Extract user ID and name from cookie string."""
-        try:
-            # Extract c_user value using regex
-            c_user_match = re.search(r'c_user=(\d+)', cookie_str)
-            if not c_user_match:
-                return 'unknown', 'Unknown_User'
-            
-            user_id = c_user_match.group(1)
-            name = f"Facebook_{user_id[:6]}..." if len(user_id) > 6 else f"Facebook_{user_id}"
-            return user_id, name
-        except Exception:
+        c_user_match = re.search(r'c_user=(\d+)', cookie_str)
+        if not c_user_match:
             return 'unknown', 'Unknown_User'
+        
+        user_id = c_user_match.group(1)
+        name = f"Facebook_{user_id}"
+        return user_id, name
 
     def _validate_cookie(self, cookie_str: str) -> Tuple[bool, str]:
         """Validate cookie string contains required fields."""
         if not cookie_str or not isinstance(cookie_str, str):
             return False, "Invalid cookie format"
 
-        required_fields = ['c_user=', 'xs=']
-        missing_fields = [field for field in required_fields if field not in cookie_str]
-        
-        if missing_fields:
-            return False, f"Missing required cookie fields: {', '.join(f.rstrip('=') for f in missing_fields)}"
+        # Check for c_user presence
+        if "c_user=" not in cookie_str:
+            return False, "Invalid cookie: missing c_user"
+            
+        # Check for xs presence
+        if "xs=" not in cookie_str:
+            return False, "Invalid cookie: missing xs"
 
-        # Check for c_user value
+        # Extract and validate c_user value
         c_user_match = re.search(r'c_user=(\d+)', cookie_str)
         if not c_user_match or not c_user_match.group(1).isdigit():
             return False, "Invalid c_user value"
@@ -77,7 +75,8 @@ class CookieManager:
     def add_cookie(self, cookie: str) -> Tuple[bool, str]:
         """Add a new cookie to storage."""
         try:
-            # Validate cookie format and required fields
+            # Basic validation
+            cookie = cookie.strip()
             valid, message = self._validate_cookie(cookie)
             if not valid:
                 return False, message
@@ -92,7 +91,7 @@ class CookieManager:
                 'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
                 'name': name,
                 'user_id': user_id,
-                'cookie': cookie.strip(),
+                'cookie': cookie,
                 'added_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
                 'last_used': None,
                 'status': 'active'
@@ -145,7 +144,7 @@ class CookieManager:
 
     def get_all_accounts(self) -> List[Dict]:
         """Get list of all stored accounts."""
-        return sorted(self.cookies, key=lambda x: x.get('last_used', ''), reverse=True)
+        return self.cookies
 
     def get_active_accounts(self) -> List[Dict]:
         """Get list of active accounts."""
@@ -153,7 +152,9 @@ class CookieManager:
 
     def format_cookie_display(self, cookie: str) -> str:
         """Format cookie string for display (masked version)."""
-        return cookie[:20] + "..." + cookie[-10:] if len(cookie) > 30 else cookie
+        if len(cookie) > 30:
+            return cookie[:20] + "..." + cookie[-10:]
+        return cookie
 
     def export_cookies(self, export_path: str) -> Tuple[bool, str]:
         """Export cookies to a file."""
