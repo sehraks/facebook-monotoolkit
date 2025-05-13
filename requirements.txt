@@ -1,0 +1,14 @@
+# Core dependencies
+aiohttp>=3.8.0    # For async HTTP requests
+colorama>=0.4.6   # For colored terminal output
+requests>=2.31.0  # For HTTP requests
+asyncio>=3.4.3    # For asynchronous operations
+
+# Utility dependencies
+python-dateutil>=2.8.2  # For date handling
+urllib3>=2.0.7         # HTTP client
+certifi>=2023.7.22     # SSL/TLS verification
+charset-normalizer>=3.3.2  # Character encoding detection
+
+# Optional but recommended
+tqdm>=4.66.1      # For progress bars (optional)
