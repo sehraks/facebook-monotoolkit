@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/spam_sharing.py
-# Last Modified: 2025-05-13 14:46:06 UTC
+# Last Modified: 2025-05-13 14:58:54 UTC
 # Author: sehraks
 
 import aiohttp
@@ -16,7 +16,7 @@ from .utils import Utils
 class SpamSharing:
     def __init__(self):
         """Initialize SpamSharing with necessary configurations."""
-        self.last_update = "2025-05-13 14:46:06"  # Current UTC time
+        self.last_update = "2025-05-13 14:58:54"  # Current UTC time
         self.current_user = "sehraks"  # Current user's login
         self.share_api_url = "https://b-graph.facebook.com/me/feed"
         self.max_shares_per_day = 200000
