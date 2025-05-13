@@ -1,23 +1,20 @@
 import aiohttp
 import asyncio
 import re
-import json
-import time
-from typing import Dict, List, Tuple, Optional
-from urllib.parse import urlparse, parse_qs
+import os
 from datetime import datetime
+from typing import Dict, Tuple, Optional
 from colorama import Fore, Style
 
 class SpamSharing:
     def __init__(self):
-        """Initialize the SpamSharing class with necessary configurations."""
+        """Initialize SpamSharing with necessary configurations."""
+        self.last_update = "2025-05-13 07:36:16"  # Current UTC time
+        self.current_user = "sehraks"  # Current user's login
         self.share_api_url = "https://b-graph.facebook.com/me/feed"
-        self.business_url = "https://business.facebook.com/content_management"
-        self.mbasic_url = "https://mbasic.facebook.com"
+        self.max_shares_per_day = 200000
         self.default_headers = {
             "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
-            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-            "accept-language": "en-US,en;q=0.9",
             "sec-ch-ua": '"Chromium";v="124", "Not-A.Brand";v="99"',
             "sec-ch-ua-mobile": "?1",
             "sec-ch-ua-platform": "Android",
@@ -25,227 +22,165 @@ class SpamSharing:
             "sec-fetch-mode": "navigate",
             "sec-fetch-site": "none",
             "sec-fetch-user": "?1",
-            "upgrade-insecure-requests": "1"
+            "upgrade-insecure-requests": "1",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "accept-encoding": "gzip, deflate",
+            "accept-language": "en-US,en;q=0.9",
+            "cache-control": "max-age=0"
         }
+        self._init_logging()
 
-    async def get_token(self, session: aiohttp.ClientSession, cookie: str) -> Tuple[Optional[str], str]:
-        """
-        Get Facebook access token using the provided cookie.
-        Returns tuple of (token, error_message).
-        """
+    def _init_logging(self) -> None:
+        """Initialize logging directory."""
+        self.log_dir = "logs"
+        if not os.path.exists(self.log_dir):
+            os.makedirs(self.log_dir)
+
+    def _log_share_activity(self, user_id: str, success: bool, message: str) -> None:
+        """Log sharing activity to file."""
+        timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        log_file = os.path.join(self.log_dir, f"share_activity_{datetime.now().strftime('%Y%m')}.log")
+        
+        try:
+            with open(log_file, 'a', encoding='utf-8') as f:
+                f.write(f"[{timestamp}] User: {user_id} | Success: {success} | Message: {message}\n")
+        except Exception as e:
+            print(f"{Fore.RED}Failed to log activity: {str(e)}{Style.RESET_ALL}")
+
+    async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str) -> Tuple[Optional[str], str]:
+        """Get Facebook access token from business.facebook.com."""
         headers = self.default_headers.copy()
         headers["cookie"] = cookie
 
         try:
-            async with session.get(self.business_url, headers=headers, timeout=30) as response:
+            async with session.get("https://business.facebook.com/content_management", headers=headers) as response:
                 if response.status != 200:
                     return None, f"Failed to fetch token: HTTP {response.status}"
-
-                data = await response.text()
                 
-                # Try different token patterns
-                patterns = [
-                    r'EAAG\w+',  # Standard token pattern
-                    r'EAAB\w+',  # Business token pattern
-                    r'EAA\w+',   # Generic token pattern
-                ]
-
-                for pattern in patterns:
-                    match = re.search(pattern, data)
-                    if match:
-                        return match.group(0), ""
-
-                return None, "Could not extract access token. Cookie may be invalid."
-
-        except asyncio.TimeoutError:
-            return None, "Request timed out while fetching token"
+                data = await response.text()
+                match = re.search(r'EAAG(.*?)",', data)
+                
+                if not match:
+                    return None, "Could not extract access token. Cookie may be invalid."
+                
+                access_token = f"EAAG{match.group(1)}"
+                return access_token, ""
+                
         except Exception as e:
             return None, f"Failed to get token: {str(e)}"
 
-    def normalize_url(self, url: str) -> str:
-        """Normalize Facebook URL to a standard format."""
-        url = url.strip()
-        if not url.startswith(('http://', 'https://')):
-            url = 'https://' + url
-        return url
-
-    def extract_post_id(self, url: str) -> Optional[str]:
-        """Extract post ID from various Facebook URL formats."""
-        parsed = urlparse(url)
-        path = parsed.path.strip('/')
-        query = parse_qs(parsed.query)
-
-        # Pattern 1: /posts/<post_id>
-        if 'posts' in path:
-            match = re.search(r'/posts/(\d+)', path)
-            if match:
-                return match.group(1)
-
-        # Pattern 2: /permalink/<post_id>
-        if 'permalink' in path:
-            match = re.search(r'/permalink/(\d+)', path)
-            if match:
-                return match.group(1)
-
-        # Pattern 3: story_fbid in query
-        if 'story_fbid' in query:
-            return query['story_fbid'][0]
-
-        # Pattern 4: ?p= format
-        if 'p' in query:
-            return query['p'][0]
-
-        return None
-
-    def validate_post_url(self, url: str) -> Tuple[bool, str]:
-        """
-        Validate Facebook post URL format and extract sharing path.
-        Returns tuple of (is_valid, result).
-        """
-        try:
-            url = self.normalize_url(url)
-            if not url.startswith(("https://www.facebook.com/", "https://facebook.com/", "https://m.facebook.com/")):
-                return False, "Invalid URL. Must be a Facebook post URL."
-
-            parsed = urlparse(url)
-            path = parsed.path.strip("/")
-            post_id = self.extract_post_id(url)
-
-            if post_id:
-                return True, post_id
-            elif (re.match(r"^.+/posts/\d+$", path) or 
-                  re.match(r"^groups/\d+/permalink/\d+$", path) or 
-                  "story_fbid" in parsed.query):
-                return True, path
-            
-            return False, "Invalid post URL format. Could not extract post information."
-
-        except Exception as e:
-            return False, f"URL validation error: {str(e)}"
-
-    async def check_share_limit(self, session: aiohttp.ClientSession, token: str) -> Tuple[bool, int]:
-        """Check if account has reached sharing limits."""
-        try:
-            url = f"https://graph.facebook.com/v17.0/me/feed?limit=5&access_token={token}"
-            async with session.get(url) as response:
-                if response.status != 200:
-                    return False, 0
-                
-                data = await response.json()
-                recent_shares = len([post for post in data.get('data', [])
-                                  if post.get('created_time', '') > 
-                                  (datetime.utcnow() - timedelta(hours=1)).isoformat()])
-                
-                return recent_shares < 30, 30 - recent_shares  # Assuming limit is 30 shares per hour
-        except Exception:
-            return True, 30  # If check fails, assume no limit reached
-
-    async def do_share(self, session: aiohttp.ClientSession, token: str, cookie: str,
-                      post_path: str, share_count: int, delay: int) -> Tuple[int, str]:
-        """
-        Perform the actual sharing operation.
-        Returns tuple of (shares_completed, message).
-        """
-        headers = {
-            **self.default_headers,
+    async def _perform_share(self, 
+                           session: aiohttp.ClientSession,
+                           token: str,
+                           cookie: str,
+                           post_path: str,
+                           share_count: int,
+                           delay: float) -> Tuple[int, str]:
+        """Perform the actual sharing operation."""
+        headers = self.default_headers.copy()
+        headers.update({
             "accept-encoding": "gzip, deflate",
             "host": "b-graph.facebook.com",
             "cookie": cookie
-        }
+        })
 
         successful_shares = 0
-        total_attempts = 0
-        max_retries = 3
-        error_count = 0
+        c_user_match = re.search(r'c_user=(\d+)', cookie)
+        user_id = c_user_match.group(1) if c_user_match else "unknown"
 
         print(f"{Fore.CYAN}Starting share operation...{Style.RESET_ALL}")
-
-        while successful_shares < share_count and total_attempts < share_count * max_retries:
+        
+        for i in range(share_count):
             try:
-                # Check sharing limits
-                can_share, remaining = await self.check_share_limit(session, token)
-                if not can_share:
-                    return successful_shares, f"Sharing limit reached. Try again later. Completed {successful_shares} shares."
-
-                post_url = (f"{self.share_api_url}?link={self.mbasic_url}/{post_path}"
-                           f"&published=0&access_token={token}")
-
-                async with session.post(post_url, headers=headers, timeout=30) as response:
+                share_url = f"{self.share_api_url}?link=https://mbasic.facebook.com/{post_path}&published=0&access_token={token}"
+                
+                async with session.post(share_url, headers=headers) as response:
                     try:
                         data = await response.json()
-                    except json.JSONDecodeError:
+                    except Exception:
                         data = {"error": {"message": "Invalid JSON response"}}
 
                     if "id" in data:
                         successful_shares += 1
-                        error_count = 0  # Reset error count on success
-                        print(f"{Fore.GREEN}[{successful_shares}/{share_count}] "
-                              f"Share successful{Style.RESET_ALL}")
+                        print(f"{Fore.GREEN}[{successful_shares}/{share_count}] Share successful{Style.RESET_ALL}")
+                        self._log_share_activity(user_id, True, f"Share {successful_shares}/{share_count}")
                     else:
                         error_msg = data.get("error", {}).get("message", "Unknown error")
-                        error_count += 1
-                        print(f"{Fore.YELLOW}Share attempt failed: {error_msg}{Style.RESET_ALL}")
-                        
-                        if "spam" in error_msg.lower():
-                            return successful_shares, "Spam detection triggered. Stopping."
-                        elif error_count >= 3:
-                            return successful_shares, f"Multiple errors occurred: {error_msg}"
+                        self._log_share_activity(user_id, False, f"Share failed: {error_msg}")
+                        return successful_shares, f"Share operation blocked: {error_msg}"
 
-                total_attempts += 1
-                if successful_shares < share_count:
-                    print(f"{Fore.CYAN}Waiting {delay} seconds before next share...{Style.RESET_ALL}")
-                    await asyncio.sleep(delay)
-
-            except asyncio.TimeoutError:
-                error_count += 1
-                print(f"{Fore.RED}Request timed out. Retrying...{Style.RESET_ALL}")
-                await asyncio.sleep(delay)
             except Exception as e:
-                error_count += 1
-                print(f"{Fore.RED}Error during share: {str(e)}{Style.RESET_ALL}")
-                if error_count >= 3:
-                    return successful_shares, f"Multiple errors occurred: {str(e)}"
+                error_msg = str(e)
+                self._log_share_activity(user_id, False, f"Share failed: {error_msg}")
+                return successful_shares, f"Share operation failed: {error_msg}"
+
+            if i < share_count - 1:  # Don't delay after the last share
                 await asyncio.sleep(delay)
 
-        completion_message = (f"Completed {successful_shares} out of {share_count} shares "
-                            f"({total_attempts} total attempts)")
-        return successful_shares, completion_message
+        return successful_shares, "Share operation completed successfully"
+
+    def validate_post_url(self, url: str) -> Tuple[bool, str]:
+        """Validate Facebook post URL format."""
+        if not url.startswith("https://www.facebook.com/"):
+            return False, "Invalid URL: Must start with https://www.facebook.com/"
+
+        # Common Facebook post URL patterns
+        patterns = [
+            r'^https://www\.facebook\.com/[^/]+/posts/\d+/?$',
+            r'^https://www\.facebook\.com/groups/\d+/permalink/\d+/?$',
+            r'^https://www\.facebook\.com/photo\.php\?fbid=\d+',
+            r'^https://www\.facebook\.com/[^/]+/photos/[^/]+/\d+/?$'
+        ]
+
+        for pattern in patterns:
+            if re.match(pattern, url):
+                return True, self._extract_post_path(url)
+
+        return False, "Invalid post URL format"
+
+    def _extract_post_path(self, url: str) -> str:
+        """Extract the post path from a Facebook URL."""
+        path = url.replace("https://www.facebook.com/", "")
+        return path.rstrip('/')
 
     def share_post(self, cookie: str, post_url: str, share_count: int, delay: int) -> Tuple[bool, str]:
-        """
-        Main method to handle post sharing.
-        Returns tuple of (success, message).
-        """
-        async def share():
-            async with aiohttp.ClientSession() as session:
-                # Validate post URL
-                valid, post_path = self.validate_post_url(post_url)
-                if not valid:
-                    return False, post_path
+        """Share a Facebook post multiple times."""
+        if share_count > self.max_shares_per_day:
+            return False, f"Share count exceeds maximum limit of {self.max_shares_per_day}"
 
+        # Validate post URL
+        valid_url, post_path = self.validate_post_url(post_url)
+        if not valid_url:
+            return False, post_path
+
+        async def _share():
+            async with aiohttp.ClientSession() as session:
                 # Get access token
-                token, error = await self.get_token(session, cookie)
+                token, token_error = await self._get_access_token(session, cookie)
                 if not token:
-                    return False, error
+                    return False, token_error
 
                 # Perform sharing
-                shares_completed, message = await self.do_share(
+                shares_completed, share_message = await self._perform_share(
                     session, token, cookie, post_path, share_count, delay
                 )
 
-                return shares_completed > 0, message
+                if shares_completed == share_count:
+                    return True, f"Successfully completed {shares_completed} shares"
+                elif shares_completed > 0:
+                    return False, f"Partially completed: {shares_completed}/{share_count} shares. {share_message}"
+                else:
+                    return False, share_message
 
         try:
-            return asyncio.run(share())
+            return asyncio.run(_share())
         except Exception as e:
             return False, f"Share operation failed: {str(e)}"
 
-    def get_share_stats(self) -> Dict:
-        """Get sharing statistics and limits."""
+    def get_share_limits(self) -> Dict:
+        """Get current sharing limits and status."""
         return {
-            "max_shares_per_hour": 30,
-            "max_shares_per_day": 100,
-            "recommended_delay": 5,
-            "spam_detection_threshold": 50,
-            "last_updated": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+            "max_shares_per_day": self.max_shares_per_day,
+            "last_updated": self.last_update,
+            "updated_by": self.current_user
         }
