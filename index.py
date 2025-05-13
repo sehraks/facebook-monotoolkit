@@ -158,7 +158,7 @@ class FacebookMonoToolkit:
             style="bold cyan"
         ))
         
-        console.print("\n[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
+        console.print("[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
         console.print("[bold yellow]Note: Cookie must contain c_user and xs values[/]\n")
         
         cookie = console.input("[bold green]Cookie: [/]")
@@ -175,10 +175,6 @@ class FacebookMonoToolkit:
         success, message = self.cookie_manager.add_cookie(cookie)
         
         if success:
-            console.print(Panel(
-                f"[bold green]✅ {message}[/]",
-                style="bold green"
-            ))
             if not self.current_account:
                 self.current_account = self.cookie_manager.get_all_accounts()[-1]
         else:
