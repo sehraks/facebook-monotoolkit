@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 15:51:37 UTC
+# Last Modified: 2025-05-13 16:53:50 UTC
 # Author: sehraks
 
 import os
@@ -26,7 +26,7 @@ class FacebookMonoToolkit:
         self.VERSION = "1.0.0"
         self.AUTHOR = "sehraks"
         self.TOOL_NAME = "Facebook MonoToolkit"
-        self.LAST_UPDATED = "2025-05-13 15:51:37 UTC"
+        self.LAST_UPDATED = "2025-05-13 16:53:50 UTC"
         
         # Initialize components
         self.cookie_manager = CookieManager()
@@ -49,15 +49,14 @@ class FacebookMonoToolkit:
     def display_banner(self) -> None:
         """Display the tool banner."""
         self.clear_screen()
-        banner = f"""[bold cyan]
-╭━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╮
-┃              {self.TOOL_NAME}                             ┃
-┃━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┃
-┃              Version: {self.VERSION}                      ┃
-┃              Author: {self.AUTHOR}                        ┃
-┃    Last Updated: {self.LAST_UPDATED}                      ┃
-╰━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╯[/]
-        """
+        banner = Panel(
+            f"[bold cyan]🚀 {self.TOOL_NAME} 🚀[/]\n"
+            f"[bold cyan]Version: {self.VERSION}[/]\n"
+            f"[bold cyan]Author: {self.AUTHOR}[/]\n"
+            f"[bold cyan]Last Updated: {self.LAST_UPDATED}[/]",
+            style="bold magenta",
+            title="[bold yellow]Welcome to Facebook MonoToolkit[/]"
+        )
         console.print(banner)
 
     def check_cookie_required(self) -> bool:
