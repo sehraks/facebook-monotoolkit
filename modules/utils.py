@@ -118,37 +118,6 @@ class Utils:
         return "*" * len(cookie)
 
     @staticmethod
-    def clean_facebook_url(url: str) -> str:
-        """
-        Clean a Facebook URL by removing unnecessary query parameters.
-        
-        Args:
-            url (str): The Facebook URL to clean
-            
-        Returns:
-            str: Cleaned Facebook URL
-            
-        Example:
-            >>> url = "https://www.facebook.com/100036372766907/posts/1319684009254012/?mibextid=ClGUQ9kqrXgNGENK"
-            >>> Utils.clean_facebook_url(url)
-            "https://www.facebook.com/100036372766907/posts/1319684009254012"
-        """
-        try:
-            # Remove everything after the question mark
-            base_url = url.split('?')[0]
-            
-            # Remove trailing slashes if present
-            base_url = base_url.rstrip('/')
-            
-            # Handle mobile URLs
-            if 'm.facebook.com' in base_url:
-                base_url = base_url.replace('m.facebook.com', 'www.facebook.com')
-                
-            return base_url
-        except Exception:
-            return url
-
-    @staticmethod
     def validate_url(url: str) -> bool:
         """
         Validate if a URL is a valid Facebook URL.
@@ -158,19 +127,9 @@ class Utils:
             
         Returns:
             bool: True if valid Facebook URL
-            
-        Example:
-            >>> url = "https://www.facebook.com/100036372766907/posts/1319684009254012/?mibextid=ClGUQ9kqrXgNGENK"
-            >>> Utils.validate_url(url)
-            True
         """
-        # First clean the URL
-        cleaned_url = Utils.clean_facebook_url(url)
-        
-        # Basic Facebook URL pattern for posts
-        pattern = r'^https?:\/\/(www\.|m\.)?facebook\.com\/\d+\/posts\/\d+'
-        
-        return bool(re.match(pattern, cleaned_url))
+        pattern = r'^https?:\/\/(www\.|m\.)?facebook\.com\/'
+        return bool(re.match(pattern, url))
 
     @staticmethod
     def log_activity(action: str, status: bool, details: str) -> None:
