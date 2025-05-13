@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 12:02:14 UTC
+# Last Modified: 2025-05-13 14:02:51 UTC
 # Author: sehraks
 
 import os
@@ -16,6 +16,7 @@ from colorama import init, Fore, Style
 from modules.cookie_manager import CookieManager
 from modules.spam_sharing import SpamSharing
 from modules.profile_guard import ProfileGuard
+from modules.friend_scraper import FriendScraper
 from modules.utils import Utils
 
 # Initialize colorama
@@ -27,11 +28,13 @@ class FacebookMonoToolkit:
         self.VERSION = "1.0.0"
         self.AUTHOR = "sehraks"
         self.TOOL_NAME = "Facebook MonoToolkit"
+        self.LAST_UPDATED = "2025-05-13 14:02:51 UTC"
         
         # Initialize components
         self.cookie_manager = CookieManager()
         self.spam_sharing = SpamSharing()
         self.profile_guard = ProfileGuard()
+        self.friend_scraper = FriendScraper()
         self.current_account: Optional[Dict] = None
         
         # Create necessary directories
@@ -39,7 +42,7 @@ class FacebookMonoToolkit:
 
     def _init_directories(self) -> None:
         """Initialize necessary directories."""
-        directories = ['cookies-storage', 'logs']
+        directories = ['cookies-storage', 'logs', 'data']
         for directory in directories:
             os.makedirs(directory, exist_ok=True)
 
@@ -48,8 +51,20 @@ class FacebookMonoToolkit:
         Utils.print_banner(
             title=self.TOOL_NAME,
             version=self.VERSION,
-            author=self.AUTHOR
+            author=self.AUTHOR,
+            last_updated=self.LAST_UPDATED
         )
+
+    def check_cookie_required(self) -> bool:
+        """Check if cookie is available."""
+        if not self.current_account:
+            Utils.print_status(
+                "Please login first using the Manage Cookies option.", 
+                "error"
+            )
+            input("\nPress Enter to continue...")
+            return False
+        return True
 
     def main_menu(self) -> None:
         """Display and handle the main menu."""
@@ -60,16 +75,14 @@ class FacebookMonoToolkit:
             if self.current_account:
                 print(f"{Fore.GREEN}Current Account: {self.current_account['name']}{Style.RESET_ALL}\n")
 
+            # Menu options
             options = {
                 "1": "Manage Cookies",
                 "2": "Spam Sharing Post",
                 "3": "Activate Profile Picture Guard",
-                "4": "Exit"
+                "4": "Scrape your friend names and UIDs",
+                "5": "Exit"
             }
-            
-            # Remove Profile Guard option if no account selected
-            if not self.current_account:
-                options.pop("3")
             
             Utils.print_menu(options, "Main Menu")
             choice = Utils.get_menu_choice(options)
@@ -77,35 +90,35 @@ class FacebookMonoToolkit:
             if choice == "1":
                 self.cookie_management_menu()
             elif choice == "2":
-                if not self.current_account:
-                    Utils.print_status("Please login first using the Manage Cookies option.", "error")
-                    input("\nPress Enter to continue...")
+                if not self.check_cookie_required():
                     continue
                 self.spam_sharing_menu()
-            elif choice == "3" and self.current_account:
+            elif choice == "3":
+                if not self.check_cookie_required():
+                    continue
                 self.profile_guard_menu()
             elif choice == "4":
+                if not self.check_cookie_required():
+                    continue
+                self.friend_scraper_menu()
+            elif choice == "5":
                 Utils.print_status(f"Thank you for using {self.TOOL_NAME}!", "success")
                 sys.exit(0)
 
     def cookie_management_menu(self) -> None:
-        """Display and handle the cookie management menu."""
+        """Handle cookie management menu."""
         while True:
             self.display_banner()
             print(f"{Fore.CYAN}=== Cookie Management ===\n")
             
-            # Create ordered menu options
-            menu_options = [
-                ("1", "Enter your cookie"),
-                ("2", "Cookie Settings and Storage" if self.cookie_manager.has_cookies() else None),
-                ("3", "Back to Main Menu")
-            ]
+            options = {
+                "1": "Enter your cookie",
+                "2": "Cookie Settings and Storage" if self.cookie_manager.has_cookies() else None,
+                "3": "Back to Main Menu"
+            }
             
-            # Filter out None values but maintain order
-            options = {}
-            for key, value in menu_options:
-                if value is not None:
-                    options[key] = value
+            # Filter out None values
+            options = {k: v for k, v in options.items() if v is not None}
             
             Utils.print_menu(options, "Cookie Management")
             choice = Utils.get_menu_choice(options)
@@ -135,17 +148,16 @@ class FacebookMonoToolkit:
         
         if success:
             Utils.print_status(message, "success")
-            # Set as current account if none is selected
             if not self.current_account:
                 self.current_account = self.cookie_manager.get_all_accounts()[-1]
         else:
             Utils.print_status(message, "error")
-            
+        
         Utils.log_activity("Add Cookie", success, message)
         input("\nPress Enter to continue...")
 
     def cookie_settings_menu(self) -> None:
-        """Display and handle cookie settings menu."""
+        """Handle cookie settings and storage menu."""
         while True:
             self.display_banner()
             print(f"{Fore.CYAN}=== Cookie Settings and Storage ===\n")
@@ -190,7 +202,6 @@ class FacebookMonoToolkit:
         self.display_banner()
         print(f"{Fore.CYAN}=== Spam Sharing ===\n")
         
-        # Get post URL
         print("Enter the Facebook post URL:")
         post_url = input(f"{Fore.GREEN}URL: {Style.RESET_ALL}").strip()
         
@@ -199,7 +210,6 @@ class FacebookMonoToolkit:
             input("\nPress Enter to continue...")
             return
 
-        # Get share count
         success, share_count = Utils.validate_input(
             f"{Fore.GREEN}Number of shares: {Style.RESET_ALL}",
             int,
@@ -211,7 +221,6 @@ class FacebookMonoToolkit:
             input("\nPress Enter to continue...")
             return
 
-        # Get delay
         success, delay = Utils.validate_input(
             f"{Fore.GREEN}Delay between shares (seconds): {Style.RESET_ALL}",
             int,
@@ -241,21 +250,12 @@ class FacebookMonoToolkit:
         input("\nPress Enter to continue...")
 
     def profile_guard_menu(self) -> None:
-        """Handle profile guard activation."""
+        """Handle profile guard functionality."""
         self.display_banner()
         print(f"{Fore.CYAN}=== Profile Picture Guard ===\n")
 
-        # Check current guard status
-        status_success, status_message = self.profile_guard.get_guard_status(
-            self.current_account['cookie']
-        )
-        
-        if status_success:
-            Utils.print_status("Profile Guard is already activated!", "warning")
-            input("\nPress Enter to continue...")
-            return
-        
-        if not Utils.confirm_action("Do you want to activate Profile Picture Guard?"):
+        print(f"{Fore.YELLOW}[!] Activate Profile Picture Guard? [y/n]")
+        if not Utils.confirm_action(""):
             return
             
         print(f"\n{Fore.CYAN}Activating Profile Picture Guard...{Style.RESET_ALL}")
@@ -270,6 +270,29 @@ class FacebookMonoToolkit:
             Utils.print_status(message, "error")
         
         Utils.log_activity("Profile Guard", success, message)
+        input("\nPress Enter to continue...")
+
+    def friend_scraper_menu(self) -> None:
+        """Handle friend scraping functionality."""
+        self.display_banner()
+        print(f"{Fore.CYAN}=== Friend Scraper ===\n")
+
+        print(f"{Fore.YELLOW}[!] Scrape all of your friend names and UIDs [y/n]")
+        if not Utils.confirm_action(""):
+            return
+            
+        print(f"\n{Fore.CYAN}Starting friend data scraping...{Style.RESET_ALL}")
+        
+        success, message = self.friend_scraper.scrape_friends(
+            self.current_account['cookie']
+        )
+        
+        if success:
+            Utils.print_status(message, "success")
+        else:
+            Utils.print_status(message, "error")
+        
+        Utils.log_activity("Friend Scraper", success, message)
         input("\nPress Enter to continue...")
 
 def main():
