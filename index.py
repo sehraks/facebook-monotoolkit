@@ -76,7 +76,6 @@ class FacebookMonoToolkit:
                 sys.exit(0)
 
     def cookie_management_menu(self) -> None:
-    def cookie_management_menu(self) -> None:
     """Display and handle the cookie management menu."""
     while True:
         self.display_banner()
