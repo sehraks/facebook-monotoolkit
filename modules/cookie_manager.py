@@ -18,6 +18,9 @@ class CookieManager:
         """Ensure the storage directory exists."""
         if not os.path.exists(self.base_dir):
             os.makedirs(self.base_dir)
+        if not os.path.exists(self.cookies_file):
+            with open(self.cookies_file, 'w', encoding='utf-8') as f:
+                json.dump([], f)
 
     def load_cookies(self) -> None:
         """Load cookies from storage file."""
@@ -39,99 +42,77 @@ class CookieManager:
             print(f"Error saving cookies: {str(e)}")
             return False
 
-    def _extract_user_info(self, cookie_dict: Dict) -> Tuple[str, str]:
-        """Extract user ID and name from cookie data."""
-        user_id = cookie_dict.get('c_user', 'unknown')
-        # Extract name if available, otherwise use user ID
-        name = f"Facebook_{user_id[:6]}..." if len(user_id) > 6 else f"Facebook_{user_id}"
-        return user_id, name
-
-    def _parse_json_cookie(self, cookie_str: str) -> Optional[Dict[str, str]]:
-        """Parse JSON format cookie string."""
+    def _extract_user_info(self, cookie_str: str) -> Tuple[str, str]:
+        """Extract user ID and name from cookie string."""
         try:
-            cookie_data = json.loads(cookie_str)
-            if isinstance(cookie_data, list):
-                return {item['key']: item['value'] for item in cookie_data if 'key' in item and 'value' in item}
-        except Exception:
-            return None
-        return None
-
-    def _parse_semicolon_cookie(self, cookie_str: str) -> Dict[str, str]:
-        """Parse semicolon-separated cookie string."""
-        cookie_dict = {}
-        pairs = cookie_str.split(';')
-        for pair in pairs:
-            if '=' in pair:
-                key, value = pair.strip().split('=', 1)
-                cookie_dict[key.strip()] = value.strip()
-        return cookie_dict
-
-    def parse_cookie(self, cookie: str) -> Tuple[bool, str, Optional[Dict]]:
-        """Parse cookie string in either JSON or semicolon-separated format."""
-        cookie = cookie.strip()
-        
-        # Try JSON format first
-        if cookie.startswith('['):
-            cookie_dict = self._parse_json_cookie(cookie)
-            if cookie_dict:
-                # Convert to semicolon format
-                cookie_str = '; '.join(f"{k}={v}" for k, v in cookie_dict.items())
-                return True, cookie_str, cookie_dict
-
-        # Try semicolon-separated format
-        cookie_dict = self._parse_semicolon_cookie(cookie)
-        if cookie_dict:
-            return True, cookie, cookie_dict
-
-        return False, "Invalid cookie format", None
-
-    def validate_cookie(self, cookie_dict: Dict) -> Tuple[bool, str]:
-        """Validate cookie contains required fields."""
-        required_fields = ['c_user', 'xs']
-        missing = [field for field in required_fields if field not in cookie_dict]
-        
-        if missing:
-            return False, f"Missing required cookie fields: {', '.join(missing)}"
-        
-        # Additional validation can be added here
-        if not cookie_dict['c_user'].isdigit():
-            return False, "Invalid c_user value"
+            # Extract c_user value using regex
+            c_user_match = re.search(r'c_user=(\d+)', cookie_str)
+            if not c_user_match:
+                return 'unknown', 'Unknown_User'
             
+            user_id = c_user_match.group(1)
+            name = f"Facebook_{user_id[:6]}..." if len(user_id) > 6 else f"Facebook_{user_id}"
+            return user_id, name
+        except Exception:
+            return 'unknown', 'Unknown_User'
+
+    def _validate_cookie(self, cookie_str: str) -> Tuple[bool, str]:
+        """Validate cookie string contains required fields."""
+        if not cookie_str or not isinstance(cookie_str, str):
+            return False, "Invalid cookie format"
+
+        required_fields = ['c_user=', 'xs=']
+        missing_fields = [field for field in required_fields if field not in cookie_str]
+        
+        if missing_fields:
+            return False, f"Missing required cookie fields: {', '.join(f.rstrip('=') for f in missing_fields)}"
+
+        # Check for c_user value
+        c_user_match = re.search(r'c_user=(\d+)', cookie_str)
+        if not c_user_match or not c_user_match.group(1).isdigit():
+            return False, "Invalid c_user value"
+
         return True, "Cookie validation successful"
 
     def add_cookie(self, cookie: str) -> Tuple[bool, str]:
         """Add a new cookie to storage."""
-        success, parsed_cookie, cookie_dict = self.parse_cookie(cookie)
-        if not success:
-            return False, parsed_cookie
+        try:
+            # Validate cookie format and required fields
+            valid, message = self._validate_cookie(cookie)
+            if not valid:
+                return False, message
 
-        valid, message = self.validate_cookie(cookie_dict)
-        if not valid:
-            return False, message
+            # Extract user info
+            user_id, name = self._extract_user_info(cookie)
+            if user_id == 'unknown':
+                return False, "Could not extract user ID from cookie"
 
-        user_id, name = self._extract_user_info(cookie_dict)
-        
-        # Prepare account data
-        account_data = {
-            'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],  # Generate unique ID
-            'name': name,
-            'user_id': user_id,
-            'cookie': parsed_cookie,
-            'added_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
-            'last_used': None,
-            'status': 'active'
-        }
+            # Prepare account data
+            account_data = {
+                'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
+                'name': name,
+                'user_id': user_id,
+                'cookie': cookie.strip(),
+                'added_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+                'last_used': None,
+                'status': 'active'
+            }
 
-        # Update existing or add new
-        for idx, existing in enumerate(self.cookies):
-            if existing['user_id'] == user_id:
-                self.cookies[idx] = account_data
-                self.save_cookies()
-                return True, f"Updated existing account: {name}"
+            # Update existing or add new
+            for idx, existing in enumerate(self.cookies):
+                if existing['user_id'] == user_id:
+                    self.cookies[idx] = account_data
+                    if self.save_cookies():
+                        return True, f"Updated existing account: {name}"
+                    return False, "Failed to save cookie data"
 
-        self.cookies.append(account_data)
-        self.save_cookies()
-        return True, f"Added new account: {name}"
+            self.cookies.append(account_data)
+            if self.save_cookies():
+                return True, f"Added new account: {name}"
+            return False, "Failed to save cookie data"
+
+        except Exception as e:
+            return False, f"Error adding cookie: {str(e)}"
 
     def remove_cookie(self, user_id: str) -> Tuple[bool, str]:
         """Remove a cookie from storage."""
@@ -189,11 +170,9 @@ class CookieManager:
             with open(import_path, 'r', encoding='utf-8') as f:
                 imported_cookies = json.load(f)
             
-            # Validate imported data
             if not isinstance(imported_cookies, list):
                 return False, "Invalid import file format"
 
-            # Add each imported cookie
             success_count = 0
             for cookie_data in imported_cookies:
                 if 'cookie' in cookie_data:
@@ -218,26 +197,26 @@ class CookieManager:
         """Validate all stored cookies and return status report."""
         status_report = []
         for account in self.cookies:
-            _, _, cookie_dict = self.parse_cookie(account['cookie'])
-            is_valid, message = self.validate_cookie(cookie_dict if cookie_dict else {})
+            valid, message = self._validate_cookie(account['cookie'])
             status_report.append({
                 'user_id': account['user_id'],
                 'name': account['name'],
-                'valid': is_valid,
+                'valid': valid,
                 'message': message
             })
         return status_report
 
     def get_cookie_info(self, cookie: str) -> Dict:
         """Extract and return detailed information about a cookie."""
-        _, _, cookie_dict = self.parse_cookie(cookie)
-        if not cookie_dict:
-            return {}
+        valid, message = self._validate_cookie(cookie)
+        if not valid:
+            return {'error': message}
 
+        user_id, _ = self._extract_user_info(cookie)
         return {
-            'user_id': cookie_dict.get('c_user', 'unknown'),
+            'user_id': user_id,
             'creation_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
             'cookie_length': len(cookie),
-            'has_required_fields': all(field in cookie_dict for field in ['c_user', 'xs']),
-            'fields': list(cookie_dict.keys())
+            'has_required_fields': valid,
+            'validation_message': message
         }
