@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 14:32:21 UTC
+# Last Modified: 2025-05-13 14:56:28 UTC
 # Author: sehraks
 
 import os
@@ -28,7 +28,7 @@ class FacebookMonoToolkit:
         self.VERSION = "1.0.0"
         self.AUTHOR = "sehraks"
         self.TOOL_NAME = "Facebook MonoToolkit"
-        self.LAST_UPDATED = "2025-05-13 14:32:21 UTC"
+        self.LAST_UPDATED = "2025-05-13 14:56:28 UTC"
         
         # Initialize components
         self.cookie_manager = CookieManager()
