@@ -1,188 +1,186 @@
-import asyncio
-import json
-import re
 import aiohttp
-from typing import Dict, Tuple, Optional
+import asyncio
+import re
+import os
 from datetime import datetime
+from typing import Dict, Tuple, Optional
 from colorama import Fore, Style
-from .utils import Utils
 
 class SpamSharing:
-    def __init__(self) -> None:
-        """Initialize SpamSharing with default values."""
-        self.headers = {
-            'authority': 'www.facebook.com',
-            'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-            'accept-language': 'en-US,en;q=0.9',
-            'cache-control': 'max-age=0',
-            'sec-ch-ua': '"Not_A Brand";v="8", "Chromium";v="120"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Linux"',
-            'sec-fetch-dest': 'document',
-            'sec-fetch-mode': 'navigate',
-            'sec-fetch-site': 'none',
-            'sec-fetch-user': '?1',
-            'upgrade-insecure-requests': '1',
-            'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    def __init__(self):
+        """Initialize SpamSharing with necessary configurations."""
+        self.last_update = "2025-05-13 07:36:16"  # Current UTC time
+        self.current_user = "sehraks"  # Current user's login
+        self.share_api_url = "https://b-graph.facebook.com/me/feed"
+        self.max_shares_per_day = 200000
+        self.default_headers = {
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+            "sec-ch-ua": '"Chromium";v="124", "Not-A.Brand";v="99"',
+            "sec-ch-ua-mobile": "?1",
+            "sec-ch-ua-platform": "Android",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "none",
+            "sec-fetch-user": "?1",
+            "upgrade-insecure-requests": "1",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "accept-encoding": "gzip, deflate",
+            "accept-language": "en-US,en;q=0.9",
+            "cache-control": "max-age=0"
         }
+        self._init_logging()
 
-    async def _get_fb_dtsg(self, session: aiohttp.ClientSession, cookie: str) -> Optional[str]:
-        """
-        Extract fb_dtsg token from Facebook page.
+    def _init_logging(self) -> None:
+        """Initialize logging directory."""
+        self.log_dir = "logs"
+        if not os.path.exists(self.log_dir):
+            os.makedirs(self.log_dir)
+
+    def _log_share_activity(self, user_id: str, success: bool, message: str) -> None:
+        """Log sharing activity to file."""
+        timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        log_file = os.path.join(self.log_dir, f"share_activity_{datetime.now().strftime('%Y%m')}.log")
         
-        Args:
-            session (aiohttp.ClientSession): Active session
-            cookie (str): Facebook cookie
-            
-        Returns:
-            Optional[str]: fb_dtsg token if found, None otherwise
-        """
         try:
-            headers = self.headers.copy()
-            headers['cookie'] = cookie
-            
-            async with session.get('https://www.facebook.com', headers=headers) as response:
+            with open(log_file, 'a', encoding='utf-8') as f:
+                f.write(f"[{timestamp}] User: {user_id} | Success: {success} | Message: {message}\n")
+        except Exception as e:
+            print(f"{Fore.RED}Failed to log activity: {str(e)}{Style.RESET_ALL}")
+
+    async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str) -> Tuple[Optional[str], str]:
+        """Get Facebook access token from business.facebook.com."""
+        headers = self.default_headers.copy()
+        headers["cookie"] = cookie
+
+        try:
+            async with session.get("https://business.facebook.com/content_management", headers=headers) as response:
                 if response.status != 200:
-                    return None
-                    
-                text = await response.text()
-                match = re.search(r'"DTSGInitialData",\[\],{"token":"(.*?)"}', text)
-                if match:
-                    return match.group(1)
-                return None
+                    return None, f"Failed to fetch token: HTTP {response.status}"
+                
+                data = await response.text()
+                match = re.search(r'EAAG(.*?)",', data)
+                
+                if not match:
+                    return None, "Could not extract access token. Cookie may be invalid."
+                
+                access_token = f"EAAG{match.group(1)}"
+                return access_token, ""
+                
         except Exception as e:
-            Utils.print_status(f"Error getting fb_dtsg: {str(e)}", "error")
-            return None
+            return None, f"Failed to get token: {str(e)}"
 
-    async def _share_post_once(self, 
-                             session: aiohttp.ClientSession, 
-                             post_url: str,
-                             fb_dtsg: str,
-                             cookie: str) -> bool:
-        """
-        Share a Facebook post once.
+    async def _perform_share(self, 
+                           session: aiohttp.ClientSession,
+                           token: str,
+                           cookie: str,
+                           post_path: str,
+                           share_count: int,
+                           delay: float) -> Tuple[int, str]:
+        """Perform the actual sharing operation."""
+        headers = self.default_headers.copy()
+        headers.update({
+            "accept-encoding": "gzip, deflate",
+            "host": "b-graph.facebook.com",
+            "cookie": cookie
+        })
+
+        successful_shares = 0
+        c_user_match = re.search(r'c_user=(\d+)', cookie)
+        user_id = c_user_match.group(1) if c_user_match else "unknown"
+
+        print(f"{Fore.CYAN}Starting share operation...{Style.RESET_ALL}")
         
-        Args:
-            session (aiohttp.ClientSession): Active session
-            post_url (str): URL of the post to share
-            fb_dtsg (str): Facebook DTSG token
-            cookie (str): Facebook cookie
-            
-        Returns:
-            bool: True if share was successful
-        """
-        try:
-            # Extract post ID from URL
-            post_id_match = re.search(r'/posts/(\d+)', post_url)
-            if not post_id_match:
-                Utils.print_status("Invalid post URL format", "error")
-                return False
+        for i in range(share_count):
+            try:
+                share_url = f"{self.share_api_url}?link=https://mbasic.facebook.com/{post_path}&published=0&access_token={token}"
+                
+                async with session.post(share_url, headers=headers) as response:
+                    try:
+                        data = await response.json()
+                    except Exception:
+                        data = {"error": {"message": "Invalid JSON response"}}
 
-            post_id = post_id_match.group(1)
-            share_url = f'https://www.facebook.com/share/dialog/submit/'
+                    if "id" in data:
+                        successful_shares += 1
+                        print(f"{Fore.GREEN}[{successful_shares}/{share_count}] Share successful{Style.RESET_ALL}")
+                        self._log_share_activity(user_id, True, f"Share {successful_shares}/{share_count}")
+                    else:
+                        error_msg = data.get("error", {}).get("message", "Unknown error")
+                        self._log_share_activity(user_id, False, f"Share failed: {error_msg}")
+                        return successful_shares, f"Share operation blocked: {error_msg}"
 
-            headers = self.headers.copy()
-            headers['cookie'] = cookie
-            headers['content-type'] = 'application/x-www-form-urlencoded'
+            except Exception as e:
+                error_msg = str(e)
+                self._log_share_activity(user_id, False, f"Share failed: {error_msg}")
+                return successful_shares, f"Share operation failed: {error_msg}"
 
-            data = {
-                'fb_dtsg': fb_dtsg,
-                'shareID': post_id,
-                'share_type': 22,
-                '__a': 1
-            }
+            if i < share_count - 1:  # Don't delay after the last share
+                await asyncio.sleep(delay)
 
-            async with session.post(share_url, headers=headers, data=data) as response:
-                if response.status == 200:
-                    return True
-                else:
-                    Utils.print_status(f"Share failed with status {response.status}", "error")
-                    return False
+        return successful_shares, "Share operation completed successfully"
 
-        except Exception as e:
-            Utils.print_status(f"Error sharing post: {str(e)}", "error")
-            return False
+    def validate_post_url(self, url: str) -> Tuple[bool, str]:
+        """Validate Facebook post URL format."""
+        if not url.startswith("https://www.facebook.com/"):
+            return False, "Invalid URL: Must start with https://www.facebook.com/"
+
+        # Common Facebook post URL patterns
+        patterns = [
+            r'^https://www\.facebook\.com/[^/]+/posts/\d+/?$',
+            r'^https://www\.facebook\.com/groups/\d+/permalink/\d+/?$',
+            r'^https://www\.facebook\.com/photo\.php\?fbid=\d+',
+            r'^https://www\.facebook\.com/[^/]+/photos/[^/]+/\d+/?$'
+        ]
+
+        for pattern in patterns:
+            if re.match(pattern, url):
+                return True, self._extract_post_path(url)
+
+        return False, "Invalid post URL format"
+
+    def _extract_post_path(self, url: str) -> str:
+        """Extract the post path from a Facebook URL."""
+        path = url.replace("https://www.facebook.com/", "")
+        return path.rstrip('/')
 
     def share_post(self, cookie: str, post_url: str, share_count: int, delay: int) -> Tuple[bool, str]:
-        """
-        Share a Facebook post multiple times.
-        
-        Args:
-            cookie (str): Facebook cookie for authentication
-            post_url (str): URL of the post to share
-            share_count (int): Number of times to share
-            delay (int): Delay between shares in seconds
-            
-        Returns:
-            Tuple[bool, str]: (success, message) pair
-        """
-        # Clean and validate the URL
-        post_url = Utils.clean_facebook_url(post_url)
-        if not Utils.validate_url(post_url):
-            return False, "Invalid Facebook post URL format"
+        """Share a Facebook post multiple times."""
+        if share_count > self.max_shares_per_day:
+            return False, f"Share count exceeds maximum limit of {self.max_shares_per_day}"
 
-        async def _share_multiple():
-            try:
-                async with aiohttp.ClientSession() as session:
-                    # Get fb_dtsg token
-                    fb_dtsg = await self._get_fb_dtsg(session, cookie)
-                    if not fb_dtsg:
-                        return False, "Failed to get Facebook authentication token"
+        # Validate post URL
+        valid_url, post_path = self.validate_post_url(post_url)
+        if not valid_url:
+            return False, post_path
 
-                    successful_shares = 0
-                    
-                    for i in range(share_count):
-                        # Show progress
-                        progress_bar = Utils.create_progress_bar(i + 1, share_count)
-                        print(f"\r{Fore.CYAN}Progress: {progress_bar}{Style.RESET_ALL}", end='')
-                        
-                        # Attempt to share
-                        if await self._share_post_once(session, post_url, fb_dtsg, cookie):
-                            successful_shares += 1
-                        
-                        # Wait before next share
-                        if i < share_count - 1:  # Don't delay after last share
-                            await asyncio.sleep(delay)
-                    
-                    print()  # New line after progress bar
-                    
-                    if successful_shares == 0:
-                        return False, "Failed to share post"
-                    elif successful_shares < share_count:
-                        return True, f"Partially successful: {successful_shares}/{share_count} shares completed"
-                    else:
-                        return True, f"Successfully shared post {share_count} times"
-                        
-            except Exception as e:
-                return False, f"Error during sharing: {str(e)}"
+        async def _share():
+            async with aiohttp.ClientSession() as session:
+                # Get access token
+                token, token_error = await self._get_access_token(session, cookie)
+                if not token:
+                    return False, token_error
 
-        # Run the async function
+                # Perform sharing
+                shares_completed, share_message = await self._perform_share(
+                    session, token, cookie, post_path, share_count, delay
+                )
+
+                if shares_completed == share_count:
+                    return True, f"Successfully completed {shares_completed} shares"
+                elif shares_completed > 0:
+                    return False, f"Partially completed: {shares_completed}/{share_count} shares. {share_message}"
+                else:
+                    return False, share_message
+
         try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            
-        return loop.run_until_complete(_share_multiple())
+            return asyncio.run(_share())
+        except Exception as e:
+            return False, f"Share operation failed: {str(e)}"
 
-    def get_post_info(self, post_url: str, cookie: str) -> Dict:
-        """
-        Get information about a Facebook post.
-        
-        Args:
-            post_url (str): URL of the post
-            cookie (str): Facebook cookie for authentication
-            
-        Returns:
-            Dict: Post information
-        """
-        # Clean the URL first
-        post_url = Utils.clean_facebook_url(post_url)
-        
-        # This is a placeholder for future implementation
-        # Could fetch post title, author, share count, etc.
+    def get_share_limits(self) -> Dict:
+        """Get current sharing limits and status."""
         return {
-            "url": post_url,
-            "timestamp": datetime.now().isoformat(),
-            "status": "info retrieved"
+            "max_shares_per_day": self.max_shares_per_day,
+            "last_updated": self.last_update,
+            "updated_by": self.current_user
         }
