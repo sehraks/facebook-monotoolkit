@@ -11,6 +11,8 @@ class CookieManager:
         self.base_dir = "cookies-storage"
         self.cookies_file = os.path.join(self.base_dir, "cookies.json")
         self.cookies: List[Dict] = []
+        self.last_update = "2025-05-13 07:33:52"  # Current UTC time
+        self.current_user = "sehraks"  # Current user's login
         self._ensure_storage_exists()
         self.load_cookies()
 
@@ -20,14 +22,24 @@ class CookieManager:
             os.makedirs(self.base_dir)
         if not os.path.exists(self.cookies_file):
             with open(self.cookies_file, 'w', encoding='utf-8') as f:
-                json.dump([], f)
+                json.dump({
+                    "cookies": [],
+                    "metadata": {
+                        "last_update": self.last_update,
+                        "updated_by": self.current_user
+                    }
+                }, f, indent=4)
 
     def load_cookies(self) -> None:
         """Load cookies from storage file."""
         try:
             if os.path.exists(self.cookies_file):
                 with open(self.cookies_file, 'r', encoding='utf-8') as f:
-                    self.cookies = json.load(f)
+                    data = json.load(f)
+                    if isinstance(data, dict) and "cookies" in data:
+                        self.cookies = data["cookies"]
+                    else:
+                        self.cookies = data if isinstance(data, list) else []
         except Exception as e:
             print(f"Error loading cookies: {str(e)}")
             self.cookies = []
@@ -35,8 +47,15 @@ class CookieManager:
     def save_cookies(self) -> bool:
         """Save cookies to storage file."""
         try:
+            data = {
+                "cookies": self.cookies,
+                "metadata": {
+                    "last_update": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+                    "updated_by": self.current_user
+                }
+            }
             with open(self.cookies_file, 'w', encoding='utf-8') as f:
-                json.dump(self.cookies, f, indent=4)
+                json.dump(data, f, indent=4)
             return True
         except Exception as e:
             print(f"Error saving cookies: {str(e)}")
@@ -94,7 +113,8 @@ class CookieManager:
                 'cookie': cookie,
                 'added_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
                 'last_used': None,
-                'status': 'active'
+                'status': 'active',
+                'added_by': self.current_user
             }
 
             # Update existing or add new
@@ -159,8 +179,15 @@ class CookieManager:
     def export_cookies(self, export_path: str) -> Tuple[bool, str]:
         """Export cookies to a file."""
         try:
+            export_data = {
+                "cookies": self.cookies,
+                "metadata": {
+                    "export_date": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+                    "exported_by": self.current_user
+                }
+            }
             with open(export_path, 'w', encoding='utf-8') as f:
-                json.dump(self.cookies, f, indent=4)
+                json.dump(export_data, f, indent=4)
             return True, f"Successfully exported cookies to {export_path}"
         except Exception as e:
             return False, f"Failed to export cookies: {str(e)}"
@@ -169,8 +196,14 @@ class CookieManager:
         """Import cookies from a file."""
         try:
             with open(import_path, 'r', encoding='utf-8') as f:
-                imported_cookies = json.load(f)
+                imported_data = json.load(f)
             
+            # Handle both new and old format
+            if isinstance(imported_data, dict) and "cookies" in imported_data:
+                imported_cookies = imported_data["cookies"]
+            else:
+                imported_cookies = imported_data
+
             if not isinstance(imported_cookies, list):
                 return False, "Invalid import file format"
 
@@ -203,7 +236,8 @@ class CookieManager:
                 'user_id': account['user_id'],
                 'name': account['name'],
                 'valid': valid,
-                'message': message
+                'message': message,
+                'last_validated': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
             })
         return status_report
 
@@ -219,5 +253,6 @@ class CookieManager:
             'creation_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
             'cookie_length': len(cookie),
             'has_required_fields': valid,
-            'validation_message': message
+            'validation_message': message,
+            'checked_by': self.current_user
         }
