@@ -320,7 +320,7 @@ class FacebookMonoToolkit:
             "[bold green]🔢 Number of shares: [/]",
             int,
             min_val=1,
-            max_val=100
+            max_val=100000
         )
         
         if not success:
