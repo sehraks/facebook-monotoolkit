@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/cookie_manager.py
-# Last Modified: 2025-05-14 10:38:07 UTC
+# Last Modified: 2025-05-13 16:09:12 UTC
 # Author: sehraks
 
 import json
@@ -9,205 +9,76 @@ import os
 import re
 import base64
 from typing import Dict, List, Tuple, Optional
-from datetime import datetime, timedelta
+from datetime import datetime
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
-from cryptography.fernet import Fernet
-from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
 console = Console()
 
 class CookieManager:
     def __init__(self):
-        """Initialize the CookieManager with encryption setup."""
-        self.base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "cookies-storage")
-        self.backup_dir = os.path.join(self.base_dir, ".backup")
-        self.cookies_file = os.path.join(self.base_dir, "cookies.enc")
-        self.key_file = os.path.join(self.base_dir, ".cookiekey")
+        """Initialize the CookieManager with necessary file paths and data structures."""
+        self.base_dir = "cookies-storage"
+        self.cookies_file = os.path.join(self.base_dir, "cookies.json")
         self.cookies: List[Dict] = []
-        self.last_update = "2025-05-14 10:38:07"
-        self.current_user = "sehraks"
-        
+        self.last_update = "2025-05-13 16:09:12"  # Current UTC time
+        self.current_user = "sehraks"  # Current user's login
         self._ensure_storage_exists()
-        self._initialize_encryption()
         self.load_cookies()
 
-    def _initialize_encryption(self) -> None:
-        """Initialize or load encryption key."""
-        if not os.path.exists(self.key_file):
-            # Generate new key if none exists
-            password = base64.b64encode(os.urandom(32)).decode('utf-8')
-            salt = os.urandom(16)
-            kdf = PBKDF2HMAC(
-                algorithm=hashes.SHA256(),
-                length=32,
-                salt=salt,
-                iterations=480000,
-            )
-            key = base64.urlsafe_b64encode(kdf.derive(password.encode()))
-            with open(self.key_file, 'wb') as f:
-                f.write(salt + key)
-            os.chmod(self.key_file, 0o600)
-        
-        # Load existing key
-        with open(self.key_file, 'rb') as f:
-            data = f.read()
-            salt = data[:16]
-            key = data[16:]
-        
-        self.cipher = Fernet(key)
-
-    def _encrypt_data(self, data: str) -> str:
-        """Encrypt sensitive data."""
-        return self.cipher.encrypt(data.encode()).decode()
-
-    def _decrypt_data(self, encrypted_data: str) -> str:
-        """Decrypt sensitive data."""
-        return self.cipher.decrypt(encrypted_data.encode()).decode()
-
     def _ensure_storage_exists(self) -> None:
-        """Ensure the storage directory exists with proper permissions."""
-        # Create main storage directory
+        """Ensure the storage directory exists."""
         if not os.path.exists(self.base_dir):
-            os.makedirs(self.base_dir, mode=0o700)
-        
-        # Create backup directory
-        if not os.path.exists(self.backup_dir):
-            os.makedirs(self.backup_dir, mode=0o700)
+            os.makedirs(self.base_dir)
+            console.print(Panel(
+                "[bold green]✅ Created storage directory[/]",
+                style="bold green"
+            ))
 
         if not os.path.exists(self.cookies_file):
-            self._create_initial_storage()
-
-    def _create_initial_storage(self) -> None:
-        """Create initial encrypted storage file."""
-        initial_data = {
-            "cookies": [],
-            "metadata": {
-                "last_update": self.last_update,
-                "updated_by": self.current_user,
-                "created_at": self.last_update,
-                "version": "3.51"
-            }
-        }
-        with open(self.cookies_file, 'w', encoding='utf-8') as f:
-            json.dump(initial_data, f, indent=4)
-        os.chmod(self.cookies_file, 0o600)
-
-    def create_backup(self) -> bool:
-        """Create an encrypted backup of the cookies."""
-        try:
-            timestamp = datetime.utcnow().strftime('%Y%m%d_%H%M%S')
-            backup_file = os.path.join(self.backup_dir, f"cookies_backup_{timestamp}.enc")
-            
-            if os.path.exists(self.cookies_file):
-                with open(self.cookies_file, 'rb') as src, open(backup_file, 'wb') as dst:
-                    dst.write(src.read())
-                os.chmod(backup_file, 0o600)
-                return True
-        except Exception as e:
+            with open(self.cookies_file, 'w', encoding='utf-8') as f:
+                json.dump({
+                    "cookies": [],
+                    "metadata": {
+                        "last_update": self.last_update,
+                        "updated_by": self.current_user
+                    }
+                }, f, indent=4)
             console.print(Panel(
-                f"[bold red]❌ Backup failed: {str(e)}[/]",
-                style="bold red"
+                "[bold green]✅ Initialized cookies storage file[/]",
+                style="bold green"
             ))
-        return False
-
-    def rotate_encryption_key(self) -> bool:
-        """Rotate encryption key for security."""
-        try:
-            # Create backup before key rotation
-            if not self.create_backup():
-                return False
-
-            # Decrypt all current cookies
-            decrypted_cookies = self.cookies.copy()
-            
-            # Generate new key
-            self._initialize_encryption()
-            
-            # Re-encrypt with new key
-            self.cookies = decrypted_cookies
-            return self.save_cookies()
-        except Exception as e:
-            console.print(Panel(
-                f"[bold red]❌ Key rotation failed: {str(e)}[/]",
-                style="bold red"
-            ))
-            return False
 
     def load_cookies(self) -> None:
-        """Load and decrypt cookies from storage file."""
+        """Load cookies from storage file."""
         try:
             if os.path.exists(self.cookies_file):
                 with open(self.cookies_file, 'r', encoding='utf-8') as f:
                     data = json.load(f)
                     if isinstance(data, dict) and "cookies" in data:
-                        # Decrypt all cookies
-                        decrypted_cookies = []
-                        for account in data["cookies"]:
-                            try:
-                                decrypted_account = account.copy()
-                                decrypted_account['cookie'] = self._decrypt_data(account['cookie'])
-                                decrypted_cookies.append(decrypted_account)
-                            except Exception as e:
-                                console.print(Panel(
-                                    f"[bold red]❌ Error decrypting cookie for {account.get('name', 'unknown')}: {str(e)}[/]",
-                                    style="bold red"
-                                ))
-                        self.cookies = decrypted_cookies
+                        self.cookies = data["cookies"]
                     else:
-                        self.cookies = []
+                        self.cookies = data if isinstance(data, list) else []
         except Exception as e:
             console.print(Panel(
                 f"[bold red]❌ Error loading cookies: {str(e)}[/]",
                 style="bold red"
             ))
             self.cookies = []
-            self._attempt_recovery()
-
-    def _attempt_recovery(self) -> bool:
-        """Attempt to recover from storage corruption."""
-        try:
-            backup_files = sorted([f for f in os.listdir(self.backup_dir) if f.startswith("cookies_backup_")])
-            if not backup_files:
-                return False
-
-            latest_backup = os.path.join(self.backup_dir, backup_files[-1])
-            with open(latest_backup, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                if isinstance(data, dict) and "cookies" in data:
-                    self.cookies = data["cookies"]
-                    return self.save_cookies()
-        except Exception:
-            return False
-        return False
 
     def save_cookies(self) -> bool:
-        """Encrypt and save cookies to storage file."""
+        """Save cookies to storage file."""
         try:
-            # Create backup before saving
-            self.create_backup()
-
-            # Encrypt all cookies before saving
-            encrypted_cookies = []
-            for account in self.cookies:
-                encrypted_account = account.copy()
-                encrypted_account['cookie'] = self._encrypt_data(account['cookie'])
-                encrypted_cookies.append(encrypted_account)
-
             data = {
-                "cookies": encrypted_cookies,
+                "cookies": self.cookies,
                 "metadata": {
                     "last_update": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
-                    "updated_by": self.current_user,
-                    "version": "3.51"
+                    "updated_by": self.current_user
                 }
             }
-
             with open(self.cookies_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=4)
-            os.chmod(self.cookies_file, 0o600)
             return True
         except Exception as e:
             console.print(Panel(
@@ -231,50 +102,47 @@ class CookieManager:
         if not cookie_str or not isinstance(cookie_str, str):
             return False, "Invalid cookie format"
 
-        required_fields = ['c_user', 'xs', 'datr', 'sb']
-        missing_fields = [field for field in required_fields if field not in cookie_str]
-        if missing_fields:
-            return False, f"Missing required cookie fields: {', '.join(missing_fields)}"
+        if "c_user=" not in cookie_str:
+            return False, "Invalid cookie: missing c_user"
             
+        if "xs=" not in cookie_str:
+            return False, "Invalid cookie: missing xs"
+
         c_user_match = re.search(r'c_user=(\d+)', cookie_str)
         if not c_user_match or not c_user_match.group(1).isdigit():
             return False, "Invalid c_user value"
-
-        if len(cookie_str) < 100:
-            return False, "Cookie appears too short to be valid"
 
         return True, "Cookie validation successful"
 
     def has_cookies(self) -> bool:
         """Check if there are any stored cookies."""
-        return len(self.cookies) > 0
-
-    def get_all_accounts(self) -> List[Dict]:
-        """Get all stored accounts."""
-        return self.cookies
-
-    def remove_cookie(self, account: Dict) -> bool:
-        """Remove a cookie from storage."""
         try:
-            self.cookies = [c for c in self.cookies if c['id'] != account['id']]
-            return self.save_cookies()
+            return bool(self.cookies)
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error removing cookie: {str(e)}[/]",
+                f"[bold red]❌ Error checking cookies: {str(e)}[/]",
                 style="bold red"
             ))
             return False
 
     def add_cookie(self, cookie: str) -> Tuple[bool, str]:
-        """Add a new cookie to encrypted storage."""
+        """Add a new cookie to storage."""
         try:
             cookie = cookie.strip()
             valid, message = self._validate_cookie(cookie)
             if not valid:
+                console.print(Panel(
+                    f"[bold red]❌ {message}[/]",
+                    style="bold red"
+                ))
                 return False, message
 
             user_id, name = self._extract_user_info(cookie)
             if user_id == 'unknown':
+                console.print(Panel(
+                    "[bold red]❌ Could not extract user ID from cookie[/]",
+                    style="bold red"
+                ))
                 return False, "Could not extract user ID from cookie"
 
             account_data = {
@@ -288,35 +156,172 @@ class CookieManager:
                 'added_by': self.current_user
             }
 
-            # Check for existing account
             for idx, existing in enumerate(self.cookies):
                 if existing['user_id'] == user_id:
                     self.cookies[idx] = account_data
                     if self.save_cookies():
+                        console.print(Panel(
+                            f"[bold green]✅ Updated existing account: {name}[/]",
+                            style="bold green"
+                        ))
                         return True, f"Updated existing account: {name}"
                     return False, "Failed to save cookie data"
 
-            # Add new account
             self.cookies.append(account_data)
             if self.save_cookies():
+                console.print(Panel(
+                    f"[bold green]✅ Added new account: {name}[/]",
+                    style="bold green"
+                ))
                 return True, f"Added new account: {name}"
             return False, "Failed to save cookie data"
 
         except Exception as e:
+            console.print(Panel(
+                f"[bold red]❌ Error adding cookie: {str(e)}[/]",
+                style="bold red"
+            ))
             return False, f"Error adding cookie: {str(e)}"
 
-    def update_cookie_status(self, account: Dict, status: str) -> bool:
-        """Update cookie status and last used timestamp."""
+    def get_all_accounts(self) -> List[Dict]:
+        """Get list of all stored accounts."""
         try:
-            for cookie in self.cookies:
-                if cookie['id'] == account['id']:
-                    cookie['status'] = status
-                    cookie['last_used'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+            return self.cookies
+        except Exception as e:
+            console.print(Panel(
+                f"[bold red]❌ Error getting accounts: {str(e)}[/]",
+                style="bold red"
+            ))
+            return []
+
+    def get_active_accounts(self) -> List[Dict]:
+        """Get list of active accounts."""
+        try:
+            return [acc for acc in self.cookies if acc.get('status') == 'active']
+        except Exception as e:
+            console.print(Panel(
+                f"[bold red]❌ Error getting active accounts: {str(e)}[/]",
+                style="bold red"
+            ))
+            return []
+
+    def remove_cookie(self, user_id: str) -> Tuple[bool, str]:
+        """Remove a cookie from storage."""
+        try:
+            for idx, account in enumerate(self.cookies):
+                if account['user_id'] == user_id:
+                    del self.cookies[idx]
+                    if self.save_cookies():
+                        console.print(Panel(
+                            f"[bold green]✅ Removed account with user ID: {user_id}[/]",
+                            style="bold green"
+                        ))
+                        return True, f"Removed account with user ID: {user_id}"
+            return False, f"Account with user ID {user_id} not found"
+        except Exception as e:
+            console.print(Panel(
+                f"[bold red]❌ Error removing cookie: {str(e)}[/]",
+                style="bold red"
+            ))
+            return False, f"Error removing cookie: {str(e)}"
+
+    def get_cookie(self, user_id: str) -> Optional[Dict]:
+        """Get a specific cookie by user ID."""
+        try:
+            for account in self.cookies:
+                if account['user_id'] == user_id:
+                    return account
+            return None
+        except Exception as e:
+            console.print(Panel(
+                f"[bold red]❌ Error getting cookie: {str(e)}[/]",
+                style="bold red"
+            ))
+            return None
+
+    def update_last_used(self, user_id: str) -> bool:
+        """Update the last used timestamp for a cookie."""
+        try:
+            for account in self.cookies:
+                if account['user_id'] == user_id:
+                    account['last_used'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
                     return self.save_cookies()
             return False
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error updating cookie status: {str(e)}[/]",
+                f"[bold red]❌ Error updating last used: {str(e)}[/]",
                 style="bold red"
             ))
             return False
+
+    def format_cookie_display(self, cookie: str) -> str:
+        """Format cookie string for display (masked version)."""
+        if len(cookie) > 30:
+            return cookie[:20] + "..." + cookie[-10:]
+        return cookie
+
+    def validate_all_cookies(self) -> List[Dict]:
+        """Validate all stored cookies and return status report."""
+        try:
+            status_report = []
+            table = Table(
+                title="[bold cyan]🍪 Cookie Validation Report[/]",
+                show_header=True,
+                header_style="bold magenta"
+            )
+            
+            table.add_column("User ID", style="cyan")
+            table.add_column("Name", style="green")
+            table.add_column("Status", style="magenta")
+            table.add_column("Message", style="yellow")
+            
+            for account in self.cookies:
+                valid, message = self._validate_cookie(account['cookie'])
+                status = "✅ Valid" if valid else "❌ Invalid"
+                
+                table.add_row(
+                    account['user_id'],
+                    account['name'],
+                    status,
+                    message
+                )
+                
+                status_report.append({
+                    'user_id': account['user_id'],
+                    'name': account['name'],
+                    'valid': valid,
+                    'message': message,
+                    'last_validated': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+                })
+            
+            console.print(table)
+            return status_report
+        except Exception as e:
+            console.print(Panel(
+                f"[bold red]❌ Error validating cookies: {str(e)}[/]",
+                style="bold red"
+            ))
+            return []
+
+    def get_cookie_info(self, cookie: str) -> Dict:
+        """Extract and return detailed information about a cookie."""
+        try:
+            valid, message = self._validate_cookie(cookie)
+            if not valid:
+                return {'error': message}
+
+            user_id, _ = self._extract_user_info(cookie)
+            return {
+                'user_id': user_id,
+                'creation_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+                'cookie_length': len(cookie),
+                'has_required_fields': valid,
+                'validation_message': message,
+                'checked_by': self.current_user
+            }
+        except Exception as e:
+            console.print(Panel(
+                f"[bold red]❌ Error getting cookie info: {str(e)}[/]",
+                style="bold red"
+            ))
+            return {'error': str(e)}
