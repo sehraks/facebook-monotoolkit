@@ -10,13 +10,12 @@ console = Console()
 
 class UpdateSettings:
     def display_settings_menu(self):
-class UpdateSettings:
-    def display_settings_menu(self):
         """Display and handle settings menu."""
         while True:
-            # Clear screen before showing menu
+            # Clear screen
             os.system('clear')
             
+            # Display menu
             menu_panel = Panel(
                 "[bold cyan][1] 🔄 Check updates[/]\n"
                 "[bold yellow][2] 🔙 Back to Main Menu[/]",
@@ -25,12 +24,12 @@ class UpdateSettings:
             )
             console.print(menu_panel)
 
+            # Get user choice
             choice = console.input("[bold yellow]Select an option (1-2): [/]")
-            choice = choice.strip()
-
+            
+            # Handle user choice
             if choice == "1":
                 self.check_updates()
-                continue  # This will restart the loop and clear screen
             elif choice == "2":
                 break
             else:
@@ -39,7 +38,8 @@ class UpdateSettings:
                     style="bold red"
                 ))
                 console.input("\nPress Enter to continue...")
-                continue  # This will restart the loop and clear screen
+                # After user presses enter, the while loop will start again
+                # and clear the screen + show the menu
 
     def run_command(self, command):
         """Run a shell command and return its status and output."""
@@ -124,7 +124,7 @@ class UpdateSettings:
                     if success:
                         console.print(Panel(
                             "✅ Update completed! Please restart the tool to apply changes.\n\n"
-                            "Current Date: 2025-05-14 07:16:34 UTC\n"
+                            "Current Date: 2025-05-14 07:49:59 UTC\n"
                             "Current User: sehraks",
                             style="bold green"
                         ))
