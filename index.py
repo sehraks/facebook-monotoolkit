@@ -186,34 +186,66 @@ class FacebookMonoToolkit:
         Utils.log_activity("Add Cookie", success, message)
         console.input("[bold blue]Press Enter to continue...[/]")
 
-    def cookie_settings_menu(self) -> None:
-        """Handle cookie settings and storage menu."""
-        while True:
-            self.display_banner()
-            console.print(Panel(
-                "[bold cyan]⚙️  Cookie Settings and Storage[/]",
-                style="bold cyan"
-            ))
-            
-            accounts = self.cookie_manager.get_all_accounts()
-            for idx, account in enumerate(accounts, 1):
-                status = "Logged in" if account == self.current_account else "Logged out"
-                console.print(f"[bold yellow]— Account {idx}[/]")
-                console.print(f"[bold cyan]Name: {account['name']}[/]")
-                status_color = "green" if status == "Logged in" else "red"
-                console.print(f"[bold {status_color}]Status: {status}[/]")
-                if account != self.current_account:
-                    console.print(f"[bold yellow][{idx}] Select[/]")
-                console.print()
+def cookie_settings_menu(self) -> None:
+    """Handle cookie settings and storage menu."""
+    while True:
+        self.display_banner()
+        console.print(Panel(
+            "[bold cyan]⚙️  Cookie Settings and Storage[/]",
+            style="bold cyan"
+        ))
+        
+        accounts = self.cookie_manager.get_all_accounts()
+        for idx, account in enumerate(accounts, 1):
+            status = "Logged in" if account == self.current_account else "Logged out"
+            console.print(f"[bold yellow]— Account {idx}[/]")
+            console.print(f"[bold cyan]Name: {account['name']}[/]")
+            status_color = "green" if status == "Logged in" else "red"
+            console.print(f"[bold {status_color}]Status: {status}[/]")
+            if account != self.current_account:
+                console.print(f"[bold yellow][{idx}] Select[/]")
+            console.print(f"[bold red][R{idx}] Remove[/]")
+            console.print()
 
-            console.print("[bold yellow][0] 🔙 Back[/]\n")
+        console.print("[bold yellow][0] 🔙 Back[/]\n")
 
-            choice = console.input("[bold yellow]Select an option: [/]")
-            choice = choice.strip()
+        choice = console.input("[bold yellow]Select an option: [/]")
+        choice = choice.strip().upper()
+        
+        if choice == "0":
+            break
             
-            if choice == "0":
-                break
-                
+        if choice.startswith('R'):
+            try:
+                idx = int(choice[1:]) - 1
+                if 0 <= idx < len(accounts):
+                    account_to_remove = accounts[idx]
+                    confirm = console.input(f"[bold red]Are you sure you want to remove {account_to_remove['name']}? (y/N): [/]").strip().lower()
+                    if confirm == 'y':
+                        if account_to_remove == self.current_account:
+                            self.current_account = None
+                        success = self.cookie_manager.remove_cookie(account_to_remove)
+                        if success:
+                            console.print(Panel(
+                                f"[bold green]✅ Successfully removed account: {account_to_remove['name']}[/]",
+                                style="bold green"
+                            ))
+                        else:
+                            console.print(Panel(
+                                "[bold red]❌ Failed to remove account![/]",
+                                style="bold red"
+                            ))
+                else:
+                    console.print(Panel(
+                        "[bold red]❌ Invalid selection![/]",
+                        style="bold red"
+                    ))
+            except (ValueError, IndexError):
+                console.print(Panel(
+                    "[bold red]❌ Invalid input![/]",
+                    style="bold red"
+                ))
+        else:
             try:
                 choice_idx = int(choice) - 1
                 if 0 <= choice_idx < len(accounts):
@@ -238,8 +270,8 @@ class FacebookMonoToolkit:
                     "[bold red]❌ Invalid input![/]",
                     style="bold red"
                 ))
-            
-            console.input("[bold blue]Press Enter to continue...[/]")
+        
+        console.input("[bold blue]Press Enter to continue...[/]")
 
     def spam_sharing_menu(self) -> None:
         """Handle spam sharing functionality."""
