@@ -1,75 +1,101 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-# File: modules/update_settings.py
-# Last Modified: 2025-05-14 03:56:00 UTC
-# Author: sehraks
 
 import os
-import sys
+import subprocess
+from datetime import datetime, timezone
 from rich.console import Console
 from rich.panel import Panel
 
-# Initialize rich console
 console = Console()
 
 class UpdateSettings:
-    def __init__(self):
-        """Initialize the Update Settings."""
-        self.VERSION = "3.50"
-        self.LAST_UPDATED = "May 14, 2025 +8 GMT"
-        self.CURRENT_TIME = "2025-05-14 03:56:00"
-        self.CURRENT_USER = "sehraks"
-
     def display_settings_menu(self):
         """Display and handle settings menu."""
         while True:
-            console.print(Panel(
-                "[bold cyan]⚙️ Settings[/]",
-                style="bold cyan"
-            ))
-
             menu_panel = Panel(
-                "[bold cyan][1] 🔄 Update Facebook MonoToolkit[/]\n"
+                "[bold cyan][1] 🔄 Check updates[/]\n"
                 "[bold yellow][2] 🔙 Back to Main Menu[/]",
-                title="[bold yellow]Settings Menu[/]",
+                title="[bold yellow]⚙️  Settings[/]",
                 style="bold magenta"
             )
             console.print(menu_panel)
 
-            choice = console.input("[bold yellow]Select an option: [/]")
+            choice = console.input("[bold yellow]Select an option (1-2): [/]")
             choice = choice.strip()
 
             if choice == "1":
-                self.update_tool()
+                self.check_updates()
             elif choice == "2":
                 break
             else:
                 console.print(Panel(
-                    "[bold red]❌ Invalid choice! Please try again.[/]", 
+                    "[bold red]❌ Invalid choice! Please try again.[/]",
                     style="bold red"
                 ))
-            
-            if choice == "1":
-                break
-            else:
-                console.input("[bold blue]Press Enter to continue...[/]")
 
-    def update_tool(self):
-        """Handle tool update process."""
-        console.print(Panel(
-            "[bold cyan]🔄 Updating Facebook MonoToolkit...[/]",
-            style="bold cyan"
-        ))
+    def check_updates(self):
+        """Check for updates using Git"""
         try:
-            os.system('chmod +x update.sh && ./update.sh')
-            console.print(Panel(
-                "[bold green]✅ Update completed! Please restart the tool to apply changes.[/]",
-                style="bold green"
-            ))
-            sys.exit(0)
+            # Clear screen
+            os.system('clear')
+
+            # Check for updates
+            console.print("📡 Checking for updates...")
+            
+            # Fetch latest changes
+            subprocess.run(["git", "fetch", "origin"], check=True, capture_output=True)
+            
+            # Check if we're behind origin
+            result = subprocess.run(
+                ["git", "rev-list", "HEAD..origin/main", "--count"],
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            
+            update_count = int(result.stdout.strip())
+            
+            if update_count > 0:
+                # Show changelog if available
+                try:
+                    with open("changelogs.txt", "r") as f:
+                        changelogs = f.read().strip()
+                        console.print(Panel(
+                            f"🆕 New updates available!\n\nChange Logs:\n{changelogs}",
+                            style="bold green"
+                        ))
+                except FileNotFoundError:
+                    console.print(Panel("🆕 New updates available!", style="bold green"))
+                
+                # Ask for user confirmation
+                while True:
+                    choice = input("\nDo you want to update it now? (y/n): ").lower()
+                    if choice in ['y', 'n']:
+                        break
+                    console.print("Please enter 'y' for yes or 'n' for no.")
+                
+                if choice == 'y':
+                    # Download updates
+                    console.print("\n📥 Downloading latest changes...")
+                    subprocess.run(["git", "pull", "origin", "main"], check=True)
+                    console.print("🔧 Setting file permissions...")
+                    subprocess.run(["chmod", "+x", "*.py"], check=True)
+                    subprocess.run(["chmod", "+x", "modules/*.py"], check=True)
+                    
+                    # Show success message only when updates were downloaded
+                    console.print(Panel(
+                        "✅ Update completed! Please restart the tool to apply changes.",
+                        style="bold green"
+                    ))
+                else:
+                    console.print(Panel("Update cancelled by user.", style="bold yellow"))
+            else:
+                # Only show no updates message when there are truly no updates
+                console.print(Panel("✨ No updates available", style="bold red"))
+
+        except subprocess.CalledProcessError as e:
+            console.print(Panel(f"❌ Update failed: {str(e)}", style="bold red"))
         except Exception as e:
-            console.print(Panel(
-                f"[bold red]❌ Update failed: {str(e)}[/]",
-                style="bold red"
-            ))
-            console.input("[bold blue]Press Enter to continue...[/]")
+            console.print(Panel(f"❌ Error: {str(e)}", style="bold red"))
+
+        console.input("\nPress Enter to continue...")
