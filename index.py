@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-14 08:19:12 UTC
+# Last Modified: 2025-05-14 08:59:29 UTC
 # Author: sehraks
 
 import os
@@ -28,7 +28,7 @@ class FacebookMonoToolkit:
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
         self.LAST_UPDATED = "May 14, 2025 +8 GMT"
-        self.CURRENT_TIME = "2025-05-14 08:19:12"
+        self.CURRENT_TIME = "2025-05-14 08:59:29"
         self.CURRENT_USER = "sehraks"
         
         # Initialize components
@@ -190,7 +190,12 @@ class FacebookMonoToolkit:
         if success:
             if not self.current_account:
                 self.current_account = self.cookie_manager.get_all_accounts()[-1]
+            console.print(Panel(
+                "[bold green]✅ Cookie added successfully![/]",
+                style="bold green"
+            ))
         else:
+            # Show error message only once
             console.print(Panel(
                 f"[bold red]❌ {message}[/]",
                 style="bold red"
