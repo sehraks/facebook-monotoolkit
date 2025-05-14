@@ -69,25 +69,42 @@ class UpdateSettings:
             return None
 
     def update_repository(self):
-        """Update repository by re-cloning."""
-        try:
-            home = os.path.expanduser("~")
-            commands = [
-                f"cd {home}",
-                "rm -rf facebook-monotoolkit",
-                "git clone https://github.com/sehraks/facebook-monotoolkit.git",
-                "cd ~/facebook-monotoolkit",
-                "chmod +x index.py"
-            ]
-            
-            console.print("\n📥 Downloading latest changes...")
-            for cmd in commands:
-                if not self.run_command(cmd)[0]:
-                    raise Exception("Failed to update repository")
-            
-            return True
-        except Exception as e:
-            return False
+    """Update repository by re-cloning."""
+    try:
+        home = os.path.expanduser("~")
+        repo_path = os.path.join(home, "facebook-monotoolkit")
+        
+        # Prepare commands with proper directory handling
+        commands = [
+            f"cd {home} && rm -rf facebook-monotoolkit",
+            f"cd {home} && git clone https://github.com/sehraks/facebook-monotoolkit.git",
+            f"cd {repo_path} && chmod +x index.py && chmod +x modules/*.py"
+        ]
+        
+        console.print("\n📥 Downloading latest changes...")
+        for cmd in commands:
+            status, output = self.run_command(cmd)
+            if not status:
+                console.print(f"Command failed: {cmd}")
+                console.print(f"Error: {output}")
+                raise Exception("Failed to update repository")
+        
+        # Update success message with current time
+        console.print(Panel(
+            "✅ Update completed! Please restart the tool to apply changes.\n\n"
+            "Current Date: 2025-05-14 07:57:18 UTC\n"
+            "Current User: sehraks",
+            style="bold green"
+        ))
+        console.print("\n[bold yellow]⚠️ The program will now exit. Please restart it.[/]")
+        
+        # Force exit to ensure clean restart
+        os._exit(0)
+        
+        return True
+    except Exception as e:
+        console.print(f"Error during update: {str(e)}")
+        return False
 
     def check_updates(self):
         """Check for updates using Git"""
