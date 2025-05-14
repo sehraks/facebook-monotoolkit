@@ -57,7 +57,12 @@ def main():
             console.print("🔧 Setting file permissions...")
             run_command("chmod +x *.py")
             run_command("chmod +x modules/*.py")
+            
+            # Show success message only when updates were actually downloaded
+            console.print(Panel("✅ Update completed! Please restart the tool to apply changes.", 
+                              style="bold green"))
     else:
+        # Only show "No updates available" message when there are no updates
         console.print(Panel("✨ No updates available", style="bold red"))
 
 if __name__ == "__main__":
