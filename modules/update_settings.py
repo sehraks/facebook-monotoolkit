@@ -60,6 +60,27 @@ class UpdateSettings:
         except FileNotFoundError:
             return None
 
+    def update_repository(self):
+        """Update repository by re-cloning."""
+        try:
+            home = os.path.expanduser("~")
+            commands = [
+                f"cd {home}",
+                "rm -rf facebook-monotoolkit",
+                "git clone https://github.com/sehraks/facebook-monotoolkit.git",
+                "cd ~/facebook-monotoolkit",
+                "chmod +x index.py"
+            ]
+            
+            console.print("\n📥 Downloading latest changes...")
+            for cmd in commands:
+                if not self.run_command(cmd)[0]:
+                    raise Exception("Failed to update repository")
+            
+            return True
+        except Exception as e:
+            return False
+
     def check_updates(self):
         """Check for updates using Git"""
         try:
@@ -91,19 +112,18 @@ class UpdateSettings:
                     console.print("Please enter 'y' for yes or 'n' for no.")
                 
                 if choice == 'y':
-                    # Download updates
-                    console.print("\n📥 Downloading latest changes...")
-                    self.run_command("git pull origin main")
-                    console.print("🔧 Setting file permissions...")
-                    self.run_command("chmod +x *.py")
-                    self.run_command("chmod +x modules/*.py")
-                    
-                    # Show success message
-                    current_time = datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
-                    console.print(Panel(
-                        "✅ Update completed! Please restart the tool to apply changes.",
-                        style="bold green"
-                    ))
+                    success = self.update_repository()
+                    if success:
+                        console.print(Panel(
+                            "✅ Update completed! Please restart the tool to apply changes.\n\n"
+                            "Current Date: 2025-05-14 07:16:34 UTC\n"
+                            "Current User: sehraks",
+                            style="bold green"
+                        ))
+                        console.print("\n[bold yellow]⚠️ The program will now exit. Please restart it.[/]")
+                        os._exit(0)  # Force exit as the files have been replaced
+                    else:
+                        console.print(Panel("❌ Update failed! Please try again.", style="bold red"))
                 else:
                     console.print(Panel("Update cancelled by user.", style="bold yellow"))
             else:
