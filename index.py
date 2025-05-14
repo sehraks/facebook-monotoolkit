@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-14 08:59:29 UTC
+# Last Modified: 2025-05-14 16:02:40 UTC
 # Author: sehraks
 
 import os
@@ -28,7 +28,7 @@ class FacebookMonoToolkit:
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
         self.LAST_UPDATED = "May 14, 2025 +8 GMT"
-        self.CURRENT_TIME = "2025-05-14 08:59:29"
+        self.CURRENT_TIME = "2025-05-14 16:02:40"
         self.CURRENT_USER = "sehraks"
         
         # Initialize components
@@ -133,14 +133,11 @@ class FacebookMonoToolkit:
                 style="bold cyan"
             ))
             
-            options = [
-                "[bold cyan][1] 📝 Enter your cookie[/]",
-                "[bold cyan][2] ⚙️  Cookie Settings and Storage[/]" if self.cookie_manager.has_cookies() else None,
-                "[bold yellow][3] 🔙 Back to Main Menu[/]"
-            ]
-            
+            # Always show all menu options
             menu_panel = Panel(
-                "\n".join([opt for opt in options if opt is not None]),
+                "[bold cyan][1] 📝 Enter your cookie[/]\n"
+                "[bold cyan][2] ⚙️  Cookie Settings and Storage[/]\n"
+                "[bold yellow][3] 🔙 Back to Main Menu[/]",
                 title="[bold yellow]Cookie Management[/]",
                 style="bold magenta"
             )
@@ -151,7 +148,14 @@ class FacebookMonoToolkit:
 
             if choice == "1":
                 self.add_new_cookie()
-            elif choice == "2" and self.cookie_manager.has_cookies():
+            elif choice == "2":
+                if not self.cookie_manager.has_cookies():
+                    console.print(Panel(
+                        "[bold yellow]❕ Enter your cookie first.[/]",
+                        style="yellow"
+                    ))
+                    console.input("[bold blue]Press Enter to continue...[/]")
+                    continue
                 self.cookie_settings_menu()
             elif choice == "3":
                 break
