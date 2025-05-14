@@ -9,11 +9,16 @@ from rich.panel import Panel
 console = Console()
 
 class UpdateSettings:
+    def __init__(self, display_banner_func):
+        """Initialize with the banner display function."""
+        self.display_banner = display_banner_func
+
     def display_settings_menu(self):
         """Display and handle settings menu."""
         while True:
-            # Clear screen
+            # Clear screen and show banner
             os.system('clear')
+            self.display_banner()
             
             # Display menu
             menu_panel = Panel(
@@ -92,7 +97,7 @@ class UpdateSettings:
             # Update success message with current time
             console.print(Panel(
                 "✅ Update completed! Please restart the tool to apply changes.\n\n"
-                "Current Date: 2025-05-14 08:05:46 UTC\n"
+                "Current Date: 2025-05-14 08:17:49 UTC\n"
                 "Current User: sehraks",
                 style="bold green"
             ))
@@ -109,8 +114,9 @@ class UpdateSettings:
     def check_updates(self):
         """Check for updates using Git"""
         try:
-            # Clear screen
+            # Clear screen and show banner
             os.system('clear')
+            self.display_banner()
 
             # Check for updates
             console.print("📡 Checking for updates...")
