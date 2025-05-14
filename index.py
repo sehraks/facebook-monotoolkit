@@ -72,46 +72,99 @@ class FacebookMonoToolkit:
             return False
         return True
 
-    def main_menu(self) -> None:
-        """Display and handle the main menu."""
-        while True:
-            self.display_banner()
-            
-            if self.current_account:
+def main_menu(self) -> None:
+    """Display and handle the main menu."""
+    while True:
+        self.display_banner()
+        
+        if self.current_account:
+            console.print(Panel(
+                f"[bold green]👤 Current Account: {self.current_account['name']}[/]", 
+                style="bold green"
+            ))
+
+        menu_panel = Panel(
+            "[bold cyan][1] 🔑 Manage Cookies[/]\n"
+            "[bold cyan][2] 📢 Spam Sharing Post[/]\n"
+            "[bold cyan][3] ⚙️ Settings[/]\n"
+            "[bold red][4] 🚪 Exit[/]",
+            title="[bold yellow]📋 Main Menu[/]",
+            style="bold magenta"
+        )
+        console.print(menu_panel)
+
+        choice = console.input("[bold yellow]Select an option (1-4): [/]")
+        choice = choice.strip()
+
+        if choice == "1":
+            self.cookie_management_menu()
+        elif choice == "2":
+            if not self.check_cookie_required():
+                continue
+            self.spam_sharing_menu()
+        elif choice == "3":
+            self.settings_menu()
+        elif choice == "4":
+            console.print(Panel(
+                "[bold blue]👋 Thank you for using Facebook MonoToolkit![/]", 
+                style="bold blue"
+            ))
+            sys.exit(0)
+        else:
+            console.print(Panel(
+                "[bold red]❌ Invalid choice! Please try again.[/]", 
+                style="bold red"
+            ))
+
+def settings_menu(self) -> None:
+    """Handle settings menu."""
+    while True:
+        self.display_banner()
+        console.print(Panel(
+            "[bold cyan]⚙️ Settings[/]",
+            style="bold cyan"
+        ))
+
+        menu_panel = Panel(
+            "[bold cyan][1] 🔄 Update Facebook MonoToolkit[/]\n"
+            "[bold yellow][2] 🔙 Back to Main Menu[/]",
+            title="[bold yellow]Settings Menu[/]",
+            style="bold magenta"
+        )
+        console.print(menu_panel)
+
+        choice = console.input("[bold yellow]Select an option: [/]")
+        choice = choice.strip()
+
+        if choice == "1":
+            console.print(Panel(
+                "[bold cyan]🔄 Updating Facebook MonoToolkit...[/]",
+                style="bold cyan"
+            ))
+            try:
+                os.system('chmod +x update.sh && ./update.sh')
                 console.print(Panel(
-                    f"[bold green]👤 Current Account: {self.current_account['name']}[/]", 
+                    "[bold green]✅ Update completed! Please restart the tool to apply changes.[/]",
                     style="bold green"
                 ))
-
-            menu_panel = Panel(
-                "[bold cyan][1] 🔑 Manage Cookies[/]\n"
-                "[bold cyan][2] 📢 Spam Sharing Post[/]\n"
-                "[bold red][3] 🚪 Exit[/]",
-                title="[bold yellow]📋 Main Menu[/]",
-                style="bold magenta"
-            )
-            console.print(menu_panel)
-
-            choice = console.input("[bold yellow]Select an option (1-3): [/]")
-            choice = choice.strip()
-
-            if choice == "1":
-                self.cookie_management_menu()
-            elif choice == "2":
-                if not self.check_cookie_required():
-                    continue
-                self.spam_sharing_menu()
-            elif choice == "3":
-                console.print(Panel(
-                    "[bold blue]👋 Thank you for using Facebook MonoToolkit![/]", 
-                    style="bold blue"
-                ))
                 sys.exit(0)
-            else:
+            except Exception as e:
                 console.print(Panel(
-                    "[bold red]❌ Invalid choice! Please try again.[/]", 
+                    f"[bold red]❌ Update failed: {str(e)}[/]",
                     style="bold red"
                 ))
+        elif choice == "2":
+            break
+        else:
+            console.print(Panel(
+                "[bold red]❌ Invalid choice! Please try again.[/]", 
+                style="bold red"
+            ))
+        
+        if choice == "1":
+            break
+        else:
+            console.input("[bold blue]Press Enter to continue...[/]")
 
     def cookie_management_menu(self) -> None:
         """Handle cookie management menu."""
