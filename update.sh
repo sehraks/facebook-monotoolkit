@@ -1,81 +1,91 @@
-#!/bin/bash
-# File: update.sh
-# Last Modified: 2025-05-14 05:20:02 UTC
-# Author: sehraks
+#!/usr/bin/env python3
 
-# Clear screen for cleaner output
-clear
+import os
+import subprocess
+import re
+from datetime import datetime
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich import box
 
-# Function to create a centered banner
-create_banner() {
-    local text="$1"
-    local width=50
-    local padding=$(( (width - ${#text}) / 2 ))
-    
-    echo "╭──$(printf '─%.0s' $(seq 1 $((width-4))))──╮"
-    printf "│  %*s%s%*s  │\n" $padding "" "$text" $((width - ${#text} - padding)) ""
-    echo "╰──$(printf '─%.0s' $(seq 1 $((width-4))))──╯"
-}
+console = Console()
 
-# Display the main banner
-create_banner "Facebook MonoToolkit Updater"
-echo
+def run_command(command):
+    try:
+        process = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+        return True, process.stdout
+    except subprocess.CalledProcessError as e:
+        return False, e.stderr
 
-# Check if git is installed
-if ! command -v git &> /dev/null; then
-    create_banner "❌ Error: Git is not installed!"
-    echo
-    echo "📦 Please install git first:"
-    echo "pkg install git"
-    exit 1
-fi
+def main():
+    # Clear screen
+    os.system('clear')
 
-# Check if we're in a git repository
-if ! git rev-parse --is-inside-work-tree &> /dev/null; then
-    create_banner "❌ Error: Not in a git repository!"
-    echo
-    echo "🔄 Please clone the repository first:"
-    echo "git clone https://github.com/sehraks/facebook-monotoolkit.git"
-    exit 1
-fi
+    # Initialize console
+    console = Console()
 
-# Update process
-create_banner "Starting Update Process"
-echo
+    # Show updating message
+    console.print(Panel("🔄 Updating Facebook MonoToolkit...", style="bold blue"))
 
-echo "📡 Checking for updates..."
-if ! git fetch origin; then
-    create_banner "❌ Failed to fetch updates!"
-    exit 1
-fi
+    # Check if git is installed
+    if not run_command("command -v git")[0]:
+        console.print(Panel("❌ Error: Git is not installed!", style="bold red"))
+        console.print("\n📦 Please install git first:")
+        console.print("pkg install git")
+        return
 
-echo "📥 Downloading latest changes..."
-if ! git pull origin main; then
-    create_banner "❌ Update failed!"
-    echo
-    echo "💡 Try: git reset --hard origin/main"
-    exit 1
-fi
+    # Check for updates
+    console.print("📡 Checking for updates...")
+    if not run_command("git fetch origin")[0]:
+        console.print(Panel("❌ Failed to fetch updates!", style="bold red"))
+        return
 
-# Update version and timestamp in index.py
-echo "📝 Updating version information..."
-CURRENT_DATE=$(date -u '+%Y-%m-%d %H:%M:%S')
-CURRENT_DATE_GMT=$(date '+%b %d, %Y +8 GMT')
-CURRENT_VERSION="3.51"  # You can modify this as needed
+    # Download updates
+    console.print("📥 Downloading latest changes...")
+    if not run_command("git pull origin main")[0]:
+        console.print(Panel("❌ Update failed!", style="bold red"))
+        console.print("\n💡 Try: git reset --hard origin/main")
+        return
 
-sed -i "s/self\.VERSION = \".*\"/self.VERSION = \"$CURRENT_VERSION\"/" index.py
-sed -i "s/self\.LAST_UPDATED = \".*\"/self.LAST_UPDATED = \"$CURRENT_DATE_GMT\"/" index.py
-sed -i "s/self\.CURRENT_TIME = \".*\"/self.CURRENT_TIME = \"$CURRENT_DATE\"/" index.py
-sed -i "s/self\.CURRENT_USER = \".*\"/self.CURRENT_USER = \"sehraks\"/" index.py
+    # Get current version from index.py
+    with open("index.py", "r") as f:
+        content = f.read()
+        current_version = re.search(r'self\.VERSION = "([^"]+)"', content).group(1)
+        major, minor = map(int, current_version.split('.'))
+        new_version = f"{major}.{minor + 1}"
 
-# Make files executable
-echo "🔧 Setting file permissions..."
-chmod +x *.py
-chmod +x modules/*.py
+    # Update timestamps and version
+    current_date_utc = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+    current_date_gmt = datetime.now().strftime('%b %d, %Y +8 GMT')
 
-# Success message
-echo
-create_banner "✅ Update Completed Successfully!"
-echo
-echo "🕒 Last updated: $CURRENT_DATE UTC"
-echo "📝 Please restart the tool to apply changes."
+    # Update index.py
+    with open("index.py", "r") as f:
+        content = f.read()
+
+    content = re.sub(r'self\.VERSION = ".*"', f'self.VERSION = "{new_version}"', content)
+    content = re.sub(r'self\.LAST_UPDATED = ".*"', f'self.LAST_UPDATED = "{current_date_gmt}"', content)
+    content = re.sub(r'self\.CURRENT_TIME = ".*"', f'self.CURRENT_TIME = "{current_date_utc}"', content)
+    content = re.sub(r'self\.CURRENT_USER = ".*"', f'self.CURRENT_USER = "sehraks"', content)
+
+    with open("index.py", "w") as f:
+        f.write(content)
+
+    # Make files executable
+    console.print("🔧 Setting file permissions...")
+    run_command("chmod +x *.py")
+    run_command("chmod +x modules/*.py")
+
+    # Create success table
+    table = Table(show_header=False, box=box.ROUNDED)
+    table.add_row("✅ Update Completed Successfully!")
+    table.add_row(f"🕒 Last updated: {current_date_utc} UTC")
+    table.add_row(f"📈 Version updated to: {new_version}")
+    table.add_row("📝 Please restart the tool to apply changes.")
+
+    # Show success message
+    console.print("\n")
+    console.print(Panel(table, style="bold green"))
+
+if __name__ == "__main__":
+    main()
