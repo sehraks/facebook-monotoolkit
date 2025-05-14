@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/cookie_manager.py
-# Last Modified: 2025-05-13 16:09:12 UTC
+# Last Modified: 2025-05-14 11:48:55 UTC
 # Author: sehraks
 
 import json
@@ -22,7 +22,7 @@ class CookieManager:
         self.base_dir = "cookies-storage"
         self.cookies_file = os.path.join(self.base_dir, "cookies.json")
         self.cookies: List[Dict] = []
-        self.last_update = "2025-05-13 16:09:12"  # Current UTC time
+        self.last_update = "2025-05-14 11:48:55"  # Current UTC time
         self.current_user = "sehraks"  # Current user's login
         self._ensure_storage_exists()
         self.load_cookies()
@@ -205,25 +205,23 @@ class CookieManager:
             ))
             return []
 
-    def remove_cookie(self, user_id: str) -> Tuple[bool, str]:
+    def remove_cookie(self, account: Dict) -> bool:
         """Remove a cookie from storage."""
         try:
-            for idx, account in enumerate(self.cookies):
-                if account['user_id'] == user_id:
-                    del self.cookies[idx]
-                    if self.save_cookies():
-                        console.print(Panel(
-                            f"[bold green]✅ Removed account with user ID: {user_id}[/]",
-                            style="bold green"
-                        ))
-                        return True, f"Removed account with user ID: {user_id}"
-            return False, f"Account with user ID {user_id} not found"
+            self.cookies = [c for c in self.cookies if c['id'] != account['id']]
+            if self.save_cookies():
+                console.print(Panel(
+                    f"[bold green]✅ Successfully removed account: {account['name']}[/]",
+                    style="bold green"
+                ))
+                return True
+            return False
         except Exception as e:
             console.print(Panel(
                 f"[bold red]❌ Error removing cookie: {str(e)}[/]",
                 style="bold red"
             ))
-            return False, f"Error removing cookie: {str(e)}"
+            return False
 
     def get_cookie(self, user_id: str) -> Optional[Dict]:
         """Get a specific cookie by user ID."""
