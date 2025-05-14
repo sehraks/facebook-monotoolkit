@@ -69,42 +69,42 @@ class UpdateSettings:
             return None
 
     def update_repository(self):
-    """Update repository by re-cloning."""
-    try:
-        home = os.path.expanduser("~")
-        repo_path = os.path.join(home, "facebook-monotoolkit")
-        
-        # Prepare commands with proper directory handling
-        commands = [
-            f"cd {home} && rm -rf facebook-monotoolkit",
-            f"cd {home} && git clone https://github.com/sehraks/facebook-monotoolkit.git",
-            f"cd {repo_path} && chmod +x index.py && chmod +x modules/*.py"
-        ]
-        
-        console.print("\n📥 Downloading latest changes...")
-        for cmd in commands:
-            status, output = self.run_command(cmd)
-            if not status:
-                console.print(f"Command failed: {cmd}")
-                console.print(f"Error: {output}")
-                raise Exception("Failed to update repository")
-        
-        # Update success message with current time
-        console.print(Panel(
-            "✅ Update completed! Please restart the tool to apply changes.\n\n"
-            "Current Date: 2025-05-14 07:57:18 UTC\n"
-            "Current User: sehraks",
-            style="bold green"
-        ))
-        console.print("\n[bold yellow]⚠️ The program will now exit. Please restart it.[/]")
-        
-        # Force exit to ensure clean restart
-        os._exit(0)
-        
-        return True
-    except Exception as e:
-        console.print(f"Error during update: {str(e)}")
-        return False
+        """Update repository by re-cloning."""
+        try:
+            home = os.path.expanduser("~")
+            repo_path = os.path.join(home, "facebook-monotoolkit")
+            
+            # Prepare commands with proper directory handling
+            commands = [
+                f"cd {home} && rm -rf facebook-monotoolkit",
+                f"cd {home} && git clone https://github.com/sehraks/facebook-monotoolkit.git",
+                f"cd {repo_path} && chmod +x index.py && chmod +x modules/*.py"
+            ]
+            
+            console.print("\n📥 Downloading latest changes...")
+            for cmd in commands:
+                status, output = self.run_command(cmd)
+                if not status:
+                    console.print(f"Command failed: {cmd}")
+                    console.print(f"Error: {output}")
+                    raise Exception("Failed to update repository")
+            
+            # Update success message with current time
+            console.print(Panel(
+                "✅ Update completed! Please restart the tool to apply changes.\n\n"
+                "Current Date: 2025-05-14 08:05:46 UTC\n"
+                "Current User: sehraks",
+                style="bold green"
+            ))
+            console.print("\n[bold yellow]⚠️ The program will now exit. Please restart it.[/]")
+            
+            # Force exit to ensure clean restart
+            os._exit(0)
+            
+            return True
+        except Exception as e:
+            console.print(f"Error during update: {str(e)}")
+            return False
 
     def check_updates(self):
         """Check for updates using Git"""
@@ -138,16 +138,7 @@ class UpdateSettings:
                 
                 if choice == 'y':
                     success = self.update_repository()
-                    if success:
-                        console.print(Panel(
-                            "✅ Update completed! Please restart the tool to apply changes.\n\n"
-                            "Current Date: 2025-05-14 07:49:59 UTC\n"
-                            "Current User: sehraks",
-                            style="bold green"
-                        ))
-                        console.print("\n[bold yellow]⚠️ The program will now exit. Please restart it.[/]")
-                        os._exit(0)  # Force exit as the files have been replaced
-                    else:
+                    if not success:
                         console.print(Panel("❌ Update failed! Please try again.", style="bold red"))
                 else:
                     console.print(Panel("Update cancelled by user.", style="bold yellow"))
