@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-14 03:44:04 UTC
+# Last Modified: 2025-05-14 03:50:02 UTC
 # Author: sehraks
 
 import os
@@ -27,7 +27,7 @@ class FacebookMonoToolkit:
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
         self.LAST_UPDATED = "May 14, 2025 +8 GMT"
-        self.CURRENT_TIME = "2025-05-14 03:44:04"
+        self.CURRENT_TIME = "2025-05-14 03:50:02"
         self.CURRENT_USER = "sehraks"
         
         # Initialize components
@@ -38,17 +38,17 @@ class FacebookMonoToolkit:
         # Create necessary directories
         self._init_directories()
 
-    def _init_directories(self) -> None:
+    def _init_directories(self):
         """Initialize necessary directories."""
         directories = ['cookies-storage', 'logs']
         for directory in directories:
             os.makedirs(directory, exist_ok=True)
 
-    def clear_screen(self) -> None:
+    def clear_screen(self):
         """Clear the terminal screen."""
         os.system('cls' if os.name == 'nt' else 'clear')
 
-    def display_banner(self) -> None:
+    def display_banner(self):
         """Display the tool banner."""
         self.clear_screen()
         banner = Panel(
@@ -61,7 +61,7 @@ class FacebookMonoToolkit:
         )
         console.print(banner)
 
-    def check_cookie_required(self) -> bool:
+    def check_cookie_required(self):
         """Check if cookie is available."""
         if not self.current_account:
             console.print(Panel(
@@ -72,7 +72,7 @@ class FacebookMonoToolkit:
             return False
         return True
 
-    def main_menu(self) -> None:
+    def main_menu(self):
         """Display and handle the main menu."""
         while True:
             self.display_banner()
@@ -116,7 +116,7 @@ class FacebookMonoToolkit:
                     style="bold red"
                 ))
 
-    def settings_menu(self) -> None:
+    def settings_menu(self):
         """Handle settings menu."""
         while True:
             self.display_banner()
@@ -166,7 +166,7 @@ class FacebookMonoToolkit:
             else:
                 console.input("[bold blue]Press Enter to continue...[/]")
 
-    def cookie_management_menu(self) -> None:
+    def cookie_management_menu(self):
         """Handle cookie management menu."""
         while True:
             self.display_banner()
@@ -203,7 +203,7 @@ class FacebookMonoToolkit:
                     style="bold red"
                 ))
 
-    def add_new_cookie(self) -> None:
+    def add_new_cookie(self):
         """Handle adding a new cookie."""
         self.display_banner()
         console.print(Panel(
@@ -239,7 +239,7 @@ class FacebookMonoToolkit:
         Utils.log_activity("Add Cookie", success, message)
         console.input("[bold blue]Press Enter to continue...[/]")
 
-    def cookie_settings_menu(self) -> None:
+    def cookie_settings_menu(self):
         """Handle cookie settings and storage menu."""
         while True:
             self.display_banner()
@@ -326,7 +326,7 @@ class FacebookMonoToolkit:
             
             console.input("[bold blue]Press Enter to continue...[/]")
 
-    def spam_sharing_menu(self) -> None:
+    def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
         self.display_banner()
         console.print(Panel(
