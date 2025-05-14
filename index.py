@@ -24,11 +24,11 @@ console = Console()
 class FacebookMonoToolkit:
     def __init__(self):
         """Initialize the Facebook MonoToolkit."""
-        self.VERSION = "3.50"
+        self.VERSION = "3.51"
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
         self.LAST_UPDATED = "May 14, 2025 +8 GMT"
-        self.CURRENT_TIME = "2025-05-14 03:56:52"
+        self.CURRENT_TIME = "2025-05-14 05:16:48"
         self.CURRENT_USER = "sehraks"
         
         # Initialize components

@@ -1,4 +1,3 @@
-cat > scripts/install-hooks.sh << 'EOL'
 #!/bin/bash
 
 # Create hooks directory if it doesn't exist
@@ -26,4 +25,3 @@ HOOK
 chmod +x .git/hooks/pre-commit
 
 echo "✅ Git hooks installed successfully!"
-EOL
