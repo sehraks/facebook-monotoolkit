@@ -10,28 +10,32 @@ console = Console()
 
 class UpdateSettings:
     def display_settings_menu(self):
-        """Display and handle settings menu."""
-        while True:
-            menu_panel = Panel(
-                "[bold cyan][1] 🔄 Check updates[/]\n"
-                "[bold yellow][2] 🔙 Back to Main Menu[/]",
-                title="[bold yellow]⚙️  Settings[/]",
-                style="bold magenta"
-            )
-            console.print(menu_panel)
+    """Display and handle settings menu."""
+    while True:
+        # Clear screen before showing menu
+        os.system('clear')
+        
+        menu_panel = Panel(
+            "[bold cyan][1] 🔄 Check updates[/]\n"
+            "[bold yellow][2] 🔙 Back to Main Menu[/]",
+            title="[bold yellow]⚙️  Settings[/]",
+            style="bold magenta"
+        )
+        console.print(menu_panel)
 
-            choice = console.input("[bold yellow]Select an option (1-2): [/]")
-            choice = choice.strip()
+        choice = console.input("[bold yellow]Select an option (1-2): [/]")
+        choice = choice.strip()
 
-            if choice == "1":
-                self.check_updates()
-            elif choice == "2":
-                break
-            else:
-                console.print(Panel(
-                    "[bold red]❌ Invalid choice! Please try again.[/]",
-                    style="bold red"
-                ))
+        if choice == "1":
+            self.check_updates()
+        elif choice == "2":
+            break
+        else:
+            console.print(Panel(
+                "[bold red]❌ Invalid choice! Please try again.[/]",
+                style="bold red"
+            ))
+            console.input("\nPress Enter to continue...")  # Wait for user input before continuing
 
     def run_command(self, command):
         """Run a shell command and return its status and output."""
