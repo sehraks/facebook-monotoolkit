@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-13 18:29:03 UTC
+# Last Modified: 2025-05-14 03:44:04 UTC
 # Author: sehraks
 
 import os
@@ -26,8 +26,8 @@ class FacebookMonoToolkit:
         self.VERSION = "3.50"
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
-        self.LAST_UPDATED = "May 13, 2025 +8 GMT"
-        self.CURRENT_TIME = "2025-05-13 18:29:03"
+        self.LAST_UPDATED = "May 14, 2025 +8 GMT"
+        self.CURRENT_TIME = "2025-05-14 03:44:04"
         self.CURRENT_USER = "sehraks"
         
         # Initialize components
@@ -72,99 +72,99 @@ class FacebookMonoToolkit:
             return False
         return True
 
-def main_menu(self) -> None:
-    """Display and handle the main menu."""
-    while True:
-        self.display_banner()
-        
-        if self.current_account:
-            console.print(Panel(
-                f"[bold green]👤 Current Account: {self.current_account['name']}[/]", 
-                style="bold green"
-            ))
-
-        menu_panel = Panel(
-            "[bold cyan][1] 🔑 Manage Cookies[/]\n"
-            "[bold cyan][2] 📢 Spam Sharing Post[/]\n"
-            "[bold cyan][3] ⚙️ Settings[/]\n"
-            "[bold red][4] 🚪 Exit[/]",
-            title="[bold yellow]📋 Main Menu[/]",
-            style="bold magenta"
-        )
-        console.print(menu_panel)
-
-        choice = console.input("[bold yellow]Select an option (1-4): [/]")
-        choice = choice.strip()
-
-        if choice == "1":
-            self.cookie_management_menu()
-        elif choice == "2":
-            if not self.check_cookie_required():
-                continue
-            self.spam_sharing_menu()
-        elif choice == "3":
-            self.settings_menu()
-        elif choice == "4":
-            console.print(Panel(
-                "[bold blue]👋 Thank you for using Facebook MonoToolkit![/]", 
-                style="bold blue"
-            ))
-            sys.exit(0)
-        else:
-            console.print(Panel(
-                "[bold red]❌ Invalid choice! Please try again.[/]", 
-                style="bold red"
-            ))
-
-def settings_menu(self) -> None:
-    """Handle settings menu."""
-    while True:
-        self.display_banner()
-        console.print(Panel(
-            "[bold cyan]⚙️ Settings[/]",
-            style="bold cyan"
-        ))
-
-        menu_panel = Panel(
-            "[bold cyan][1] 🔄 Update Facebook MonoToolkit[/]\n"
-            "[bold yellow][2] 🔙 Back to Main Menu[/]",
-            title="[bold yellow]Settings Menu[/]",
-            style="bold magenta"
-        )
-        console.print(menu_panel)
-
-        choice = console.input("[bold yellow]Select an option: [/]")
-        choice = choice.strip()
-
-        if choice == "1":
-            console.print(Panel(
-                "[bold cyan]🔄 Updating Facebook MonoToolkit...[/]",
-                style="bold cyan"
-            ))
-            try:
-                os.system('chmod +x update.sh && ./update.sh')
+    def main_menu(self) -> None:
+        """Display and handle the main menu."""
+        while True:
+            self.display_banner()
+            
+            if self.current_account:
                 console.print(Panel(
-                    "[bold green]✅ Update completed! Please restart the tool to apply changes.[/]",
+                    f"[bold green]👤 Current Account: {self.current_account['name']}[/]", 
                     style="bold green"
                 ))
-                sys.exit(0)
-            except Exception as e:
+
+            menu_panel = Panel(
+                "[bold cyan][1] 🔑 Manage Cookies[/]\n"
+                "[bold cyan][2] 📢 Spam Sharing Post[/]\n"
+                "[bold cyan][3] ⚙️ Settings[/]\n"
+                "[bold red][4] 🚪 Exit[/]",
+                title="[bold yellow]📋 Main Menu[/]",
+                style="bold magenta"
+            )
+            console.print(menu_panel)
+
+            choice = console.input("[bold yellow]Select an option (1-4): [/]")
+            choice = choice.strip()
+
+            if choice == "1":
+                self.cookie_management_menu()
+            elif choice == "2":
+                if not self.check_cookie_required():
+                    continue
+                self.spam_sharing_menu()
+            elif choice == "3":
+                self.settings_menu()
+            elif choice == "4":
                 console.print(Panel(
-                    f"[bold red]❌ Update failed: {str(e)}[/]",
+                    "[bold blue]👋 Thank you for using Facebook MonoToolkit![/]", 
+                    style="bold blue"
+                ))
+                sys.exit(0)
+            else:
+                console.print(Panel(
+                    "[bold red]❌ Invalid choice! Please try again.[/]", 
                     style="bold red"
                 ))
-        elif choice == "2":
-            break
-        else:
+
+    def settings_menu(self) -> None:
+        """Handle settings menu."""
+        while True:
+            self.display_banner()
             console.print(Panel(
-                "[bold red]❌ Invalid choice! Please try again.[/]", 
-                style="bold red"
+                "[bold cyan]⚙️ Settings[/]",
+                style="bold cyan"
             ))
-        
-        if choice == "1":
-            break
-        else:
-            console.input("[bold blue]Press Enter to continue...[/]")
+
+            menu_panel = Panel(
+                "[bold cyan][1] 🔄 Update Facebook MonoToolkit[/]\n"
+                "[bold yellow][2] 🔙 Back to Main Menu[/]",
+                title="[bold yellow]Settings Menu[/]",
+                style="bold magenta"
+            )
+            console.print(menu_panel)
+
+            choice = console.input("[bold yellow]Select an option: [/]")
+            choice = choice.strip()
+
+            if choice == "1":
+                console.print(Panel(
+                    "[bold cyan]🔄 Updating Facebook MonoToolkit...[/]",
+                    style="bold cyan"
+                ))
+                try:
+                    os.system('chmod +x update.sh && ./update.sh')
+                    console.print(Panel(
+                        "[bold green]✅ Update completed! Please restart the tool to apply changes.[/]",
+                        style="bold green"
+                    ))
+                    sys.exit(0)
+                except Exception as e:
+                    console.print(Panel(
+                        f"[bold red]❌ Update failed: {str(e)}[/]",
+                        style="bold red"
+                    ))
+            elif choice == "2":
+                break
+            else:
+                console.print(Panel(
+                    "[bold red]❌ Invalid choice! Please try again.[/]", 
+                    style="bold red"
+                ))
+            
+            if choice == "1":
+                break
+            else:
+                console.input("[bold blue]Press Enter to continue...[/]")
 
     def cookie_management_menu(self) -> None:
         """Handle cookie management menu."""
@@ -239,92 +239,92 @@ def settings_menu(self) -> None:
         Utils.log_activity("Add Cookie", success, message)
         console.input("[bold blue]Press Enter to continue...[/]")
 
-def cookie_settings_menu(self) -> None:
-    """Handle cookie settings and storage menu."""
-    while True:
-        self.display_banner()
-        console.print(Panel(
-            "[bold cyan]⚙️  Cookie Settings and Storage[/]",
-            style="bold cyan"
-        ))
-        
-        accounts = self.cookie_manager.get_all_accounts()
-        for idx, account in enumerate(accounts, 1):
-            status = "Logged in" if account == self.current_account else "Logged out"
-            console.print(f"[bold yellow]— Account {idx}[/]")
-            console.print(f"[bold cyan]Name: {account['name']}[/]")
-            status_color = "green" if status == "Logged in" else "red"
-            console.print(f"[bold {status_color}]Status: {status}[/]")
-            if account != self.current_account:
-                console.print(f"[bold yellow][{idx}] Select[/]")
-            console.print(f"[bold red][R{idx}] Remove[/]")
-            console.print()
-
-        console.print("[bold yellow][0] 🔙 Back[/]\n")
-
-        choice = console.input("[bold yellow]Select an option: [/]")
-        choice = choice.strip().upper()
-        
-        if choice == "0":
-            break
+    def cookie_settings_menu(self) -> None:
+        """Handle cookie settings and storage menu."""
+        while True:
+            self.display_banner()
+            console.print(Panel(
+                "[bold cyan]⚙️  Cookie Settings and Storage[/]",
+                style="bold cyan"
+            ))
             
-        if choice.startswith('R'):
-            try:
-                idx = int(choice[1:]) - 1
-                if 0 <= idx < len(accounts):
-                    account_to_remove = accounts[idx]
-                    confirm = console.input(f"[bold red]Are you sure you want to remove {account_to_remove['name']}? (y/N): [/]").strip().lower()
-                    if confirm == 'y':
-                        if account_to_remove == self.current_account:
-                            self.current_account = None
-                        success = self.cookie_manager.remove_cookie(account_to_remove)
-                        if success:
+            accounts = self.cookie_manager.get_all_accounts()
+            for idx, account in enumerate(accounts, 1):
+                status = "Logged in" if account == self.current_account else "Logged out"
+                console.print(f"[bold yellow]— Account {idx}[/]")
+                console.print(f"[bold cyan]Name: {account['name']}[/]")
+                status_color = "green" if status == "Logged in" else "red"
+                console.print(f"[bold {status_color}]Status: {status}[/]")
+                if account != self.current_account:
+                    console.print(f"[bold yellow][{idx}] Select[/]")
+                console.print(f"[bold red][R{idx}] Remove[/]")
+                console.print()
+
+            console.print("[bold yellow][0] 🔙 Back[/]\n")
+
+            choice = console.input("[bold yellow]Select an option: [/]")
+            choice = choice.strip().upper()
+            
+            if choice == "0":
+                break
+                
+            if choice.startswith('R'):
+                try:
+                    idx = int(choice[1:]) - 1
+                    if 0 <= idx < len(accounts):
+                        account_to_remove = accounts[idx]
+                        confirm = console.input(f"[bold red]Are you sure you want to remove {account_to_remove['name']}? (y/N): [/]").strip().lower()
+                        if confirm == 'y':
+                            if account_to_remove == self.current_account:
+                                self.current_account = None
+                            success = self.cookie_manager.remove_cookie(account_to_remove)
+                            if success:
+                                console.print(Panel(
+                                    f"[bold green]✅ Successfully removed account: {account_to_remove['name']}[/]",
+                                    style="bold green"
+                                ))
+                            else:
+                                console.print(Panel(
+                                    "[bold red]❌ Failed to remove account![/]",
+                                    style="bold red"
+                                ))
+                    else:
+                        console.print(Panel(
+                            "[bold red]❌ Invalid selection![/]",
+                            style="bold red"
+                        ))
+                except (ValueError, IndexError):
+                    console.print(Panel(
+                        "[bold red]❌ Invalid input![/]",
+                        style="bold red"
+                    ))
+            else:
+                try:
+                    choice_idx = int(choice) - 1
+                    if 0 <= choice_idx < len(accounts):
+                        if accounts[choice_idx] != self.current_account:
+                            self.current_account = accounts[choice_idx]
                             console.print(Panel(
-                                f"[bold green]✅ Successfully removed account: {account_to_remove['name']}[/]",
+                                f"[bold green]✅ Successfully switched to account: {self.current_account['name']}[/]",
                                 style="bold green"
                             ))
                         else:
                             console.print(Panel(
-                                "[bold red]❌ Failed to remove account![/]",
-                                style="bold red"
+                                "[bold yellow]⚠️ This account is already selected.[/]",
+                                style="bold yellow"
                             ))
-                else:
-                    console.print(Panel(
-                        "[bold red]❌ Invalid selection![/]",
-                        style="bold red"
-                    ))
-            except (ValueError, IndexError):
-                console.print(Panel(
-                    "[bold red]❌ Invalid input![/]",
-                    style="bold red"
-                ))
-        else:
-            try:
-                choice_idx = int(choice) - 1
-                if 0 <= choice_idx < len(accounts):
-                    if accounts[choice_idx] != self.current_account:
-                        self.current_account = accounts[choice_idx]
-                        console.print(Panel(
-                            f"[bold green]✅ Successfully switched to account: {self.current_account['name']}[/]",
-                            style="bold green"
-                        ))
                     else:
                         console.print(Panel(
-                            "[bold yellow]⚠️ This account is already selected.[/]",
-                            style="bold yellow"
+                            "[bold red]❌ Invalid selection![/]",
+                            style="bold red"
                         ))
-                else:
+                except ValueError:
                     console.print(Panel(
-                        "[bold red]❌ Invalid selection![/]",
+                        "[bold red]❌ Invalid input![/]",
                         style="bold red"
                     ))
-            except ValueError:
-                console.print(Panel(
-                    "[bold red]❌ Invalid input![/]",
-                    style="bold red"
-                ))
-        
-        console.input("[bold blue]Press Enter to continue...[/]")
+            
+            console.input("[bold blue]Press Enter to continue...[/]")
 
     def spam_sharing_menu(self) -> None:
         """Handle spam sharing functionality."""
