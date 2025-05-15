@@ -206,7 +206,7 @@ class CookieManager:
         try:
             status_report = []
             table = Table(
-                title="[bold cyan]🍪 Cookie Validation Report[/]",
+                title="[bold cyan] Cookie Validation Report[/]",
                 show_header=True,
                 header_style="bold magenta"
             )
