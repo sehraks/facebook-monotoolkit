@@ -61,7 +61,7 @@ class Utils:
         status_styles = {
             "success": ("[bold green]✅", "bold green"),
             "error": ("[bold red]❌", "bold red"),
-            "warning": ("[bold yellow]⚠️", "bold yellow"),
+            "warning": ("[bold yellow]❕", "bold yellow"),
             "info": ("[bold cyan]ℹ️", "bold cyan")
         }
         
