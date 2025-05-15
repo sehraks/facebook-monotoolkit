@@ -108,8 +108,8 @@ class FacebookMonoToolkit:
                 self.settings_menu()
             elif choice == "4":
                 console.print(Panel(
-                    "[bold cyan]👋 Thank you for using Facebook MonoToolkit![/]", 
-                    style="bold white"
+                    "[bold white]👋 Thank you for using Facebook MonoToolkit![/]", 
+                    style="bold cyan"
                 ))
                 sys.exit(0)
             else:
@@ -135,11 +135,11 @@ class FacebookMonoToolkit:
             
             # Always show all menu options
             menu_panel = Panel(
-                "[bold yellow][1] Enter your cookie[/]\n"
-                "[bold yellow][2] Cookie Settings and Storage[/]\n"
-                "[bold yellow][3] Back to Main Menu[/]",
+                "[bold white][1] Enter your cookie[/]\n"
+                "[bold white][2] Cookie Settings and Storage[/]\n"
+                "[bold white][3] Back to Main Menu[/]",
                 title="[bold white]Cookie Management[/]",
-                style="bold magenta"
+                style="bold yellow"
             )
             console.print(menu_panel)
             
