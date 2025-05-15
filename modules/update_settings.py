@@ -101,7 +101,7 @@ class UpdateSettings:
                 "Current User: sehraks",
                 style="bold green"
             ))
-            console.print("\n[bold yellow]⚠️ The program will now exit. Please restart it.[/]")
+            console.print("\n[bold yellow]❕ The program will now exit. Please restart it.[/]")
             
             # Force exit to ensure clean restart
             os._exit(0)
