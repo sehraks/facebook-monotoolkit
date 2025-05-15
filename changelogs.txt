@@ -1,7 +1,6 @@
-# Create or update changelogs.txt
-echo "- Version 4.53" > changelogs.txt
-echo "  Date: $(TZ='Asia/Manila' date '+%B %d, %Y')" >> changelogs.txt
-echo "  Time: $(TZ='Asia/Manila' date '+%I:%M %p')" >> changelogs.txt
-echo "  • Make some changes on UI and colorings" >> changelogs.txt
-echo "  • Fixed duplicate messages" >> changelogs.txt
-echo "  • Improved the functionality and fixed minor bugs and errors" >> changelogs.txt
+- Version 4.53
+  Date: May 15, 2025
+  Time: 03:23 PM
+  • Make some changes on UI and colorings
+  • Fixed duplicate messages
+  • Improved the functionality and fixed minor bugs and errors
