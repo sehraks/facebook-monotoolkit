@@ -114,7 +114,7 @@ class FacebookMonoToolkit:
                 sys.exit(0)
             else:
                 console.print(Panel(
-                    "[bold yellow]❕ Invalid choice! Please try again.[/]", 
+                    "[bold white]❕ Invalid choice! Please try again.[/]", 
                     style="bold red"
                 ))
                 console.input("\nPress Enter to continue...")
@@ -222,7 +222,7 @@ class FacebookMonoToolkit:
             for idx, account in enumerate(accounts, 1):
                 status = "Logged in" if account == self.current_account else "Logged out"
                 console.print(f"[bold yellow]— Account {idx}[/]")
-                console.print(f"[bold cyan]Name: {account['name']}[/]")
+                console.print(f"[bold white]Name: {account['name']}[/]")
                 status_color = "green" if status == "Logged in" else "red"
                 console.print(f"[bold {status_color}]Status: {status}[/]")
                 if account != self.current_account:
@@ -255,7 +255,7 @@ class FacebookMonoToolkit:
                                 ))
                             else:
                                 console.print(Panel(
-                                    "[bold red]❕ Failed to remove account![/]",
+                                    "[bold white]❕ Failed to remove account![/]",
                                     style="bold yellow"
                                 ))
                     else:
@@ -285,12 +285,12 @@ class FacebookMonoToolkit:
                             ))
                     else:
                         console.print(Panel(
-                            "[bold red]❕ Invalid selection![/]",
+                            "[bold white]❕ Invalid selection![/]",
                             style="bold yellow"
                         ))
                 except ValueError:
                     console.print(Panel(
-                        "[bold red]❕ Invalid input![/]",
+                        "[bold white]❕ Invalid input![/]",
                         style="bold yellow"
                     ))
             
@@ -310,8 +310,8 @@ class FacebookMonoToolkit:
         
         if not Utils.validate_url(post_url):
             console.print(Panel(
-                "[bold red]❕ Invalid Facebook URL![/]",
-                style="bold yellow"
+                "[bold white]❕ Invalid Facebook URL![/]",
+                style="bold red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return
@@ -368,7 +368,7 @@ def main():
         console.print("\n[bold yellow]❕ Program interrupted by user.[/]")
         sys.exit(0)
     except Exception as e:
-        console.print(f"\n[bold red]❌ An unexpected error occurred: {str(e)}[/]")
+        console.print(f"\n[bold yellow]❕ An unexpected error occurred: {str(e)}[/]")
         Utils.log_activity("System Error", False, str(e))
         sys.exit(1)
 
