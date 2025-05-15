@@ -22,9 +22,9 @@ class UpdateSettings:
             
             # Display menu
             menu_panel = Panel(
-                "[bold cyan][1] 🔄 Check updates[/]\n"
-                "[bold yellow][2] 🔙 Back to Main Menu[/]",
-                title="[bold yellow]⚙️  Settings[/]",
+                "[bold green][1] Check updates[/]\n"
+                "[bold yellow][2] Back to Main Menu[/]",
+                title="[bold yellow] Settings[/]",
                 style="bold magenta"
             )
             console.print(menu_panel)
@@ -39,7 +39,7 @@ class UpdateSettings:
                 break
             else:
                 console.print(Panel(
-                    "[bold red]❌ Invalid choice! Please try again.[/]",
+                    "[bold white]❕ Invalid choice! Please try again.[/]",
                     style="bold red"
                 ))
                 console.input("\nPress Enter to continue...")
@@ -145,7 +145,7 @@ class UpdateSettings:
                 if choice == 'y':
                     success = self.update_repository()
                     if not success:
-                        console.print(Panel("❌ Update failed! Please try again.", style="bold red"))
+                        console.print(Panel("❕ Update failed! Please try again.", style="bold red"))
                 else:
                     console.print(Panel("Update cancelled by user.", style="bold yellow"))
             else:
