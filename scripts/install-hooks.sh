@@ -7,22 +7,24 @@ mkdir -p .git/hooks
 cat > .git/hooks/pre-commit << 'HOOK'
 #!/bin/bash
 
-# Get current timestamp in UTC
-CURRENT_DATE=$(date -u '+%Y-%m-%d %H:%M:%S')
-CURRENT_DATE_GMT=$(date '+%b %d, %Y +8 GMT')
+# Get current date and time in Philippines timezone (Asia/Manila)
+CURRENT_DATE=$(TZ='Asia/Manila' date '+%B %d, %Y')
+CURRENT_TIME=$(TZ='Asia/Manila' date '+%I:%M %p')
 
 # Update the version and timestamp in index.py
 sed -i "s/self\.VERSION = \".*\"/self.VERSION = \"3.51\"/" index.py
-sed -i "s/self\.LAST_UPDATED = \".*\"/self.LAST_UPDATED = \"$CURRENT_DATE_GMT\"/" index.py
-sed -i "s/self\.CURRENT_TIME = \".*\"/self.CURRENT_TIME = \"$CURRENT_DATE\"/" index.py
-sed -i "s/self\.CURRENT_USER = \".*\"/self.CURRENT_USER = \"sehraks\"/" index.py
+sed -i "s/self\.LAST_UPDATED = \".*\"/self.LAST_UPDATED = \"$CURRENT_DATE\"/" index.py
+sed -i "s/self\.CURRENT_TIME = \".*\"/self.CURRENT_TIME = \"$CURRENT_TIME\"/" index.py
+sed -i "s/self\.CURRENT_USER = \".*\"/self.CURRENT_USER = \"Cerax\"/" index.py
 
-# Add change logs (Developer needs to edit this section)
+# Add change logs
 CHANGELOG_FILE="changelogs.txt"
-echo "- Version 3.51 ($CURRENT_DATE_GMT)" > $CHANGELOG_FILE
-echo "  • Added new feature X" >> $CHANGELOG_FILE
-echo "  • Fixed bug Y" >> $CHANGELOG_FILE
-echo "  • Improved performance Z" >> $CHANGELOG_FILE
+echo "- Version 4.53" > $CHANGELOG_FILE
+echo "  Date: $CURRENT_DATE" >> $CHANGELOG_FILE
+echo "  Time: $CURRENT_TIME" >> $CHANGELOG_FILE
+echo "  • Make some changes on UI and colorings" >> $CHANGELOG_FILE
+echo "  • Fixed duplicate messages" >> $CHANGELOG_FILE
+echo "  • Improved the functionality and fixed minor bugs and errors" >> $CHANGELOG_FILE
 
 # Stage the modified files
 git add index.py
@@ -33,4 +35,3 @@ HOOK
 chmod +x .git/hooks/pre-commit
 
 echo "✅ Git hooks installed successfully!"
-EOL
