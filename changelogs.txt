@@ -1,11 +1,11 @@
-ℹ️ Version 4.60
-🗓️ Date: May 15, 2025
-🕓 Time: 04:16 PM
+Version 4.60
+Date: May 15, 2025
+Time: 04:25 PM
 ADDED NEW FEATURE(S):
-• Cookie Management (support log-in & log-out method. It can also remove you stored cookies
-• Spam Sharing (without Facebook's API, for less Facebook restriction
-• Facebook log-in (API support, soon)
-• Profile Picture Guard (soon)
+— Cookie Management (support log-in & log-out method. It can also remove you stored cookies
+— Spam Sharing (without Facebook's API, for less Facebook restriction
+— Facebook log-in (API support, soon)
+— Profile Picture Guard (soon)
   —————————————————————————————————
 NEW CHANGES:
-• fixed minor bugs and errors, and make minor changes.
+— fixed minor bugs and errors, and make minor changes.
