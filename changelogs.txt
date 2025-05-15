@@ -1,6 +1,7 @@
-Version 4.60
+Version 4.62
 Date: May 15, 2025
-Time: 04:48 PM
+Time: 05:25 PM
+  —————————————————————————————————
 ADDED NEW FEATURE(S):
 — Cookie Management (support log-in & log-out method. It can also remove your stored cookies
 — Spam Sharing Post (without Facebook's API, for less Facebook restriction
