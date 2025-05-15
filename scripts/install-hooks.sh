@@ -19,13 +19,13 @@ sed -i "s/self\.CURRENT_USER = \".*\"/self.CURRENT_USER = \"Cerax\"/" index.py
 
 # Add change logs
 CHANGELOG_FILE="changelogs.txt"
-echo "- Version 4.53" > $CHANGELOG_FILE
+echo "- Version 4.55" > $CHANGELOG_FILE
 echo "  Date: $CURRENT_DATE" >> $CHANGELOG_FILE
 echo "  Time: $CURRENT_TIME" >> $CHANGELOG_FILE
 echo "  • Make some changes on UI and colorings" >> $CHANGELOG_FILE
 echo "  • Fixed duplicate messages" >> $CHANGELOG_FILE
 echo "  • Improved the functionality and fixed minor bugs and errors" >> $CHANGELOG_FILE
-echo "  • Improved the changelogs update" >> $CHANGELOG_FILE
+echo "  • Improved the changelogs update and make minor changes" >> $CHANGELOG_FILE
 
 # Stage the modified files
 git add index.py
