@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/cookie_manager.py
-# Last Modified: 2025-05-14 11:48:55 UTC
+# Last Modified: 2025-05-15 05:14:02 UTC
 # Author: sehraks
 
 import json
@@ -22,7 +22,7 @@ class CookieManager:
         self.base_dir = "cookies-storage"
         self.cookies_file = os.path.join(self.base_dir, "cookies.json")
         self.cookies: List[Dict] = []
-        self.last_update = "2025-05-14 11:48:55"  # Current UTC time
+        self.last_update = "2025-05-15 05:14:02"  # Current UTC time
         self.current_user = "sehraks"  # Current user's login
         self._ensure_storage_exists()
         self.load_cookies()
@@ -61,11 +61,8 @@ class CookieManager:
                     else:
                         self.cookies = data if isinstance(data, list) else []
         except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error loading cookies: {str(e)}[/]",
-                style="bold red"
-            ))
             self.cookies = []
+            return False
 
     def save_cookies(self) -> bool:
         """Save cookies to storage file."""
@@ -80,11 +77,7 @@ class CookieManager:
             with open(self.cookies_file, 'w', encoding='utf-8') as f:
                 json.dump(data, f, indent=4)
             return True
-        except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error saving cookies: {str(e)}[/]",
-                style="bold red"
-            ))
+        except Exception:
             return False
 
     def _extract_user_info(self, cookie_str: str) -> Tuple[str, str]:
@@ -118,11 +111,7 @@ class CookieManager:
         """Check if there are any stored cookies."""
         try:
             return bool(self.cookies)
-        except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error checking cookies: {str(e)}[/]",
-                style="bold red"
-            ))
+        except Exception:
             return False
 
     def add_cookie(self, cookie: str) -> Tuple[bool, str]:
@@ -131,18 +120,10 @@ class CookieManager:
             cookie = cookie.strip()
             valid, message = self._validate_cookie(cookie)
             if not valid:
-                console.print(Panel(
-                    f"[bold white]❗ {message}[/]",
-                    style="bold red"
-                ))
                 return False, message
 
             user_id, name = self._extract_user_info(cookie)
             if user_id == 'unknown':
-                console.print(Panel(
-                    "[bold white]❌ Could not extract user ID from cookie[/]",
-                    style="bold red"
-                ))
                 return False, "Could not extract user ID from cookie"
 
             account_data = {
@@ -160,67 +141,37 @@ class CookieManager:
                 if existing['user_id'] == user_id:
                     self.cookies[idx] = account_data
                     if self.save_cookies():
-                        console.print(Panel(
-                            f"[bold green]✅ Updated existing account: {name}[/]",
-                            style="bold green"
-                        ))
                         return True, f"Updated existing account: {name}"
                     return False, "Failed to save cookie data"
 
             self.cookies.append(account_data)
             if self.save_cookies():
-                console.print(Panel(
-                    f"[bold green]✅ Added new account: {name}[/]",
-                    style="bold green"
-                ))
                 return True, f"Added new account: {name}"
             return False, "Failed to save cookie data"
 
         except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error adding cookie: {str(e)}[/]",
-                style="bold red"
-            ))
             return False, f"Error adding cookie: {str(e)}"
 
     def get_all_accounts(self) -> List[Dict]:
         """Get list of all stored accounts."""
         try:
             return self.cookies
-        except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error getting accounts: {str(e)}[/]",
-                style="bold red"
-            ))
+        except Exception:
             return []
 
     def get_active_accounts(self) -> List[Dict]:
         """Get list of active accounts."""
         try:
             return [acc for acc in self.cookies if acc.get('status') == 'active']
-        except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error getting active accounts: {str(e)}[/]",
-                style="bold red"
-            ))
+        except Exception:
             return []
 
     def remove_cookie(self, account: Dict) -> bool:
         """Remove a cookie from storage."""
         try:
             self.cookies = [c for c in self.cookies if c['id'] != account['id']]
-            if self.save_cookies():
-                console.print(Panel(
-                    f"[bold green]✅ Successfully removed account: {account['name']}[/]",
-                    style="bold green"
-                ))
-                return True
-            return False
-        except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error removing cookie: {str(e)}[/]",
-                style="bold red"
-            ))
+            return self.save_cookies()
+        except Exception:
             return False
 
     def get_cookie(self, user_id: str) -> Optional[Dict]:
@@ -230,11 +181,7 @@ class CookieManager:
                 if account['user_id'] == user_id:
                     return account
             return None
-        except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error getting cookie: {str(e)}[/]",
-                style="bold red"
-            ))
+        except Exception:
             return None
 
     def update_last_used(self, user_id: str) -> bool:
@@ -245,11 +192,7 @@ class CookieManager:
                     account['last_used'] = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
                     return self.save_cookies()
             return False
-        except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error updating last used: {str(e)}[/]",
-                style="bold red"
-            ))
+        except Exception:
             return False
 
     def format_cookie_display(self, cookie: str) -> str:
@@ -294,11 +237,7 @@ class CookieManager:
             
             console.print(table)
             return status_report
-        except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error validating cookies: {str(e)}[/]",
-                style="bold red"
-            ))
+        except Exception:
             return []
 
     def get_cookie_info(self, cookie: str) -> Dict:
@@ -318,8 +257,4 @@ class CookieManager:
                 'checked_by': self.current_user
             }
         except Exception as e:
-            console.print(Panel(
-                f"[bold white]❌ Error getting cookie info: {str(e)}[/]",
-                style="bold red"
-            ))
             return {'error': str(e)}
