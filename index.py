@@ -130,7 +130,7 @@ class FacebookMonoToolkit:
             self.display_banner()
             console.print(Panel(
                 "[bold yellow]🔑 Cookie Management[/]",
-                style="bold white"
+                style="bold yellow"
             ))
             
             # Always show all menu options
