@@ -81,7 +81,7 @@ class FacebookMonoToolkit:
             
             if self.current_account:
                 console.print(Panel(
-                    f"[bold green]👤 Current Account: {self.current_account['name']}[/]", 
+                    f"[bold green] Current Account: {self.current_account['name']}[/]", 
                     style="bold green"
                 ))
 
