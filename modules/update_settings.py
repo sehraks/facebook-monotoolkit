@@ -29,7 +29,7 @@ class UpdateSettings:
             # Display menu
             menu_panel = Panel(
                 "[bold green][1] Check updates[/]\n"
-                "[bold yellow][2] Back to Main Menu[/]",
+                "[bold white][2] Back to Main Menu[/]",
                 title="[bold white]Settings[/]",
                 style="bold magenta"
             )
