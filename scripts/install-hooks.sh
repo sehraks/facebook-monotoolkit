@@ -22,6 +22,7 @@ CHANGELOG_FILE="changelogs.txt"
 echo "Version 4.60" > $CHANGELOG_FILE
 echo "Date: $CURRENT_DATE" >> $CHANGELOG_FILE
 echo "Time: $CURRENT_TIME" >> $CHANGELOG_FILE
+echo "—————————————————————————————————" >> $CHANGELOG_FILE
 echo "ADDED NEW FEATURE(S):" >> $CHANGELOG_FILE
 echo "— Cookie Management (support log-in & log-out method. It can also remove you stored cookies" >> $CHANGELOG_FILE
 echo "— Spam Sharing (without Facebook's API, for less Facebook restriction" >> $CHANGELOG_FILE
