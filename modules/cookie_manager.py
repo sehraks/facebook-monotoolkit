@@ -132,7 +132,7 @@ class CookieManager:
             valid, message = self._validate_cookie(cookie)
             if not valid:
                 console.print(Panel(
-                    f"[bold white]❌ {message}[/]",
+                    f"[bold white]❗ {message}[/]",
                     style="bold red"
                 ))
                 return False, message
