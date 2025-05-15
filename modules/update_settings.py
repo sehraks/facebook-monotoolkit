@@ -150,7 +150,9 @@ class UpdateSettings:
                     console.print(Panel("Update cancelled by user.", style="bold yellow"))
             else:
                 # Only show no updates message when there are truly no updates
-                console.print(Panel("✨ No updates available", style="bold red"))
+                console.print(Panel(
+                    "[bold white]✨ No updates available.[/]", 
+                    style="bold red"
 
         except subprocess.CalledProcessError as e:
             console.print(Panel(f"❌ Update failed: {str(e)}", style="bold red"))
