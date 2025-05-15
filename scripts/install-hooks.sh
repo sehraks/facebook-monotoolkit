@@ -19,7 +19,7 @@ sed -i "s/self\.CURRENT_USER = \".*\"/self.CURRENT_USER = \"Cerax\"/" index.py
 
 # Add change logs
 CHANGELOG_FILE="changelogs.txt"
-echo "  ℹ️ Version 4.55" > $CHANGELOG_FILE
+echo "  ℹ️ Version 4.57" > $CHANGELOG_FILE
 echo "  🗓️ Date: $CURRENT_DATE" >> $CHANGELOG_FILE
 echo "  🕓 Time: $CURRENT_TIME" >> $CHANGELOG_FILE
 echo "  ADDED NEW FEATURE(S):" >> $CHANGELOG_FILE
