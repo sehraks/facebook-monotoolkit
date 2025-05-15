@@ -62,7 +62,7 @@ class CookieManager:
                         self.cookies = data if isinstance(data, list) else []
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error loading cookies: {str(e)}[/]",
+                f"[bold white]❌ Error loading cookies: {str(e)}[/]",
                 style="bold red"
             ))
             self.cookies = []
@@ -82,7 +82,7 @@ class CookieManager:
             return True
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error saving cookies: {str(e)}[/]",
+                f"[bold white]❌ Error saving cookies: {str(e)}[/]",
                 style="bold red"
             ))
             return False
@@ -120,7 +120,7 @@ class CookieManager:
             return bool(self.cookies)
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error checking cookies: {str(e)}[/]",
+                f"[bold white]❌ Error checking cookies: {str(e)}[/]",
                 style="bold red"
             ))
             return False
@@ -132,7 +132,7 @@ class CookieManager:
             valid, message = self._validate_cookie(cookie)
             if not valid:
                 console.print(Panel(
-                    f"[bold red]❌ {message}[/]",
+                    f"[bold white]❌ {message}[/]",
                     style="bold red"
                 ))
                 return False, message
@@ -140,7 +140,7 @@ class CookieManager:
             user_id, name = self._extract_user_info(cookie)
             if user_id == 'unknown':
                 console.print(Panel(
-                    "[bold red]❌ Could not extract user ID from cookie[/]",
+                    "[bold white]❌ Could not extract user ID from cookie[/]",
                     style="bold red"
                 ))
                 return False, "Could not extract user ID from cookie"
@@ -178,7 +178,7 @@ class CookieManager:
 
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error adding cookie: {str(e)}[/]",
+                f"[bold white]❌ Error adding cookie: {str(e)}[/]",
                 style="bold red"
             ))
             return False, f"Error adding cookie: {str(e)}"
@@ -189,7 +189,7 @@ class CookieManager:
             return self.cookies
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error getting accounts: {str(e)}[/]",
+                f"[bold white]❌ Error getting accounts: {str(e)}[/]",
                 style="bold red"
             ))
             return []
@@ -200,7 +200,7 @@ class CookieManager:
             return [acc for acc in self.cookies if acc.get('status') == 'active']
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error getting active accounts: {str(e)}[/]",
+                f"[bold white]❌ Error getting active accounts: {str(e)}[/]",
                 style="bold red"
             ))
             return []
@@ -218,7 +218,7 @@ class CookieManager:
             return False
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error removing cookie: {str(e)}[/]",
+                f"[bold white]❌ Error removing cookie: {str(e)}[/]",
                 style="bold red"
             ))
             return False
@@ -232,7 +232,7 @@ class CookieManager:
             return None
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error getting cookie: {str(e)}[/]",
+                f"[bold white]❌ Error getting cookie: {str(e)}[/]",
                 style="bold red"
             ))
             return None
@@ -247,7 +247,7 @@ class CookieManager:
             return False
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error updating last used: {str(e)}[/]",
+                f"[bold white]❌ Error updating last used: {str(e)}[/]",
                 style="bold red"
             ))
             return False
@@ -296,7 +296,7 @@ class CookieManager:
             return status_report
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error validating cookies: {str(e)}[/]",
+                f"[bold white]❌ Error validating cookies: {str(e)}[/]",
                 style="bold red"
             ))
             return []
@@ -319,7 +319,7 @@ class CookieManager:
             }
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Error getting cookie info: {str(e)}[/]",
+                f"[bold white]❌ Error getting cookie info: {str(e)}[/]",
                 style="bold red"
             ))
             return {'error': str(e)}
