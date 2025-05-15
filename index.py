@@ -66,8 +66,8 @@ class FacebookMonoToolkit:
         """Check if cookie is available."""
         if not self.current_account:
             console.print(Panel(
-                "[bold yellow]❕ Please login first using the Manage Cookies option.[/]",
-                style="bold white"
+                "[bold white]❕ Please login first using the Manage Cookies option.[/]",
+                style="bold red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return False
@@ -117,7 +117,7 @@ class FacebookMonoToolkit:
                     "[bold white]❕ Invalid choice! Please try again.[/]", 
                     style="bold red"
                 ))
-                console.input("\nPress Enter to continue...")
+                console.input("[bold white]Press Enter to continue...[/]")
 
     def settings_menu(self):
         """Handle settings menu."""
@@ -161,7 +161,7 @@ class FacebookMonoToolkit:
                 break
             else:
                 console.print(Panel(
-                    "[bold red]❌ Invalid choice! Please try again.[/]", 
+                    "[bold white]❌ Invalid choice! Please try again.[/]", 
                     style="bold red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
@@ -183,8 +183,8 @@ class FacebookMonoToolkit:
         
         if not cookie:
             console.print(Panel(
-                "[bold red]❕ Cookie cannot be empty![/]",
-                style="bold yellow"
+                "[bold white]❕ Cookie cannot be empty![/]",
+                style="bold red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return
@@ -201,8 +201,8 @@ class FacebookMonoToolkit:
         else:
             # Show error message only once
             console.print(Panel(
-                f"[bold red]❕ {message}[/]",
-                style="bold yellow"
+                f"[bold white]❕ {message}[/]",
+                style="bold red"
             ))
         
         Utils.log_activity("Add Cookie", success, message)
@@ -260,13 +260,13 @@ class FacebookMonoToolkit:
                                 ))
                     else:
                         console.print(Panel(
-                            "[bold red]❕ Invalid selection![/]",
-                            style="bold yellow"
+                            "[bold white]❕ Invalid selection![/]",
+                            style="bold red"
                         ))
                 except (ValueError, IndexError):
                     console.print(Panel(
-                        "[bold red]❕ Invalid input![/]",
-                        style="bold yellow"
+                        "[bold white]❕ Invalid input![/]",
+                        style="bold red"
                     ))
             else:
                 try:
@@ -280,18 +280,18 @@ class FacebookMonoToolkit:
                             ))
                         else:
                             console.print(Panel(
-                                "[bold yellow]❕ This account is already selected.[/]",
+                                "[bold white]❕ This account is already selected.[/]",
                                 style="bold yellow"
                             ))
                     else:
                         console.print(Panel(
                             "[bold white]❕ Invalid selection![/]",
-                            style="bold yellow"
+                            style="bold red"
                         ))
                 except ValueError:
                     console.print(Panel(
                         "[bold white]❕ Invalid input![/]",
-                        style="bold yellow"
+                        style="bold red"
                     ))
             
             console.input("[bold white]Press Enter to continue...[/]")
