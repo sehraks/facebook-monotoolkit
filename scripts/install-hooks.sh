@@ -27,6 +27,7 @@ echo "  — Cookie Management (support log-in & log-out method. It can also remo
 echo "  — Spam Sharing (without Facebook's API, for less Facebook restriction" >> $CHANGELOG_FILE
 echo "  — Facebook log-in (API support, soon)" >> $CHANGELOG_FILE
 echo "  — Profile Picture Guard (soon)" >> $CHANGELOG_FILE
+echo "  —————————————————————————————————" >> $CHANGELOG_FILE
 echo "  NEW CHANGES:" >> $CHANGELOG_FILE
 echo "  — fixed minor bugs and errors." >> $CHANGELOG_FILE
 
