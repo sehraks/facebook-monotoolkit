@@ -12,7 +12,7 @@ CURRENT_DATE=$(TZ='Asia/Manila' date '+%B %d, %Y')
 CURRENT_TIME=$(TZ='Asia/Manila' date '+%I:%M %p')
 
 # Update the version and timestamp in index.py
-sed -i "s/self\.VERSION = \".*\"/self.VERSION = \"3.51\"/" index.py
+sed -i "s/self\.VERSION = \".*\"/self.VERSION = \"4.60\"/" index.py              # Changed to 4.60
 sed -i "s/self\.LAST_UPDATED = \".*\"/self.LAST_UPDATED = \"$CURRENT_DATE\"/" index.py
 sed -i "s/self\.CURRENT_TIME = \".*\"/self.CURRENT_TIME = \"$CURRENT_TIME\"/" index.py
 sed -i "s/self\.CURRENT_USER = \".*\"/self.CURRENT_USER = \"Cerax\"/" index.py
