@@ -67,7 +67,7 @@ class FacebookMonoToolkit:
         if not self.current_account:
             console.print(Panel(
                 "[bold yellow]❕ Please login first using the Manage Cookies option.[/]",
-                style="bold yellow"
+                style="bold white"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return False
@@ -86,11 +86,11 @@ class FacebookMonoToolkit:
                 ))
 
             menu_panel = Panel(
-                "[bold yellow][1] 🔑 Manage Cookies[/]\n"
-                "[bold cyan][2] 👥 Spam Sharing Post[/]\n"
-                "[bold white][3]  Settings[/]\n"
-                "[bold red][4] 🚪 Exit[/]",
-                title="[bold white]📋 Main Menu[/]",
+                "[bold yellow][1] Manage Cookies[/]\n"
+                "[bold cyan][2] Spam Sharing Post[/]\n"
+                "[bold white][3] Settings[/]\n"
+                "[bold red][4] Exit[/]",
+                title="[bold white] Main Menu[/]",
                 style="bold magenta"
             )
             console.print(menu_panel)
@@ -114,8 +114,8 @@ class FacebookMonoToolkit:
                 sys.exit(0)
             else:
                 console.print(Panel(
-                    "[bold red]❕ Invalid choice! Please try again.[/]", 
-                    style="bold yellow"
+                    "[bold yellow]❕ Invalid choice! Please try again.[/]", 
+                    style="bold red"
                 ))
                 console.input("\nPress Enter to continue...")
 
@@ -135,9 +135,9 @@ class FacebookMonoToolkit:
             
             # Always show all menu options
             menu_panel = Panel(
-                "[bold yellow][1] 🍪 Enter your cookie[/]\n"
-                "[bold yellow][2] 📰 Cookie Settings and Storage[/]\n"
-                "[bold yellow][3] ↩️ Back to Main Menu[/]",
+                "[bold yellow][1] Enter your cookie[/]\n"
+                "[bold yellow][2] Cookie Settings and Storage[/]\n"
+                "[bold yellow][3] Back to Main Menu[/]",
                 title="[bold white]Cookie Management[/]",
                 style="bold magenta"
             )
@@ -171,7 +171,7 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         console.print(Panel(
-            "[bold yellow]🍪 Add New Cookie[/]",
+            "[bold yellow] Add New Cookie[/]",
             style="bold yellow"
         ))
         
@@ -214,7 +214,7 @@ class FacebookMonoToolkit:
             self.clear_screen()
             self.display_banner()
             console.print(Panel(
-                "[bold yellow]🍪 Cookie Settings and Storage[/]",
+                "[bold yellow] Cookie Settings and Storage[/]",
                 style="bold yellow"
             ))
             
@@ -230,7 +230,7 @@ class FacebookMonoToolkit:
                 console.print(f"[bold red][R{idx}] Remove[/]")
                 console.print()
 
-            console.print("[bold yellow][0] 🔙 Back[/]\n")
+            console.print("[bold white][0] Back[/]\n")
 
             choice = console.input("[bold yellow]Select an option: [/]")
             choice = choice.strip().upper()
@@ -301,7 +301,7 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         console.print(Panel(
-            "[bold cyan]👥 Spam Sharing[/]",
+            "[bold cyan] Spam Sharing[/]",
             style="bold white"
         ))
         
@@ -317,7 +317,7 @@ class FacebookMonoToolkit:
             return
 
         success, share_count = Utils.validate_input(
-            "[bold green]🔢 Number of shares: [/]",
+            "[bold green] Number of shares: [/]",
             int,
             min_val=1,
             max_val=100000
@@ -328,7 +328,7 @@ class FacebookMonoToolkit:
             return
 
         success, delay = Utils.validate_input(
-            "[bold green]⏱️  Delay between shares (seconds): [/]",
+            "[bold green] Delay between shares (seconds): [/]",
             int,
             min_val=1,
             max_val=60
@@ -365,7 +365,7 @@ def main():
         tool = FacebookMonoToolkit()
         tool.main()
     except KeyboardInterrupt:
-        console.print("\n[bold yellow]⚠️ Program interrupted by user.[/]")
+        console.print("\n[bold yellow]❕ Program interrupted by user.[/]")
         sys.exit(0)
     except Exception as e:
         console.print(f"\n[bold red]❌ An unexpected error occurred: {str(e)}[/]")
