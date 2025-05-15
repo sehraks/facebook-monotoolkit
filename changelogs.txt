@@ -1,9 +1,7 @@
-Version 4.50 (May 15, 2025 +8 GMT)
------------------------------------
-• Fixed some bugs regarding duplicate messages
-• Improved update checking system
-• Improved UI and coloring
-• Fixed various bugs and improved performance
-
-Current Date: 2025-05-15 2:41 PM GMT
-Developer: Cerax
+# Create or update changelogs.txt
+echo "- Version 4.53" > changelogs.txt
+echo "  Date: $(TZ='Asia/Manila' date '+%B %d, %Y')" >> changelogs.txt
+echo "  Time: $(TZ='Asia/Manila' date '+%I:%M %p')" >> changelogs.txt
+echo "  • Make some changes on UI and colorings" >> changelogs.txt
+echo "  • Fixed duplicate messages" >> changelogs.txt
+echo "  • Improved the functionality and fixed minor bugs and errors" >> changelogs.txt
