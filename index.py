@@ -66,10 +66,10 @@ class FacebookMonoToolkit:
         """Check if cookie is available."""
         if not self.current_account:
             console.print(Panel(
-                "[bold red]⚠️ Please login first using the Manage Cookies option.[/]",
-                style="bold red"
+                "[bold yellow]❕ Please login first using the Manage Cookies option.[/]",
+                style="bold yellow"
             ))
-            console.input("[bold blue]Press Enter to continue...[/]")
+            console.input("[bold white]Press Enter to continue...[/]")
             return False
         return True
 
@@ -86,11 +86,11 @@ class FacebookMonoToolkit:
                 ))
 
             menu_panel = Panel(
-                "[bold cyan][1] 🔑 Manage Cookies[/]\n"
-                "[bold cyan][2] 📢 Spam Sharing Post[/]\n"
-                "[bold cyan][3] ⚙️ Settings[/]\n"
+                "[bold yellow][1] 🔑 Manage Cookies[/]\n"
+                "[bold cyan][2] 👥 Spam Sharing Post[/]\n"
+                "[bold white][3]  Settings[/]\n"
                 "[bold red][4] 🚪 Exit[/]",
-                title="[bold yellow]📋 Main Menu[/]",
+                title="[bold white]📋 Main Menu[/]",
                 style="bold magenta"
             )
             console.print(menu_panel)
@@ -108,14 +108,14 @@ class FacebookMonoToolkit:
                 self.settings_menu()
             elif choice == "4":
                 console.print(Panel(
-                    "[bold blue]👋 Thank you for using Facebook MonoToolkit![/]", 
-                    style="bold blue"
+                    "[bold cyan]👋 Thank you for using Facebook MonoToolkit![/]", 
+                    style="bold white"
                 ))
                 sys.exit(0)
             else:
                 console.print(Panel(
-                    "[bold red]❌ Invalid choice! Please try again.[/]", 
-                    style="bold red"
+                    "[bold red]❕ Invalid choice! Please try again.[/]", 
+                    style="bold yellow"
                 ))
                 console.input("\nPress Enter to continue...")
 
@@ -129,16 +129,16 @@ class FacebookMonoToolkit:
             self.clear_screen()
             self.display_banner()
             console.print(Panel(
-                "[bold cyan]🔑 Cookie Management[/]",
-                style="bold cyan"
+                "[bold yellow]🔑 Cookie Management[/]",
+                style="bold white"
             ))
             
             # Always show all menu options
             menu_panel = Panel(
-                "[bold cyan][1] 📝 Enter your cookie[/]\n"
-                "[bold cyan][2] ⚙️  Cookie Settings and Storage[/]\n"
-                "[bold yellow][3] 🔙 Back to Main Menu[/]",
-                title="[bold yellow]Cookie Management[/]",
+                "[bold yellow][1] 🍪 Enter your cookie[/]\n"
+                "[bold yellow][2] 📰 Cookie Settings and Storage[/]\n"
+                "[bold yellow][3] ↩️ Back to Main Menu[/]",
+                title="[bold white]Cookie Management[/]",
                 style="bold magenta"
             )
             console.print(menu_panel)
@@ -151,10 +151,10 @@ class FacebookMonoToolkit:
             elif choice == "2":
                 if not self.cookie_manager.has_cookies():
                     console.print(Panel(
-                        "[bold yellow]❕ Enter your cookie first.[/]",
-                        style="yellow"
+                        "[bold red]❕ Enter your cookie first.[/]",
+                        style="bold yellow"
                     ))
-                    console.input("[bold blue]Press Enter to continue...[/]")
+                    console.input("[bold white]Press Enter to continue...[/]")
                     continue
                 self.cookie_settings_menu()
             elif choice == "3":
@@ -164,15 +164,15 @@ class FacebookMonoToolkit:
                     "[bold red]❌ Invalid choice! Please try again.[/]", 
                     style="bold red"
                 ))
-                console.input("\nPress Enter to continue...")
+                console.input("[bold white]Press Enter to continue...[/]")
 
     def add_new_cookie(self):
         """Handle adding a new cookie."""
         self.clear_screen()
         self.display_banner()
         console.print(Panel(
-            "[bold cyan]📝 Add New Cookie[/]",
-            style="bold cyan"
+            "[bold yellow]🍪 Add New Cookie[/]",
+            style="bold yellow"
         ))
         
         console.print("[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
@@ -183,10 +183,10 @@ class FacebookMonoToolkit:
         
         if not cookie:
             console.print(Panel(
-                "[bold red]❌ Cookie cannot be empty![/]",
-                style="bold red"
+                "[bold red]❕ Cookie cannot be empty![/]",
+                style="bold yellow"
             ))
-            console.input("[bold blue]Press Enter to continue...[/]")
+            console.input("[bold white]Press Enter to continue...[/]")
             return
 
         success, message = self.cookie_manager.add_cookie(cookie)
@@ -201,12 +201,12 @@ class FacebookMonoToolkit:
         else:
             # Show error message only once
             console.print(Panel(
-                f"[bold red]❌ {message}[/]",
-                style="bold red"
+                f"[bold red]❕ {message}[/]",
+                style="bold yellow"
             ))
         
         Utils.log_activity("Add Cookie", success, message)
-        console.input("[bold blue]Press Enter to continue...[/]")
+        console.input("[bold white]Press Enter to continue...[/]")
 
     def cookie_settings_menu(self):
         """Handle cookie settings and storage menu."""
@@ -214,8 +214,8 @@ class FacebookMonoToolkit:
             self.clear_screen()
             self.display_banner()
             console.print(Panel(
-                "[bold cyan]⚙️  Cookie Settings and Storage[/]",
-                style="bold cyan"
+                "[bold yellow]🍪 Cookie Settings and Storage[/]",
+                style="bold yellow"
             ))
             
             accounts = self.cookie_manager.get_all_accounts()
@@ -255,18 +255,18 @@ class FacebookMonoToolkit:
                                 ))
                             else:
                                 console.print(Panel(
-                                    "[bold red]❌ Failed to remove account![/]",
-                                    style="bold red"
+                                    "[bold red]❕ Failed to remove account![/]",
+                                    style="bold yellow"
                                 ))
                     else:
                         console.print(Panel(
-                            "[bold red]❌ Invalid selection![/]",
-                            style="bold red"
+                            "[bold red]❕ Invalid selection![/]",
+                            style="bold yellow"
                         ))
                 except (ValueError, IndexError):
                     console.print(Panel(
-                        "[bold red]❌ Invalid input![/]",
-                        style="bold red"
+                        "[bold red]❕ Invalid input![/]",
+                        style="bold yellow"
                     ))
             else:
                 try:
@@ -280,40 +280,40 @@ class FacebookMonoToolkit:
                             ))
                         else:
                             console.print(Panel(
-                                "[bold yellow]⚠️ This account is already selected.[/]",
+                                "[bold yellow]❕ This account is already selected.[/]",
                                 style="bold yellow"
                             ))
                     else:
                         console.print(Panel(
-                            "[bold red]❌ Invalid selection![/]",
-                            style="bold red"
+                            "[bold red]❕ Invalid selection![/]",
+                            style="bold yellow"
                         ))
                 except ValueError:
                     console.print(Panel(
-                        "[bold red]❌ Invalid input![/]",
-                        style="bold red"
+                        "[bold red]❕ Invalid input![/]",
+                        style="bold yellow"
                     ))
             
-            console.input("[bold blue]Press Enter to continue...[/]")
+            console.input("[bold white]Press Enter to continue...[/]")
 
     def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
         self.clear_screen()
         self.display_banner()
         console.print(Panel(
-            "[bold cyan]📢 Spam Sharing[/]",
-            style="bold cyan"
+            "[bold cyan]👥 Spam Sharing[/]",
+            style="bold white"
         ))
         
-        post_url = console.input("[bold green]📌 Enter the Facebook post URL: [/]")
+        post_url = console.input("[bold green]🔗 Enter the Facebook post URL: [/]")
         post_url = post_url.strip()
         
         if not Utils.validate_url(post_url):
             console.print(Panel(
-                "[bold red]❌ Invalid Facebook URL![/]",
-                style="bold red"
+                "[bold red]❕ Invalid Facebook URL![/]",
+                style="bold yellow"
             ))
-            console.input("[bold blue]Press Enter to continue...[/]")
+            console.input("[bold white]Press Enter to continue...[/]")
             return
 
         success, share_count = Utils.validate_input(
@@ -324,7 +324,7 @@ class FacebookMonoToolkit:
         )
         
         if not success:
-            console.input("[bold blue]Press Enter to continue...[/]")
+            console.input("[bold white]Press Enter to continue...[/]")
             return
 
         success, delay = Utils.validate_input(
@@ -335,7 +335,7 @@ class FacebookMonoToolkit:
         )
         
         if not success:
-            console.input("[bold blue]Press Enter to continue...[/]")
+            console.input("[bold white]Press Enter to continue...[/]")
             return
         
         success, message = self.spam_sharing.share_post(
@@ -352,12 +352,12 @@ class FacebookMonoToolkit:
             ))
         else:
             console.print(Panel(
-                f"[bold red]❌ {message}[/]",
-                style="bold red"
+                f"[bold red]❕ {message}[/]",
+                style="bold yellow"
             ))
         
         Utils.log_activity("Share Post", success, message)
-        console.input("[bold blue]Press Enter to continue...[/]")
+        console.input("[bold white]Press Enter to continue...[/]")
 
 def main():
     """Main entry point of the application."""
