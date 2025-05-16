@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: 2025-05-15 17:09:27 +8 GMT
+# Last Modified: May 16, 2025 02:31 PM +8 GMT
 # Author: sehraks
 
 import os
 import subprocess
 import re
+import time
+import shutil
 from datetime import datetime, timezone, timedelta
 from rich.console import Console
 from rich.panel import Panel
@@ -17,7 +19,9 @@ class UpdateSettings:
     def __init__(self, display_banner_func):
         """Initialize with the banner display function."""
         self.display_banner = display_banner_func
-        self.current_time = "2025-05-15 17:09:27"  # Philippines time (GMT+8)
+        # Get current Philippines time (GMT+8)
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        self.current_time = philippines_time.strftime("%I:%M %p")
         self.current_user = "sehraks"
 
     def display_settings_menu(self):
@@ -32,7 +36,8 @@ class UpdateSettings:
                 "[bold green][1] Check updates[/]\n"
                 "[bold white][2] Back to Main Menu[/]",
                 title="[bold white]Settings[/]",
-                style="bold magenta"
+                style="bold magenta",
+                border_style="cyan"
             )
             console.print(menu_panel)
 
@@ -47,7 +52,8 @@ class UpdateSettings:
             else:
                 console.print(Panel(
                     "[bold white]❕ Invalid choice! Please try again.[/]",
-                    style="bold red"
+                    style="bold red",
+                    border_style="red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
 
@@ -78,9 +84,61 @@ class UpdateSettings:
         except FileNotFoundError:
             return None
 
+    def backup_current_data(self):
+        """Create backup of important data before update."""
+        try:
+            backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
+            os.makedirs(backup_dir, exist_ok=True)
+            
+            # Backup cookies and logs
+            for directory in ['cookies-storage', 'logs']:
+                src = directory
+                dst = os.path.join(backup_dir, directory)
+                if os.path.exists(src):
+                    if os.path.exists(dst):
+                        shutil.rmtree(dst)
+                    shutil.copytree(src, dst)
+            
+            return True
+        except Exception as e:
+            console.print(Panel(
+                f"[bold red]Failed to create backup: {str(e)}[/]",
+                style="bold red",
+                border_style="red"
+            ))
+            return False
+
+    def restore_backup(self):
+        """Restore data from backup if update fails."""
+        try:
+            backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
+            if not os.path.exists(backup_dir):
+                return False
+                
+            for directory in ['cookies-storage', 'logs']:
+                src = os.path.join(backup_dir, directory)
+                if os.path.exists(src):
+                    dst = directory
+                    if os.path.exists(dst):
+                        shutil.rmtree(dst)
+                    shutil.copytree(src, dst)
+            
+            return True
+        except Exception:
+            return False
+
     def update_index_values(self):
         """Update version and timestamps in index.py"""
         try:
+            # Wait for files to be available
+            max_attempts = 5
+            for attempt in range(max_attempts):
+                if os.path.exists("changelogs.txt"):
+                    break
+                time.sleep(1)
+            else:
+                return False
+
             # Read current version from changelogs.txt
             with open("changelogs.txt", "r") as f:
                 first_line = f.readline().strip()
@@ -88,8 +146,8 @@ class UpdateSettings:
 
             # Get current Philippines time (GMT+8)
             philippines_time = datetime.now(timezone(timedelta(hours=8)))
-            current_date = philippines_time.strftime("%B %d, %Y +8 GMT")
-            current_time = philippines_time.strftime("%Y-%m-%d %H:%M:%S")
+            current_date = philippines_time.strftime("%B %d, %Y")
+            current_time = philippines_time.strftime("%I:%M %p")
 
             # Read and update index.py
             with open("index.py", "r") as f:
@@ -120,7 +178,7 @@ class UpdateSettings:
             # Update file header
             content = re.sub(
                 r'# Last Modified: .*',
-                f'# Last Modified: {current_time} +8 GMT',
+                f'# Last Modified: {current_date} {current_time} +8 GMT',
                 content
             )
 
@@ -130,12 +188,20 @@ class UpdateSettings:
                 
             return True
         except Exception as e:
-            console.print(f"[bold red]Failed to update index.py: {str(e)}[/]")
+            console.print(Panel(
+                f"[bold red]Failed to update index.py: {str(e)}[/]",
+                style="bold red",
+                border_style="red"
+            ))
             return False
 
     def update_repository(self):
         """Update repository by re-cloning."""
         try:
+            # Backup current data
+            if not self.backup_current_data():
+                raise Exception("Failed to create backup")
+
             home = os.path.expanduser("~")
             repo_path = os.path.join(home, "facebook-monotoolkit")
             
@@ -152,7 +218,21 @@ class UpdateSettings:
                 if not status:
                     console.print(f"Command failed: {cmd}")
                     console.print(f"Error: {output}")
+                    self.restore_backup()
                     raise Exception("Failed to update repository")
+
+            # Wait for files to be ready
+            time.sleep(2)
+
+            # Check if we can access the new files
+            if not os.path.exists(os.path.join(repo_path, "changelogs.txt")):
+                console.print(Panel(
+                    "[bold white]Update successful but requires restart.[/]\n"
+                    "Please restart the tool manually.",
+                    style="bold green",
+                    border_style="green"
+                ))
+                os._exit(0)
 
             # Update index.py values after successful update
             if self.update_index_values():
@@ -160,14 +240,17 @@ class UpdateSettings:
 
             # Get current Philippines time
             philippines_time = datetime.now(timezone(timedelta(hours=8)))
-            current_time = philippines_time.strftime("%Y-%m-%d %H:%M:%S")
+            current_time = philippines_time.strftime("%I:%M %p")
+            current_date = philippines_time.strftime("%B %d, %Y")
             
             # Update success message with current Philippines time
             console.print(Panel(
                 "✅ Update completed! Please restart the tool to apply changes.\n\n"
-                f"Current Date: {current_time} +8 GMT\n"
+                f"Date: {current_date}\n"
+                f"Time: {current_time} GMT+8\n"
                 f"Current User: {self.current_user}",
-                style="bold green"
+                style="bold green",
+                border_style="green"
             ))
             console.print("\n[bold yellow]❕ The program will now exit. Please restart it.[/]")
             
@@ -178,7 +261,8 @@ class UpdateSettings:
         except Exception as e:
             console.print(Panel(
                 f"[bold white]❌ Error during update: {str(e)}[/]",
-                style="bold red"
+                style="bold red",
+                border_style="red"
             ))
             return False
 
@@ -201,12 +285,14 @@ class UpdateSettings:
                 if changelogs:
                     console.print(Panel(
                         f"[bold green]🆕 New updates available!\n\nChange Logs:\n{changelogs}[/]",
-                        style="bold green"
+                        style="bold green",
+                        border_style="green"
                     ))
                 else:
                     console.print(Panel(
                         "[bold green]🆕 New updates available![/]",
-                        style="bold green"
+                        style="bold green",
+                        border_style="green"
                     ))
                 
                 # Ask for user confirmation
@@ -216,7 +302,8 @@ class UpdateSettings:
                         break
                     console.print(Panel(
                         "[bold white]❕ Please enter 'y' for yes or 'n' for no.[/]",
-                        style="bold yellow"
+                        style="bold yellow",
+                        border_style="yellow"
                     ))
                 
                 if choice == 'y':
@@ -224,29 +311,34 @@ class UpdateSettings:
                     if not success:
                         console.print(Panel(
                             "[bold white]❕ Update failed! Please try again.[/]",
-                            style="bold red"
+                            style="bold red",
+                            border_style="red"
                         ))
                 else:
                     console.print(Panel(
                         "[bold white]❕ Update cancelled by user.[/]",
-                        style="bold yellow"
+                        style="bold yellow",
+                        border_style="yellow"
                     ))
             else:
                 # Only show no updates message when there are truly no updates
                 console.print(Panel(
                     "[bold white]✨ No updates available.[/]", 
-                    style="bold red"
+                    style="bold red",
+                    border_style="red"
                 ))
 
         except subprocess.CalledProcessError as e:
             console.print(Panel(
                 f"[bold white]❌ Update failed: {str(e)}[/]",
-                style="bold red"
+                style="bold red",
+                border_style="red"
             ))
         except Exception as e:
             console.print(Panel(
                 f"[bold white]❌ Error: {str(e)}[/]",
-                style="bold red"
+                style="bold red",
+                border_style="red"
             ))
 
         console.input("[bold white]Press Enter to continue...[/]")
