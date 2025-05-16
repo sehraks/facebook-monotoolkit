@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: 2025-05-14 16:02:40 UTC
+# Last Modified: May 16, 2025 02:14 PM +8 GMT
 # Author: sehraks
 
 import os
 import sys
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Optional
 from rich.console import Console
 from rich.panel import Panel
@@ -24,11 +24,21 @@ console = Console()
 class FacebookMonoToolkit:
     def __init__(self):
         """Initialize the Facebook MonoToolkit."""
-        self.VERSION = "3.51"
+        # Read version from changelogs.txt
+        try:
+            with open("changelogs.txt", "r") as f:
+                first_line = f.readline().strip()
+                self.VERSION = first_line.replace("Version ", "")
+        except:
+            self.VERSION = "4.62"  # Fallback version if file read fails
+            
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
-        self.LAST_UPDATED = "May 14, 2025 +8 GMT"
-        self.CURRENT_TIME = "2025-05-14 16:02:40"
+        
+        # Get current Philippines time (GMT+8)
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")
+        self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")
         self.CURRENT_USER = "sehraks"
         
         # Initialize components
@@ -44,7 +54,11 @@ class FacebookMonoToolkit:
         """Initialize necessary directories."""
         directories = ['cookies-storage', 'logs']
         for directory in directories:
-            os.makedirs(directory, exist_ok=True)
+            try:
+                os.makedirs(directory, exist_ok=True)
+                os.chmod(directory, 0o700)  # Secure permissions
+            except Exception as e:
+                console.print(f"[bold red]Error creating directory {directory}: {str(e)}[/]")
 
     def clear_screen(self):
         """Clear the terminal screen."""
@@ -52,13 +66,20 @@ class FacebookMonoToolkit:
 
     def display_banner(self):
         """Display the tool banner."""
+        # Get current Philippines time for display
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        current_time = philippines_time.strftime("%I:%M %p")
+        current_date = philippines_time.strftime("%B %d, %Y")
+        
         banner = Panel(
             f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
             f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
             f"[white]Version: {self.VERSION}[/]\n"
-            f"[white]Last Updated: {self.LAST_UPDATED}[/]",
+            f"[white]Date: {current_date}[/]\n"
+            f"[white]Time: {current_time} GMT+8[/]",
             style="bold magenta",
-            title="[bold yellow]Facebook MonoToolkit[/]"
+            title="[bold yellow]Facebook MonoToolkit[/]",
+            border_style="cyan"
         )
         console.print(banner)
 
@@ -67,7 +88,8 @@ class FacebookMonoToolkit:
         if not self.current_account:
             console.print(Panel(
                 "[bold white]❕ Please login first using the Manage Cookies option.[/]",
-                style="bold red"
+                style="bold red",
+                border_style="red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return False
@@ -81,8 +103,9 @@ class FacebookMonoToolkit:
             
             if self.current_account:
                 console.print(Panel(
-                    f"[bold green] Current Account: {self.current_account['name']}[/]", 
-                    style="bold green"
+                    f"[bold green]Current Account: {self.current_account['name']}[/]", 
+                    style="bold green",
+                    border_style="green"
                 ))
 
             menu_panel = Panel(
@@ -90,8 +113,9 @@ class FacebookMonoToolkit:
                 "[bold cyan][2] Spam Sharing Post[/]\n"
                 "[bold white][3] Settings[/]\n"
                 "[bold red][4] Exit[/]",
-                title="[bold white] Main Menu[/]",
-                style="bold magenta"
+                title="[bold white]Main Menu[/]",
+                style="bold magenta",
+                border_style="cyan"
             )
             console.print(menu_panel)
 
@@ -109,13 +133,15 @@ class FacebookMonoToolkit:
             elif choice == "4":
                 console.print(Panel(
                     "[bold white]👋 Thank you for using Facebook MonoToolkit![/]", 
-                    style="bold cyan"
+                    style="bold cyan",
+                    border_style="cyan"
                 ))
                 sys.exit(0)
             else:
                 console.print(Panel(
                     "[bold white]❕ Invalid choice! Please try again.[/]", 
-                    style="bold red"
+                    style="bold red",
+                    border_style="red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
 
@@ -130,16 +156,17 @@ class FacebookMonoToolkit:
             self.display_banner()
             console.print(Panel(
                 "[bold yellow]🔑 Cookie Management[/]",
-                style="bold yellow"
+                style="bold yellow",
+                border_style="yellow"
             ))
             
-            # Always show all menu options
             menu_panel = Panel(
                 "[bold white][1] Enter your cookie[/]\n"
                 "[bold white][2] Cookie Settings and Storage[/]\n"
                 "[bold white][3] Back to Main Menu[/]",
                 title="[bold white]Cookie Management[/]",
-                style="bold yellow"
+                style="bold yellow",
+                border_style="yellow"
             )
             console.print(menu_panel)
             
@@ -152,7 +179,8 @@ class FacebookMonoToolkit:
                 if not self.cookie_manager.has_cookies():
                     console.print(Panel(
                         "[bold red]❕ Enter your cookie first.[/]",
-                        style="bold yellow"
+                        style="bold yellow",
+                        border_style="yellow"
                     ))
                     console.input("[bold white]Press Enter to continue...[/]")
                     continue
@@ -162,7 +190,8 @@ class FacebookMonoToolkit:
             else:
                 console.print(Panel(
                     "[bold white]❌ Invalid choice! Please try again.[/]", 
-                    style="bold red"
+                    style="bold red",
+                    border_style="red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
 
@@ -171,8 +200,9 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         console.print(Panel(
-            "[bold yellow] Add New Cookie[/]",
-            style="bold yellow"
+            "[bold yellow]Add New Cookie[/]",
+            style="bold yellow",
+            border_style="yellow"
         ))
         
         console.print("[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
@@ -184,7 +214,8 @@ class FacebookMonoToolkit:
         if not cookie:
             console.print(Panel(
                 "[bold white]❕ Cookie cannot be empty![/]",
-                style="bold red"
+                style="bold red",
+                border_style="red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return
@@ -196,13 +227,14 @@ class FacebookMonoToolkit:
                 self.current_account = self.cookie_manager.get_all_accounts()[-1]
             console.print(Panel(
                 "[bold green]✅ Cookie added successfully![/]",
-                style="bold green"
+                style="bold green",
+                border_style="green"
             ))
         else:
-            # Show error message only once
             console.print(Panel(
                 f"[bold white]❕ {message}[/]",
-                style="bold red"
+                style="bold red",
+                border_style="red"
             ))
         
         Utils.log_activity("Add Cookie", success, message)
@@ -214,8 +246,9 @@ class FacebookMonoToolkit:
             self.clear_screen()
             self.display_banner()
             console.print(Panel(
-                "[bold yellow] Cookie Settings and Storage[/]",
-                style="bold yellow"
+                "[bold yellow]Cookie Settings and Storage[/]",
+                style="bold yellow",
+                border_style="yellow"
             ))
             
             accounts = self.cookie_manager.get_all_accounts()
@@ -251,22 +284,26 @@ class FacebookMonoToolkit:
                             if success:
                                 console.print(Panel(
                                     f"[bold green]✅ Successfully removed account: {account_to_remove['name']}[/]",
-                                    style="bold green"
+                                    style="bold green",
+                                    border_style="green"
                                 ))
                             else:
                                 console.print(Panel(
                                     "[bold white]❕ Failed to remove account![/]",
-                                    style="bold yellow"
+                                    style="bold yellow",
+                                    border_style="yellow"
                                 ))
                     else:
                         console.print(Panel(
                             "[bold white]❕ Invalid selection![/]",
-                            style="bold red"
+                            style="bold red",
+                            border_style="red"
                         ))
                 except (ValueError, IndexError):
                     console.print(Panel(
                         "[bold white]❕ Invalid input![/]",
-                        style="bold red"
+                        style="bold red",
+                        border_style="red"
                     ))
             else:
                 try:
@@ -276,22 +313,26 @@ class FacebookMonoToolkit:
                             self.current_account = accounts[choice_idx]
                             console.print(Panel(
                                 f"[bold green]✅ Successfully switched to account: {self.current_account['name']}[/]",
-                                style="bold green"
+                                style="bold green",
+                                border_style="green"
                             ))
                         else:
                             console.print(Panel(
                                 "[bold white]❕ This account is already selected.[/]",
-                                style="bold yellow"
+                                style="bold yellow",
+                                border_style="yellow"
                             ))
                     else:
                         console.print(Panel(
                             "[bold white]❕ Invalid selection![/]",
-                            style="bold red"
+                            style="bold red",
+                            border_style="red"
                         ))
                 except ValueError:
                     console.print(Panel(
                         "[bold white]❕ Invalid input![/]",
-                        style="bold red"
+                        style="bold red",
+                        border_style="red"
                     ))
             
             console.input("[bold white]Press Enter to continue...[/]")
@@ -301,8 +342,9 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         console.print(Panel(
-            "[bold cyan] Spam Sharing[/]",
-            style="bold white"
+            "[bold cyan]Spam Sharing[/]",
+            style="bold white",
+            border_style="cyan"
         ))
         
         post_url = console.input("[bold green]🔗 Enter the Facebook post URL: [/]")
@@ -311,13 +353,14 @@ class FacebookMonoToolkit:
         if not Utils.validate_url(post_url):
             console.print(Panel(
                 "[bold white]❕ Invalid Facebook URL![/]",
-                style="bold red"
+                style="bold red",
+                border_style="red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return
 
         success, share_count = Utils.validate_input(
-            "[bold green] Number of shares: [/]",
+            "[bold green]Number of shares: [/]",
             int,
             min_val=1,
             max_val=100000
@@ -328,7 +371,7 @@ class FacebookMonoToolkit:
             return
 
         success, delay = Utils.validate_input(
-            "[bold green] Delay between shares (seconds): [/]",
+            "[bold green]Delay between shares (seconds): [/]",
             int,
             min_val=1,
             max_val=60
@@ -348,12 +391,14 @@ class FacebookMonoToolkit:
         if success:
             console.print(Panel(
                 f"[bold green]✅ {message}[/]",
-                style="bold green"
+                style="bold green",
+                border_style="green"
             ))
         else:
             console.print(Panel(
                 f"[bold red]❕ {message}[/]",
-                style="bold yellow"
+                style="bold yellow",
+                border_style="yellow"
             ))
         
         Utils.log_activity("Share Post", success, message)
