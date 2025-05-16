@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: May 16, 2025 02:14 PM +8 GMT
+# Last Modified: May 17, 2025 02:46 AM +8 GMT
 # Author: sehraks
 
 import os
 import sys
+import re
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Optional
 from rich.console import Console
@@ -24,11 +25,12 @@ console = Console()
 class FacebookMonoToolkit:
     def __init__(self):
         """Initialize the Facebook MonoToolkit."""
-        # Read version from changelogs.txt
+        # Read version from install-hook.sh
         try:
-            with open("changelogs.txt", "r") as f:
-                first_line = f.readline().strip()
-                self.VERSION = first_line.replace("Version ", "")
+            with open("install-hook.sh", "r") as f:
+                content = f.read()
+                version_match = re.search(r'VERSION="([0-9.]+)"', content)
+                self.VERSION = version_match.group(1) if version_match else "4.62"  # Fallback version
         except:
             self.VERSION = "4.62"  # Fallback version if file read fails
             
@@ -70,6 +72,16 @@ class FacebookMonoToolkit:
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
         current_time = philippines_time.strftime("%I:%M %p")
         current_date = philippines_time.strftime("%B %d, %Y")
+        
+        # Try to read latest version from install-hook.sh
+        try:
+            with open("install-hook.sh", "r") as f:
+                content = f.read()
+                version_match = re.search(r'VERSION="([0-9.]+)"', content)
+                if version_match:
+                    self.VERSION = version_match.group(1)
+        except:
+            pass  # Keep existing version if file read fails
         
         banner = Panel(
             f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
