@@ -8,7 +8,7 @@ cat > .git/hooks/pre-commit << 'HOOK'
 #!/bin/bash
 
 # Version to update (change this when you want to update the version)
-VERSION="4.64"
+VERSION="4.65"
 
 # Get current date and time in Philippines timezone (Asia/Manila)
 CURRENT_DATE=$(TZ='Asia/Manila' date '+%B %d, %Y')
