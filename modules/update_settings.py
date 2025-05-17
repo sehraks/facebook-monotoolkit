@@ -79,7 +79,7 @@ class UpdateSettings:
     def read_version_from_install_hook(self):
         """Read version and other details from install-hook.sh."""
         try:
-            with open("install-hook.sh", "r") as f:
+            with open("install-hooks.sh", "r") as f:
                 content = f.read()
                 
                 # Look for VERSION="X.XX" pattern
@@ -93,7 +93,7 @@ class UpdateSettings:
                 changelog_start = content.find('echo "Version')
                 changelog_end = content.find('HOOK', changelog_start)
                 if changelog_start == -1 or changelog_end == -1:
-                    raise Exception("Changelog content not found in install-hook.sh")
+                    raise Exception("Changelog content not found in install-hooks.sh")
                     
                 changelog_content = content[changelog_start:changelog_end]
                 changelog_lines = [line.strip() for line in changelog_content.split('echo "')[1:]]
@@ -101,7 +101,7 @@ class UpdateSettings:
                 
                 return True, version, changelog_text
         except FileNotFoundError:
-            return False, None, "install-hook.sh not found"
+            return False, None, "install-hooks.sh not found"
         except Exception as e:
             return False, None, str(e)
 
