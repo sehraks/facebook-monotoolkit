@@ -115,39 +115,35 @@ class FacebookMonoToolkit:
                 "[bold white][2] Login your Facebook account[/]\n"
                 "[bold white][3] Spam Sharing Post[/]\n"
                 "[bold white][4] Settings[/]\n"
-                "[bold red][4] Exit[/]",
+                "[bold red][5] Exit[/]",
                 title="[bold white]Main Menu[/]",
                 style="bold magenta",
                 border_style="cyan"
             )
             console.print(menu_panel)
 
-            choice = console.input("[bold yellow]Select an option (1-4): [/]")
+            choice = console.input("[bold yellow]Select an option (1-5): [/]")
             choice = choice.strip()
 
-        if choice == "1":
-            self.add_new_cookie()
-        elif choice == "2":
-            self.facebook_login()  # New method
-        elif choice == "3":
-            if not self.cookie_manager.has_cookies():
+            if choice == "1":
+                self.cookie_management_menu()
+            elif choice == "2":
+                self.facebook_login()  # New method
+            elif choice == "3":
+                if not self.check_cookie_required():
+                    continue
+                self.spam_sharing_menu()
+            elif choice == "4":
+                self.settings_menu()
+            elif choice == "5":
+                break
+            else:
                 console.print(Panel(
-                    "[bold red]❕ Add a cookie or login first.[/]",
-                    style="bold yellow",
-                    border_style="yellow"
+                    "[bold white]❌ Invalid choice! Please try again.[/]", 
+                    style="bold red",
+                    border_style="red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
-                continue
-            self.cookie_settings_menu()
-        elif choice == "4":
-            break
-        else:
-            console.print(Panel(
-                "[bold white]❌ Invalid choice! Please try again.[/]", 
-                style="bold red",
-                border_style="red"
-            ))
-            console.input("[bold white]Press Enter to continue...[/]")
 
     def settings_menu(self):
         """Handle settings menu."""
@@ -165,11 +161,11 @@ class FacebookMonoToolkit:
             ))
 
             if self.current_account:
-            console.print(Panel(
-                f"[bold green]👤 Current Account: {self.current_account['name']} / {self.current_account['user_id']}[/]",
-                style="bold green",
-                border_style="green"
-            ))
+                console.print(Panel(
+                    f"[bold green]👤 Current Account: {self.current_account['name']} / {self.current_account['user_id']}[/]",
+                    style="bold green",
+                    border_style="green"
+                ))
             
             menu_panel = Panel(
                 "[bold white][1] Enter your cookie[/]\n"
@@ -190,86 +186,86 @@ class FacebookMonoToolkit:
             elif choice == "2":
                 self.facebook_login()  # New method
             elif choice == "3":
-                 if not self.cookie_manager.has_cookies():
+                if not self.cookie_manager.has_cookies():
                     console.print(Panel(
-                      "[bold red]❕ Add a cookie or login first.[/]",
-                       style="bold yellow",
-                       border_style="yellow"
+                        "[bold red]❕ Add a cookie or login first.[/]",
+                        style="bold yellow",
+                        border_style="yellow"
+                    ))
+                    console.input("[bold white]Press Enter to continue...[/]")
+                    continue
+                self.cookie_settings_menu()
+            elif choice == "4":
+                break
+            else:
+                console.print(Panel(
+                    "[bold white]❌ Invalid choice! Please try again.[/]", 
+                    style="bold white",
+                    border_style="red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
-                continue
-            self.cookie_settings_menu()
-        elif choice == "4":
-            break
-        else:
-            console.print(Panel(
-                "[bold white]❌ Invalid choice! Please try again.[/]", 
-                style="bold white",
-                border_style="red"
-            ))
-            console.input("[bold white]Press Enter to continue...[/]")
 
     def facebook_login(self):
         """Handle Facebook login functionality."""
-          self.clear_screen()
-          self.display_banner()
-          console.print(Panel(
-            "[bold yellow]Facebook Login[/]",
-           style="bold yellow",
-        border_style="yellow"
-    ))
-    
-    email = console.input("[bold yellow]📧 Enter your email: [/]")
-    password = console.input("[bold yellow]🔑 Enter your password: [/]")
-    
-    # Validate credentials format
-    valid, message = self.fb_login.validate_credentials(email.strip(), password.strip())
-    if not valid:
+        self.clear_screen()
+        self.display_banner()
         console.print(Panel(
-            f"[bold white]❕ {message}[/]",
-            style="bold red",
-            border_style="red"
+            "[bold yellow]Facebook Login[/]",
+            style="bold yellow",
+            border_style="yellow"
         ))
-        console.input("[bold white]Press Enter to continue...[/]")
-        return
-
-    console.print(Panel(
-        "[bold cyan]🔄 Logging in to Facebook...[/]",
-        style="bold cyan",
-        border_style="cyan"
-    ))
-
-    # Attempt login
-    success, message, account_data = self.fb_login.login(email.strip(), password.strip())
-    
-    if success and account_data:
-        # Add account to cookie manager
-        success = self.cookie_manager.add_cookie(account_data['cookie'])[0]
         
-        if success:
-            self.current_account = account_data
+        email = console.input("[bold yellow]📧 Enter your email: [/]")
+        password = console.input("[bold yellow]🔑 Enter your password: [/]")
+        
+        # Validate credentials format
+        valid, message = self.fb_login.validate_credentials(email.strip(), password.strip())
+        if not valid:
             console.print(Panel(
-                f"[bold green]✅ {message}[/]\n"
-                f"[bold green]👤 Account: {account_data['name']} / {account_data['user_id']}[/]",
-                style="bold green",
-                border_style="green"
-            ))
-       else:
-            console.print(Panel(
-                "[bold red]❌ Failed to save account data[/]",
+                f"[bold white]❕ {message}[/]",
                 style="bold red",
                 border_style="red"
             ))
-       else:
-          console.print(Panel(
-            f"[bold red]❌ {message}[/]",
-            style="bold red",
-            border_style="red"
+            console.input("[bold white]Press Enter to continue...[/]")
+            return
+
+        console.print(Panel(
+            "[bold cyan]🔄 Logging in to Facebook...[/]",
+            style="bold cyan",
+            border_style="cyan"
         ))
-    
-    # Log the login attempt
-    self.fb_login.log_login_attempt(email, success, message)
-    console.input("[bold white]Press Enter to continue...[/]")
+
+        # Attempt login
+        success, message, account_data = self.fb_login.login(email.strip(), password.strip())
+        
+        if success and account_data:
+            # Add account to cookie manager
+            success = self.cookie_manager.add_cookie(account_data['cookie'])[0]
+            
+            if success:
+                self.current_account = account_data
+                console.print(Panel(
+                    f"[bold green]✅ {message}[/]\n"
+                    f"[bold green]👤 Account: {account_data['name']} / {account_data['user_id']}[/]",
+                    style="bold green",
+                    border_style="green"
+                ))
+            else:
+                console.print(Panel(
+                    "[bold red]❌ Failed to save account data[/]",
+                    style="bold red",
+                    border_style="red"
+                ))
+        else:
+            console.print(Panel(
+                f"[bold red]❌ {message}[/]",
+                style="bold red",
+                border_style="red"
+            ))
+        
+        # Log the login attempt
+        self.fb_login.log_login_attempt(email, success, message)
+        console.input("[bold white]Press Enter to continue...[/]")
 
     def add_new_cookie(self):
         """Handle adding a new cookie."""
