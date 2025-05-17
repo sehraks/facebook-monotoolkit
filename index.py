@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: May 16, 2025 02:14 PM +8 GMT
+# Last Modified: May 16, 2025 04:40 PM +8 GMT
 # Author: sehraks
 
 import os
@@ -17,6 +17,7 @@ from modules.cookie_manager import CookieManager
 from modules.spam_sharing import SpamSharing
 from modules.utils import Utils
 from modules.update_settings import UpdateSettings
+from modules.fb_login import FacebookLogin
 
 # Initialize rich console
 console = Console()
@@ -45,6 +46,7 @@ class FacebookMonoToolkit:
         self.cookie_manager = CookieManager()
         self.spam_sharing = SpamSharing()
         self.update_settings = UpdateSettings(self.display_banner)
+        self.fb_login = FacebookLogin()  # New component
         self.current_account: Optional[Dict] = None
         
         # Create necessary directories
@@ -159,11 +161,19 @@ class FacebookMonoToolkit:
                 style="bold yellow",
                 border_style="yellow"
             ))
+
+            if self.current_account:
+            console.print(Panel(
+                f"[bold green]👤 Current Account: {self.current_account['name']} / {self.current_account['user_id']}[/]",
+                style="bold green",
+                border_style="green"
+            ))
             
             menu_panel = Panel(
                 "[bold white][1] Enter your cookie[/]\n"
-                "[bold white][2] Cookie Settings and Storage[/]\n"
-                "[bold white][3] Back to Main Menu[/]",
+                "[bold white][2] Login your Facebook account[/]\n"
+                "[bold white][3] Cookie Settings and Storage[/]\n"
+                "[bold white][4] Back to Main Menu[/]",
                 title="[bold white]Cookie Management[/]",
                 style="bold yellow",
                 border_style="yellow"
@@ -176,24 +186,26 @@ class FacebookMonoToolkit:
             if choice == "1":
                 self.add_new_cookie()
             elif choice == "2":
-                if not self.cookie_manager.has_cookies():
-                    console.print(Panel(
-                        "[bold red]❕ Enter your cookie first.[/]",
-                        style="bold yellow",
-                        border_style="yellow"
-                    ))
-                    console.input("[bold white]Press Enter to continue...[/]")
-                    continue
-                self.cookie_settings_menu()
+                self.facebook_login()  # New method
             elif choice == "3":
-                break
-            else:
-                console.print(Panel(
-                    "[bold white]❌ Invalid choice! Please try again.[/]", 
-                    style="bold red",
-                    border_style="red"
+                 if not self.cookie_manager.has_cookies():
+                    console.print(Panel(
+                      "[bold red]❕ Add a cookie or login first.[/]",
+                       style="bold yellow",
+                       border_style="yellow"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
+                continue
+            self.cookie_settings_menu()
+        elif choice == "4":
+            break
+        else:
+            console.print(Panel(
+                "[bold white]❌ Invalid choice! Please try again.[/]", 
+                style="bold white",
+                border_style="red"
+            ))
+            console.input("[bold white]Press Enter to continue...[/]")
 
     def add_new_cookie(self):
         """Handle adding a new cookie."""
@@ -239,6 +251,69 @@ class FacebookMonoToolkit:
         
         Utils.log_activity("Add Cookie", success, message)
         console.input("[bold white]Press Enter to continue...[/]")
+
+
+    def facebook_login(self):
+        """Handle Facebook login functionality."""
+          self.clear_screen()
+          self.display_banner()
+          console.print(Panel(
+            "[bold yellow]Facebook Login[/]",
+           style="bold yellow",
+        border_style="yellow"
+    ))
+    
+    email = console.input("[bold yellow]📧 Enter your email: [/]")
+    password = console.input("[bold yellow]🔑 Enter your password: [/]")
+    
+    # Validate credentials format
+    valid, message = self.fb_login.validate_credentials(email.strip(), password.strip())
+    if not valid:
+        console.print(Panel(
+            f"[bold white]❕ {message}[/]",
+            style="bold red",
+            border_style="red"
+        ))
+        console.input("[bold white]Press Enter to continue...[/]")
+        return
+
+    console.print(Panel(
+        "[bold cyan]🔄 Logging in to Facebook...[/]",
+        style="bold cyan",
+        border_style="cyan"
+    ))
+
+    # Attempt login
+    success, message, account_data = self.fb_login.login(email.strip(), password.strip())
+    
+    if success and account_data:
+        # Add account to cookie manager
+        success = self.cookie_manager.add_cookie(account_data['cookie'])[0]
+        
+        if success:
+            self.current_account = account_data
+            console.print(Panel(
+                f"[bold green]✅ {message}[/]\n"
+                f"[bold green]👤 Account: {account_data['name']} / {account_data['user_id']}[/]",
+                style="bold green",
+                border_style="green"
+            ))
+       else:
+            console.print(Panel(
+                "[bold red]❌ Failed to save account data[/]",
+                style="bold red",
+                border_style="red"
+            ))
+       else:
+          console.print(Panel(
+            f"[bold red]❌ {message}[/]",
+            style="bold red",
+            border_style="red"
+        ))
+    
+    # Log the login attempt
+    self.fb_login.log_login_attempt(email, success, message)
+    console.input("[bold white]Press Enter to continue...[/]")
 
     def cookie_settings_menu(self):
         """Handle cookie settings and storage menu."""
