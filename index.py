@@ -112,30 +112,27 @@ class FacebookMonoToolkit:
 
             menu_panel = Panel(
                 "[bold white][1] Manage Cookies[/]\n"
-                "[bold white][2] Login your Facebook account[/]\n"
-                "[bold white][3] Spam Sharing Post[/]\n"
-                "[bold white][4] Settings[/]\n"
-                "[bold red][5] Exit[/]",
+                "[bold white][2] Spam Sharing Post[/]\n"
+                "[bold white][3] Settings[/]\n"
+                "[bold red][4] Exit[/]",
                 title="[bold white]Main Menu[/]",
                 style="bold magenta",
                 border_style="cyan"
             )
             console.print(menu_panel)
 
-            choice = console.input("[bold yellow]Select an option (1-5): [/]")
+            choice = console.input("[bold yellow]Select an option (1-4): [/]")
             choice = choice.strip()
 
             if choice == "1":
                 self.cookie_management_menu()
             elif choice == "2":
-                self.facebook_login()  # New method
-            elif choice == "3":
                 if not self.check_cookie_required():
                     continue
                 self.spam_sharing_menu()
-            elif choice == "4":
+            elif choice == "3":
                 self.settings_menu()
-            elif choice == "5":
+            elif choice == "4":
                 break
             else:
                 console.print(Panel(
