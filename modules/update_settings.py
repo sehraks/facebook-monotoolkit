@@ -107,7 +107,7 @@ class UpdateSettings:
 
     def sync_changelogs(self):
         """Synchronize changelogs.txt with install-hook.sh content."""
-        success, version, changelog_content = self.read_version_from_install_hook()
+        success, version, changelog_content = self.read_version_from_install_hooks()
         if not success:
             return False, changelog_content
             
