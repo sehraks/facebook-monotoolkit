@@ -1,20 +1,20 @@
 [
     {
-        "id": "a1b2c3d4",
-        "name": "Facebook_100069",
-        "user_id": "100069592175616",
-        "cookie": "datr=mmEUaAZMAsNh-n88Rrg8WHfj; sb=mmEUaMAyrTO9AK4sTNhUVk1X; m_pixel_ratio=3; vpd=v1%3B648x360x3; x-referer=eyJyIjoiL2hvbWUucGhwIiwiaCI6Ii9ob21lLnBocCIsInMiOiJtIn0%3D; ps_l=1; ps_n=1; wd=360x820; dpr=3; locale=en_US; c_user=100069592175616; fr=0HYlmubeLvMQVik5O.AWfxbGJSnRQphcibfCYNEvs77xq5HO0OLKOobssTAGipz7jGsI8.BoFGGa..AAA.0.0.BoIDAH.AWfHr9JCQDztYGacL5-tokVJX-c; xs=19%3AOaBT1ZGItwhC0g%3A2%3A1746939912%3A-1%3A7867; fbl_st=101631460%3BT%3A29117547; wl_cbv=v2%3Bclient_version%3A2815%3Btimestamp%3A1747052827",
-        "added_date": "2025-05-13 05:46:50",
-        "last_used": "2025-05-13 05:46:50",
-        "status": "active"
+        "id": "",
+        "name": "",
+        "user_id": "",
+        "cookie": "",
+        "added_date": "",
+        "last_used": "",
+        "status": ""
     },
     {
-        "id": "e5f6g7h8",
-        "name": "Facebook_100070",
-        "user_id": "100070123456789",
-        "cookie": "datr=nGEUaBZNBtNi-o89Ssh9XIgk; sb=nGEUaNBzsUP0BL5tUOiVWl2Y; locale=en_US; c_user=100070123456789; xs=20%3ABbCU2ZHJuviD1g%3A2%3A1746939912%3A-1%3A8978; fr=1IZlnvcfMwNRWjl6P.AWgyCKToSRqidjcgDZBNFwt88yr6IP1PLLPpcttUBHjqz8kHtJ9.BoFGGb..AAA.0.0.BoIDAI.AWgIs0KDRDzuZHbdM6-uplWKY-d",
-        "added_date": "2025-05-13 05:40:00",
+        "id": "",
+        "name": "",
+        "user_id": "",
+        "cookie": "",
+        "added_date": "",
         "last_used": null,
-        "status": "active"
+        "status": ""
     }
 ]
