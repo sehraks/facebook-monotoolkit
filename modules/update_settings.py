@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 17, 2025 12:12 PM +8 GMT
+# Last Modified: May 17, 2025 12:34 PM +8 GMT
 # Author: sehraks
 
 import os
@@ -162,23 +162,33 @@ class UpdateSettings:
 
     def initialize_empty_cookies_storage(self, repo_path):
         """Initialize empty cookies storage with proper structure."""
-        cookies_dir = os.path.join(repo_path, "cookies-storage")
-        cookies_file = os.path.join(cookies_dir, "cookies.json")
-        
-        # Create directory if it doesn't exist
-        os.makedirs(cookies_dir, exist_ok=True)
-        
-        # Create empty cookies file with proper structure
-        empty_data = {
-            "cookies": [],
-            "metadata": {
-                "last_update": datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S"),
-                "updated_by": self.current_user
+        try:
+            # Make sure the cookies-storage directory exists
+            cookies_dir = os.path.join(repo_path, "cookies-storage")
+            cookies_file = os.path.join(cookies_dir, "cookies.json")
+            
+            # Remove existing cookies directory and its contents if it exists
+            if os.path.exists(cookies_dir):
+                shutil.rmtree(cookies_dir)
+            
+            # Create fresh directory
+            os.makedirs(cookies_dir, exist_ok=True)
+            
+            # Create empty cookies file with proper structure
+            empty_data = {
+                "cookies": [],  # Completely empty cookies list
+                "metadata": {
+                    "last_update": datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S"),
+                    "updated_by": self.current_user
+                }
             }
-        }
-        
-        with open(cookies_file, 'w') as f:
-            json.dump(empty_data, f, indent=4)
+            
+            # Write the empty structure to cookies.json
+            with open(cookies_file, 'w') as f:
+                json.dump(empty_data, f, indent=4)
+                
+        except Exception as e:
+            raise Exception(f"Failed to initialize cookies storage: {str(e)}")
 
     def update_index_values(self):
         """Update version and timestamps in index.py"""
@@ -239,11 +249,12 @@ class UpdateSettings:
                     content
                 )
 
-                # Update file header
+                # Update file header with fixed regex pattern
                 content = re.sub(
-                    r'# Last Modified: .*',
+                    r'# Last Modified:.*$',  # Add $ to match end of line
                     f'# Last Modified: {current_date} {current_time} +8 GMT',
-                    content
+                    content,
+                    flags=re.MULTILINE  # Add multiline flag to handle line endings
                 )
 
                 # Write back to index.py
