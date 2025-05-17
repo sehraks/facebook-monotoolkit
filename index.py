@@ -1,421 +1,453 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# File: index.py
-# Last Modified: May 16, 2025 02:14 PM +8 GMT
+# File: modules/update_settings.py
+# Last Modified: May 17, 2025 12:23 PM +8 GMT
 # Author: sehraks
 
 import os
-import sys
+import subprocess
+import re
+import time
+import shutil
+import json
 from datetime import datetime, timezone, timedelta
-from typing import Dict, Optional
 from rich.console import Console
 from rich.panel import Panel
-from rich.table import Table
+from rich.progress import Progress, TextColumn, BarColumn
 
-# Import local modules
-from modules.cookie_manager import CookieManager
-from modules.spam_sharing import SpamSharing
-from modules.utils import Utils
-from modules.update_settings import UpdateSettings
-
-# Initialize rich console
 console = Console()
 
-class FacebookMonoToolkit:
-    def __init__(self):
-        """Initialize the Facebook MonoToolkit."""
-        # Read version from changelogs.txt
-        try:
-            with open("changelogs.txt", "r") as f:
-                first_line = f.readline().strip()
-                self.VERSION = first_line.replace("Version ", "")
-        except:
-            self.VERSION = "4.62"  # Fallback version if file read fails
-            
-        self.ORIGINAL_AUTHOR = "Greegmon"
-        self.MODIFIED_BY = "Cerax"
-        
+class UpdateSettings:
+    def __init__(self, display_banner_func):
+        """Initialize with the banner display function."""
+        self.display_banner = display_banner_func
         # Get current Philippines time (GMT+8)
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
-        self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")
-        self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")
-        self.CURRENT_USER = "sehraks"
-        
-        # Initialize components
-        self.cookie_manager = CookieManager()
-        self.spam_sharing = SpamSharing()
-        self.update_settings = UpdateSettings(self.display_banner)
-        self.current_account: Optional[Dict] = None
-        
-        # Create necessary directories
-        self._init_directories()
+        self.current_time = philippines_time.strftime("%I:%M %p")
+        self.current_user = "sehraks"
 
-    def _init_directories(self):
-        """Initialize necessary directories."""
-        directories = ['cookies-storage', 'logs']
-        for directory in directories:
-            try:
-                os.makedirs(directory, exist_ok=True)
-                os.chmod(directory, 0o700)  # Secure permissions
-            except Exception as e:
-                console.print(f"[bold red]Error creating directory {directory}: {str(e)}[/]")
-
-    def clear_screen(self):
-        """Clear the terminal screen."""
-        os.system('cls' if os.name == 'nt' else 'clear')
-
-    def display_banner(self):
-        """Display the tool banner."""
-        # Get current Philippines time for display
-        philippines_time = datetime.now(timezone(timedelta(hours=8)))
-        current_time = philippines_time.strftime("%I:%M %p")
-        current_date = philippines_time.strftime("%B %d, %Y")
-        
-        banner = Panel(
-            f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
-            f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
-            f"[white]Version: {self.VERSION}[/]\n"
-            f"[white]Date: {current_date}[/]\n"
-            f"[white]Time: {current_time} GMT+8[/]",
-            style="bold magenta",
-            title="[bold yellow]Facebook MonoToolkit[/]",
-            border_style="cyan"
-        )
-        console.print(banner)
-
-    def check_cookie_required(self):
-        """Check if cookie is available."""
-        if not self.current_account:
-            console.print(Panel(
-                "[bold white]❕ Please login first using the Manage Cookies option.[/]",
-                style="bold red",
-                border_style="red"
-            ))
-            console.input("[bold white]Press Enter to continue...[/]")
-            return False
-        return True
-
-    def main(self):
-        """Display and handle the main menu."""
+    def display_settings_menu(self):
+        """Display and handle settings menu."""
         while True:
-            self.clear_screen()
+            # Clear screen and show banner
+            os.system('clear')
             self.display_banner()
-            
-            if self.current_account:
-                console.print(Panel(
-                    f"[bold green]Current Account: {self.current_account['name']}[/]", 
-                    style="bold green",
-                    border_style="green"
-                ))
 
+            # Display menu
             menu_panel = Panel(
-                "[bold yellow][1] Manage Cookies[/]\n"
-                "[bold cyan][2] Spam Sharing Post[/]\n"
-                "[bold white][3] Settings[/]\n"
-                "[bold red][4] Exit[/]",
-                title="[bold white]Main Menu[/]",
+                "[bold green][1] Check updates[/]\n"
+                "[bold white][2] Back to Main Menu[/]",
+                title="[bold white]Settings[/]",
                 style="bold magenta",
                 border_style="cyan"
             )
             console.print(menu_panel)
 
-            choice = console.input("[bold yellow]Select an option (1-4): [/]")
-            choice = choice.strip()
+            # Get user choice
+            choice = console.input("[bold yellow]Select an option (1-2): [/]")
 
+            # Handle user choice
             if choice == "1":
-                self.cookie_management_menu()
+                self.check_updates()
             elif choice == "2":
-                if not self.check_cookie_required():
-                    continue
-                self.spam_sharing_menu()
-            elif choice == "3":
-                self.settings_menu()
-            elif choice == "4":
-                console.print(Panel(
-                    "[bold white]👋 Thank you for using Facebook MonoToolkit![/]", 
-                    style="bold cyan",
-                    border_style="cyan"
-                ))
-                sys.exit(0)
+                break
             else:
                 console.print(Panel(
-                    "[bold white]❕ Invalid choice! Please try again.[/]", 
+                    "[bold white]❕ Invalid choice! Please try again.[/]",
                     style="bold red",
                     border_style="red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
 
-    def settings_menu(self):
-        """Handle settings menu."""
-        self.update_settings.display_settings_menu()
+    def run_command(self, command):
+        """Run a shell command and return its status and output."""
+        try:
+            process = subprocess.run(command, shell=True, check=True, capture_output=True, text=True)
+            return True, process.stdout
+        except subprocess.CalledProcessError as e:
+            return False, e.stderr
 
-    def cookie_management_menu(self):
-        """Handle cookie management menu."""
-        while True:
-            self.clear_screen()
-            self.display_banner()
+    def check_for_updates(self):
+        """Check if updates are available."""
+        if not self.run_command("git fetch origin")[0]:
+            return False, "Failed to fetch updates"
+        
+        status, output = self.run_command("git rev-list HEAD..origin/main --count")
+        if not status:
+            return False, "Failed to check update status"
+        
+        return int(output.strip()) > 0, output.strip()
+
+    def show_changelogs(self):
+        """Show changelog content if available."""
+        try:
+            repo_path = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit")
+            changelog_path = os.path.join(repo_path, "changelogs.txt")
+            with open(changelog_path, "r") as f:
+                return f.read().strip()
+        except FileNotFoundError:
+            return None
+
+    def backup_current_data(self):
+        """Create backup of important data before update."""
+        with Progress(
+            TextColumn("[bold blue]{task.description}"),
+            BarColumn(),
+            TextColumn("[bold blue]{task.percentage:>3.0f}%")
+        ) as progress:
+            backup_task = progress.add_task("📦 Creating backup...", total=100)
+            
+            try:
+                backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
+                os.makedirs(backup_dir, exist_ok=True)
+                progress.update(backup_task, advance=30)
+
+                # Only backup logs directory, skip cookies
+                directory = 'logs'
+                src = directory
+                dst = os.path.join(backup_dir, directory)
+                if os.path.exists(src):
+                    if os.path.exists(dst):
+                        shutil.rmtree(dst)
+                    shutil.copytree(src, dst)
+                progress.update(backup_task, advance=70)
+
+                progress.update(backup_task, completed=100)
+                progress.update(backup_task, description="✅ Backup complete!")
+                time.sleep(0.5)
+                return True
+
+            except Exception as e:
+                progress.update(backup_task, description="❌ Backup failed!")
+                console.print(Panel(
+                    f"[bold red]Failed to create backup: {str(e)}[/]",
+                    style="bold red",
+                    border_style="red"
+                ))
+                return False
+
+    def restore_backup(self):
+        """Restore data from backup if update fails."""
+        with Progress(
+            TextColumn("[bold blue]{task.description}"),
+            BarColumn(),
+            TextColumn("[bold blue]{task.percentage:>3.0f}%")
+        ) as progress:
+            restore_task = progress.add_task("🔄 Restoring backup...", total=100)
+            
+            try:
+                backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
+                if not os.path.exists(backup_dir):
+                    progress.update(restore_task, description="❌ No backup found!")
+                    return False
+
+                # Only restore logs directory, skip cookies
+                directory = 'logs'
+                src = os.path.join(backup_dir, directory)
+                if os.path.exists(src):
+                    dst = directory
+                    if os.path.exists(dst):
+                        shutil.rmtree(dst)
+                    shutil.copytree(src, dst)
+                progress.update(restore_task, advance=100)
+
+                progress.update(restore_task, completed=100)
+                progress.update(restore_task, description="✅ Restore complete!")
+                time.sleep(0.5)
+                return True
+
+            except Exception:
+                progress.update(restore_task, description="❌ Restore failed!")
+                return False
+
+    def initialize_empty_cookies_storage(self, repo_path):
+        """Initialize empty cookies storage with proper structure."""
+        try:
+            # Make sure the cookies-storage directory exists
+            cookies_dir = os.path.join(repo_path, "cookies-storage")
+            cookies_file = os.path.join(cookies_dir, "cookies.json")
+            
+            # Remove existing cookies directory and its contents if it exists
+            if os.path.exists(cookies_dir):
+                shutil.rmtree(cookies_dir)
+            
+            # Create fresh directory
+            os.makedirs(cookies_dir, exist_ok=True)
+            
+            # Create empty cookies file with proper structure
+            empty_data = {
+                "cookies": [],  # Completely empty cookies list
+                "metadata": {
+                    "last_update": datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S"),
+                    "updated_by": self.current_user
+                }
+            }
+            
+            # Write the empty structure to cookies.json
+            with open(cookies_file, 'w') as f:
+                json.dump(empty_data, f, indent=4)
+                
+        except Exception as e:
+            raise Exception(f"Failed to initialize cookies storage: {str(e)}")
+
+    def update_index_values(self):
+        """Update version and timestamps in index.py"""
+        with Progress(
+            TextColumn("[bold blue]{task.description}")
+        ) as progress:
+            update_task = progress.add_task("🔄 Updating index.py values...")
+            
+            try:
+                # Get the correct path to changelogs.txt
+                repo_path = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit")
+                changelog_path = os.path.join(repo_path, "changelogs.txt")
+                
+                # Wait for files to be available
+                max_attempts = 5
+                for attempt in range(max_attempts):
+                    if os.path.exists(changelog_path):
+                        break
+                    time.sleep(1)
+                else:
+                    progress.update(update_task, description="❌ Failed to find changelogs.txt")
+                    return False
+
+                # Read current version from changelogs.txt
+                with open(changelog_path, "r") as f:
+                    first_line = f.readline().strip()
+                    version = first_line.replace("Version ", "")
+
+                # Get current Philippines time (GMT+8)
+                philippines_time = datetime.now(timezone(timedelta(hours=8)))
+                current_date = philippines_time.strftime("%B %d, %Y")
+                current_time = philippines_time.strftime("%I:%M %p")
+
+                # Read and update index.py
+                index_path = os.path.join(repo_path, "index.py")
+                with open(index_path, "r") as f:
+                    content = f.read()
+
+                # Update the values using regex
+                content = re.sub(
+                    r'self\.VERSION = \".*\"',
+                    f'self.VERSION = "{version}"',
+                    content
+                )
+                content = re.sub(
+                    r'self\.LAST_UPDATED = \".*\"',
+                    f'self.LAST_UPDATED = "{current_date}"',
+                    content
+                )
+                content = re.sub(
+                    r'self\.CURRENT_TIME = \".*\"',
+                    f'self.CURRENT_TIME = "{current_time}"',
+                    content
+                )
+                content = re.sub(
+                    r'self\.CURRENT_USER = \".*\"',
+                    f'self.CURRENT_USER = "{self.current_user}"',
+                    content
+                )
+
+                # Update file header
+                content = re.sub(
+                    r'# Last Modified: .*',
+                    f'# Last Modified: {current_date} {current_time} +8 GMT',
+                    content
+                )
+
+                # Write back to index.py
+                with open(index_path, "w") as f:
+                    f.write(content)
+
+                progress.update(update_task, description="✅ Index.py updated successfully!")
+                time.sleep(0.5)
+                return True
+
+            except Exception as e:
+                progress.update(update_task, description=f"❌ Failed to update index.py: {str(e)}")
+                return False
+
+    def update_repository(self):
+        """Update repository by re-cloning."""
+        try:
+            # Only backup logs, not cookies
+            if not self.backup_current_data():
+                raise Exception("Failed to create backup")
+
+            home = os.path.expanduser("~")
+            repo_path = os.path.join(home, "facebook-monotoolkit")
+
+            # Create a progress bar for the update process
+            with Progress(
+                TextColumn("[bold blue]{task.description}"),
+                BarColumn(),
+                TextColumn("[bold blue]{task.percentage:>3.0f}%")
+            ) as progress:
+                download_task = progress.add_task("📥 Downloading latest changes...", total=100)
+                
+                # Remove the entire repository
+                if os.path.exists(repo_path):
+                    shutil.rmtree(repo_path)
+                progress.update(download_task, advance=25)
+
+                # Clone the fresh repository
+                status, output = self.run_command(f"cd {home} && git clone https://github.com/sehraks/facebook-monotoolkit.git")
+                if not status:
+                    progress.update(download_task, description="❌ Download failed!")
+                    console.print(f"Error: {output}")
+                    self.restore_backup()
+                    raise Exception("Failed to clone repository")
+                progress.update(download_task, advance=25)
+
+                # Set permissions
+                status, output = self.run_command(f"cd {repo_path} && chmod +x index.py && chmod +x modules/*.py")
+                if not status:
+                    progress.update(download_task, description="❌ Permission setting failed!")
+                    console.print(f"Error: {output}")
+                    raise Exception("Failed to set permissions")
+                progress.update(download_task, advance=25)
+
+                # Initialize empty cookies storage
+                try:
+                    self.initialize_empty_cookies_storage(repo_path)
+                except Exception as e:
+                    progress.update(download_task, description="❌ Failed to initialize cookies storage!")
+                    raise Exception(f"Failed to initialize cookies storage: {str(e)}")
+                progress.update(download_task, advance=25)
+
+                # Complete the progress bar
+                progress.update(download_task, completed=100)
+                progress.update(download_task, description="✅ Download complete!")
+                time.sleep(0.5)
+
+            # Wait for files to be ready
+            time.sleep(1)
+
+            # Check if we can access the new files
+            if not os.path.exists(os.path.join(repo_path, "changelogs.txt")):
+                console.print(Panel(
+                    "[bold white]Update successful but requires restart.[/]\n"
+                    "Please restart the tool manually.",
+                    style="bold green",
+                    border_style="green"
+                ))
+                os._exit(0)
+
+            # Update index.py values after successful update
+            if self.update_index_values():
+                console.print("[bold green]✅ Successfully updated index.py values[/]")
+
+            # Get current Philippines time
+            philippines_time = datetime.now(timezone(timedelta(hours=8)))
+            current_time = philippines_time.strftime("%I:%M %p")
+            current_date = philippines_time.strftime("%B %d, %Y")
+
+            # Update success message with current Philippines time
             console.print(Panel(
-                "[bold yellow]🔑 Cookie Management[/]",
-                style="bold yellow",
-                border_style="yellow"
+                "✅ Update completed! Please restart the tool to apply changes.\n\n"
+                f"Date: {current_date}\n"
+                f"Time: {current_time} GMT+8\n"
+                f"Current User: {self.current_user}",
+                style="bold green",
+                border_style="green"
             ))
-            
-            menu_panel = Panel(
-                "[bold white][1] Enter your cookie[/]\n"
-                "[bold white][2] Cookie Settings and Storage[/]\n"
-                "[bold white][3] Back to Main Menu[/]",
-                title="[bold white]Cookie Management[/]",
-                style="bold yellow",
-                border_style="yellow"
-            )
-            console.print(menu_panel)
-            
-            choice = console.input("[bold yellow]Select an option: [/]")
-            choice = choice.strip()
+            console.print("\n[bold yellow]❕ The program will now exit. Please restart it.[/]")
 
-            if choice == "1":
-                self.add_new_cookie()
-            elif choice == "2":
-                if not self.cookie_manager.has_cookies():
+            # Force exit to ensure clean restart
+            os._exit(0)
+
+            return True
+        except Exception as e:
+            console.print(Panel(
+                f"[bold white]❌ Error during update: {str(e)}[/]",
+                style="bold red",
+                border_style="red"
+            ))
+            return False
+
+    def check_updates(self):
+        """Check for updates using Git"""
+        try:
+            # Clear screen and show banner
+            os.system('clear')
+            self.display_banner()
+
+            # Check for updates with simple progress
+            with Progress(
+                TextColumn("[bold blue]{task.description}")
+            ) as progress:
+                check_task = progress.add_task("🔄 Checking for updates...")
+                
+                # Perform the actual update check
+                has_updates, update_count = self.check_for_updates()
+                
+                # Complete the task without changing the message
+                progress.update(check_task, completed=True)
+                
+                # Small delay for visual feedback
+                time.sleep(0.5)
+
+            if has_updates:
+                # Show changelog if available
+                changelogs = self.show_changelogs()
+                if changelogs:
                     console.print(Panel(
-                        "[bold red]❕ Enter your cookie first.[/]",
+                        f"[bold green]🆕 New updates available!\n\nChange Logs:\n{changelogs}[/]",
+                        style="bold green",
+                        border_style="green"
+                    ))
+                else:
+                    console.print(Panel(
+                        "[bold green]🆕 New updates available![/]",
+                        style="bold green",
+                        border_style="green"
+                    ))
+
+                # Ask for user confirmation
+                while True:
+                    choice = console.input("\n[bold yellow]Do you want to update it now? (y/n): [/]").lower()
+                    if choice in ['y', 'n']:
+                        break
+                    console.print(Panel(
+                        "[bold white]❕ Please enter 'y' for yes or 'n' for no.[/]",
                         style="bold yellow",
                         border_style="yellow"
                     ))
-                    console.input("[bold white]Press Enter to continue...[/]")
-                    continue
-                self.cookie_settings_menu()
-            elif choice == "3":
-                break
+
+                if choice == 'y':
+                    success = self.update_repository()
+                    if not success:
+                        console.print(Panel(
+                            "[bold white]❕ Update failed! Please try again.[/]",
+                            style="bold red",
+                            border_style="red"
+                        ))
+                else:
+                    console.print(Panel(
+                        "[bold white]❕ Update cancelled by user.[/]",
+                        style="bold yellow",
+                        border_style="yellow"
+                    ))
             else:
+                # Only show no updates message when there are truly no updates
                 console.print(Panel(
-                    "[bold white]❌ Invalid choice! Please try again.[/]", 
+                    "[bold white]✨ No updates available.[/]", 
                     style="bold red",
                     border_style="red"
                 ))
-                console.input("[bold white]Press Enter to continue...[/]")
 
-    def add_new_cookie(self):
-        """Handle adding a new cookie."""
-        self.clear_screen()
-        self.display_banner()
-        console.print(Panel(
-            "[bold yellow]Add New Cookie[/]",
-            style="bold yellow",
-            border_style="yellow"
-        ))
-        
-        console.print("[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
-        console.print("[bold yellow]Note: Cookie must contain c_user and xs values[/]\n")
-        
-        cookie = console.input("[bold green]Cookie: [/]")
-        cookie = cookie.strip()
-        
-        if not cookie:
+        except subprocess.CalledProcessError as e:
             console.print(Panel(
-                "[bold white]❕ Cookie cannot be empty![/]",
+                f"[bold white]❌ Update failed: {str(e)}[/]",
                 style="bold red",
                 border_style="red"
             ))
-            console.input("[bold white]Press Enter to continue...[/]")
-            return
-
-        success, message = self.cookie_manager.add_cookie(cookie)
-        
-        if success:
-            if not self.current_account:
-                self.current_account = self.cookie_manager.get_all_accounts()[-1]
+        except Exception as e:
             console.print(Panel(
-                "[bold green]✅ Cookie added successfully![/]",
-                style="bold green",
-                border_style="green"
-            ))
-        else:
-            console.print(Panel(
-                f"[bold white]❕ {message}[/]",
+                f"[bold white]❌ Error: {str(e)}[/]",
                 style="bold red",
                 border_style="red"
             ))
-        
-        Utils.log_activity("Add Cookie", success, message)
+
         console.input("[bold white]Press Enter to continue...[/]")
-
-    def cookie_settings_menu(self):
-        """Handle cookie settings and storage menu."""
-        while True:
-            self.clear_screen()
-            self.display_banner()
-            console.print(Panel(
-                "[bold yellow]Cookie Settings and Storage[/]",
-                style="bold yellow",
-                border_style="yellow"
-            ))
-            
-            accounts = self.cookie_manager.get_all_accounts()
-            for idx, account in enumerate(accounts, 1):
-                status = "Logged in" if account == self.current_account else "Logged out"
-                console.print(f"[bold yellow]— Account {idx}[/]")
-                console.print(f"[bold white]Name: {account['name']}[/]")
-                status_color = "green" if status == "Logged in" else "red"
-                console.print(f"[bold {status_color}]Status: {status}[/]")
-                if account != self.current_account:
-                    console.print(f"[bold yellow][{idx}] Select[/]")
-                console.print(f"[bold red][R{idx}] Remove[/]")
-                console.print()
-
-            console.print("[bold white][0] Back[/]\n")
-
-            choice = console.input("[bold yellow]Select an option: [/]")
-            choice = choice.strip().upper()
-            
-            if choice == "0":
-                break
-                
-            if choice.startswith('R'):
-                try:
-                    idx = int(choice[1:]) - 1
-                    if 0 <= idx < len(accounts):
-                        account_to_remove = accounts[idx]
-                        confirm = console.input(f"[bold red]Are you sure you want to remove {account_to_remove['name']}? (y/N): [/]").strip().lower()
-                        if confirm == 'y':
-                            if account_to_remove == self.current_account:
-                                self.current_account = None
-                            success = self.cookie_manager.remove_cookie(account_to_remove)
-                            if success:
-                                console.print(Panel(
-                                    f"[bold green]✅ Successfully removed account: {account_to_remove['name']}[/]",
-                                    style="bold green",
-                                    border_style="green"
-                                ))
-                            else:
-                                console.print(Panel(
-                                    "[bold white]❕ Failed to remove account![/]",
-                                    style="bold yellow",
-                                    border_style="yellow"
-                                ))
-                    else:
-                        console.print(Panel(
-                            "[bold white]❕ Invalid selection![/]",
-                            style="bold red",
-                            border_style="red"
-                        ))
-                except (ValueError, IndexError):
-                    console.print(Panel(
-                        "[bold white]❕ Invalid input![/]",
-                        style="bold red",
-                        border_style="red"
-                    ))
-            else:
-                try:
-                    choice_idx = int(choice) - 1
-                    if 0 <= choice_idx < len(accounts):
-                        if accounts[choice_idx] != self.current_account:
-                            self.current_account = accounts[choice_idx]
-                            console.print(Panel(
-                                f"[bold green]✅ Successfully switched to account: {self.current_account['name']}[/]",
-                                style="bold green",
-                                border_style="green"
-                            ))
-                        else:
-                            console.print(Panel(
-                                "[bold white]❕ This account is already selected.[/]",
-                                style="bold yellow",
-                                border_style="yellow"
-                            ))
-                    else:
-                        console.print(Panel(
-                            "[bold white]❕ Invalid selection![/]",
-                            style="bold red",
-                            border_style="red"
-                        ))
-                except ValueError:
-                    console.print(Panel(
-                        "[bold white]❕ Invalid input![/]",
-                        style="bold red",
-                        border_style="red"
-                    ))
-            
-            console.input("[bold white]Press Enter to continue...[/]")
-
-    def spam_sharing_menu(self):
-        """Handle spam sharing functionality."""
-        self.clear_screen()
-        self.display_banner()
-        console.print(Panel(
-            "[bold cyan]Spam Sharing[/]",
-            style="bold white",
-            border_style="cyan"
-        ))
-        
-        post_url = console.input("[bold green]🔗 Enter the Facebook post URL: [/]")
-        post_url = post_url.strip()
-        
-        if not Utils.validate_url(post_url):
-            console.print(Panel(
-                "[bold white]❕ Invalid Facebook URL![/]",
-                style="bold red",
-                border_style="red"
-            ))
-            console.input("[bold white]Press Enter to continue...[/]")
-            return
-
-        success, share_count = Utils.validate_input(
-            "[bold green]Number of shares: [/]",
-            int,
-            min_val=1,
-            max_val=100000
-        )
-        
-        if not success:
-            console.input("[bold white]Press Enter to continue...[/]")
-            return
-
-        success, delay = Utils.validate_input(
-            "[bold green]Delay between shares (seconds): [/]",
-            int,
-            min_val=1,
-            max_val=60
-        )
-        
-        if not success:
-            console.input("[bold white]Press Enter to continue...[/]")
-            return
-        
-        success, message = self.spam_sharing.share_post(
-            self.current_account['cookie'],
-            post_url,
-            share_count,
-            delay
-        )
-        
-        if success:
-            console.print(Panel(
-                f"[bold green]✅ {message}[/]",
-                style="bold green",
-                border_style="green"
-            ))
-        else:
-            console.print(Panel(
-                f"[bold red]❕ {message}[/]",
-                style="bold yellow",
-                border_style="yellow"
-            ))
-        
-        Utils.log_activity("Share Post", success, message)
-        console.input("[bold white]Press Enter to continue...[/]")
-
-def main():
-    """Main entry point of the application."""
-    try:
-        tool = FacebookMonoToolkit()
-        tool.main()
-    except KeyboardInterrupt:
-        console.print("\n[bold yellow]❕ Program interrupted by user.[/]")
-        sys.exit(0)
-    except Exception as e:
-        console.print(f"\n[bold yellow]❕ An unexpected error occurred: {str(e)}[/]")
-        Utils.log_activity("System Error", False, str(e))
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main()
