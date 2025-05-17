@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 17, 2025 11:53 AM +8 GMT
+# Last Modified: May 17, 2025 12:03 PM +8 GMT
 # Author: sehraks
 
 import os
@@ -80,7 +80,9 @@ class UpdateSettings:
     def show_changelogs(self):
         """Show changelog content if available."""
         try:
-            with open(os.path.join(os.path.expanduser("~"), "facebook-monotoolkit", "changelogs.txt"), "r") as f:
+            repo_path = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit")
+            changelog_path = os.path.join(repo_path, "changelogs.txt")
+            with open(changelog_path, "r") as f:
                 return f.read().strip()
         except FileNotFoundError:
             return None
@@ -99,15 +101,15 @@ class UpdateSettings:
                 os.makedirs(backup_dir, exist_ok=True)
                 progress.update(backup_task, advance=30)
 
-                # Backup cookies and logs
-                for idx, directory in enumerate(['cookies-storage', 'logs']):
-                    src = directory
-                    dst = os.path.join(backup_dir, directory)
-                    if os.path.exists(src):
-                        if os.path.exists(dst):
-                            shutil.rmtree(dst)
-                        shutil.copytree(src, dst)
-                    progress.update(backup_task, advance=35)  # Split remaining progress
+                # Only backup logs directory, skip cookies
+                directory = 'logs'
+                src = directory
+                dst = os.path.join(backup_dir, directory)
+                if os.path.exists(src):
+                    if os.path.exists(dst):
+                        shutil.rmtree(dst)
+                    shutil.copytree(src, dst)
+                progress.update(backup_task, advance=70)  # Updated progress split
 
                 progress.update(backup_task, completed=100)
                 progress.update(backup_task, description="✅ Backup complete!")
@@ -138,14 +140,15 @@ class UpdateSettings:
                     progress.update(restore_task, description="❌ No backup found!")
                     return False
 
-                for idx, directory in enumerate(['cookies-storage', 'logs']):
-                    src = os.path.join(backup_dir, directory)
-                    if os.path.exists(src):
-                        dst = directory
-                        if os.path.exists(dst):
-                            shutil.rmtree(dst)
-                        shutil.copytree(src, dst)
-                    progress.update(restore_task, advance=50)  # Split progress in half
+                # Only restore logs directory, skip cookies
+                directory = 'logs'
+                src = os.path.join(backup_dir, directory)
+                if os.path.exists(src):
+                    dst = directory
+                    if os.path.exists(dst):
+                        shutil.rmtree(dst)
+                    shutil.copytree(src, dst)
+                progress.update(restore_task, advance=100)  # Updated progress
 
                 progress.update(restore_task, completed=100)
                 progress.update(restore_task, description="✅ Restore complete!")
