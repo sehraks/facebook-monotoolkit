@@ -207,52 +207,6 @@ class FacebookMonoToolkit:
             ))
             console.input("[bold white]Press Enter to continue...[/]")
 
-    def add_new_cookie(self):
-        """Handle adding a new cookie."""
-        self.clear_screen()
-        self.display_banner()
-        console.print(Panel(
-            "[bold yellow]Add New Cookie[/]",
-            style="bold yellow",
-            border_style="yellow"
-        ))
-        
-        console.print("[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
-        console.print("[bold yellow]Note: Cookie must contain c_user and xs values[/]\n")
-        
-        cookie = console.input("[bold green]Cookie: [/]")
-        cookie = cookie.strip()
-        
-        if not cookie:
-            console.print(Panel(
-                "[bold white]❕ Cookie cannot be empty![/]",
-                style="bold red",
-                border_style="red"
-            ))
-            console.input("[bold white]Press Enter to continue...[/]")
-            return
-
-        success, message = self.cookie_manager.add_cookie(cookie)
-        
-        if success:
-            if not self.current_account:
-                self.current_account = self.cookie_manager.get_all_accounts()[-1]
-            console.print(Panel(
-                "[bold green]✅ Cookie added successfully![/]",
-                style="bold green",
-                border_style="green"
-            ))
-        else:
-            console.print(Panel(
-                f"[bold white]❕ {message}[/]",
-                style="bold red",
-                border_style="red"
-            ))
-        
-        Utils.log_activity("Add Cookie", success, message)
-        console.input("[bold white]Press Enter to continue...[/]")
-
-
     def facebook_login(self):
         """Handle Facebook login functionality."""
           self.clear_screen()
@@ -314,6 +268,51 @@ class FacebookMonoToolkit:
     # Log the login attempt
     self.fb_login.log_login_attempt(email, success, message)
     console.input("[bold white]Press Enter to continue...[/]")
+
+    def add_new_cookie(self):
+        """Handle adding a new cookie."""
+        self.clear_screen()
+        self.display_banner()
+        console.print(Panel(
+            "[bold yellow]Add New Cookie[/]",
+            style="bold yellow",
+            border_style="yellow"
+        ))
+        
+        console.print("[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
+        console.print("[bold yellow]Note: Cookie must contain c_user and xs values[/]\n")
+        
+        cookie = console.input("[bold green]Cookie: [/]")
+        cookie = cookie.strip()
+        
+        if not cookie:
+            console.print(Panel(
+                "[bold white]❕ Cookie cannot be empty![/]",
+                style="bold red",
+                border_style="red"
+            ))
+            console.input("[bold white]Press Enter to continue...[/]")
+            return
+
+        success, message = self.cookie_manager.add_cookie(cookie)
+        
+        if success:
+            if not self.current_account:
+                self.current_account = self.cookie_manager.get_all_accounts()[-1]
+            console.print(Panel(
+                "[bold green]✅ Cookie added successfully![/]",
+                style="bold green",
+                border_style="green"
+            ))
+        else:
+            console.print(Panel(
+                f"[bold white]❕ {message}[/]",
+                style="bold red",
+                border_style="red"
+            ))
+        
+        Utils.log_activity("Add Cookie", success, message)
+        console.input("[bold white]Press Enter to continue...[/]")
 
     def cookie_settings_menu(self):
         """Handle cookie settings and storage menu."""
