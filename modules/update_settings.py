@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 17, 2025 02:48 AM +8 GMT
+# Last Modified: May 16, 2025 02:31 PM +8 GMT
 # Author: sehraks
 
 import os
@@ -76,47 +76,13 @@ class UpdateSettings:
         
         return int(output.strip()) > 0, output.strip()
 
-    def read_version_from_install_hook(self):
-        """Read version and other details from install-hook.sh."""
+    def show_changelogs(self):
+        """Show changelog content if available."""
         try:
-            with open("install-hooks.sh", "r") as f:
-                content = f.read()
-                
-                # Look for VERSION="X.XX" pattern
-                version_match = re.search(r'VERSION="([0-9.]+)"', content)
-                if not version_match:
-                    raise Exception("Version not found in install-hook.sh")
-                    
-                version = version_match.group(1)
-                
-                # Extract changelog entries
-                changelog_start = content.find('echo "Version')
-                changelog_end = content.find('HOOK', changelog_start)
-                if changelog_start == -1 or changelog_end == -1:
-                    raise Exception("Changelog content not found in install-hooks.sh")
-                    
-                changelog_content = content[changelog_start:changelog_end]
-                changelog_lines = [line.strip() for line in changelog_content.split('echo "')[1:]]
-                changelog_text = '\n'.join(line.strip('"') for line in changelog_lines)
-                
-                return True, version, changelog_text
+            with open("changelogs.txt", "r") as f:
+                return f.read().strip()
         except FileNotFoundError:
-            return False, None, "install-hooks.sh not found"
-        except Exception as e:
-            return False, None, str(e)
-
-    def sync_changelogs(self):
-        """Synchronize changelogs.txt with install-hook.sh content."""
-        success, version, changelog_content = self.read_version_from_install_hooks()
-        if not success:
-            return False, changelog_content
-            
-        try:
-            with open("changelogs.txt", "w") as f:
-                f.write(changelog_content)
-            return True, "Changelog synchronized successfully"
-        except Exception as e:
-            return False, f"Failed to update changelogs.txt: {str(e)}"
+            return None
 
     def backup_current_data(self):
         """Create backup of important data before update."""
@@ -161,6 +127,74 @@ class UpdateSettings:
         except Exception:
             return False
 
+    def update_index_values(self):
+        """Update version and timestamps in index.py"""
+        try:
+            # Wait for files to be available
+            max_attempts = 5
+            for attempt in range(max_attempts):
+                if os.path.exists("changelogs.txt"):
+                    break
+                time.sleep(1)
+            else:
+                return False
+
+            # Read current version from changelogs.txt
+            with open("changelogs.txt", "r") as f:
+                first_line = f.readline().strip()
+                version = first_line.replace("Version ", "")
+
+            # Get current Philippines time (GMT+8)
+            philippines_time = datetime.now(timezone(timedelta(hours=8)))
+            current_date = philippines_time.strftime("%B %d, %Y")
+            current_time = philippines_time.strftime("%I:%M %p")
+
+            # Read and update index.py
+            with open("index.py", "r") as f:
+                content = f.read()
+
+            # Update the values using regex
+            content = re.sub(
+                r'self\.VERSION = ".*"',
+                f'self.VERSION = "{version}"',
+                content
+            )
+            content = re.sub(
+                r'self\.LAST_UPDATED = ".*"',
+                f'self.LAST_UPDATED = "{current_date}"',
+                content
+            )
+            content = re.sub(
+                r'self\.CURRENT_TIME = ".*"',
+                f'self.CURRENT_TIME = "{current_time}"',
+                content
+            )
+            content = re.sub(
+                r'self\.CURRENT_USER = ".*"',
+                f'self.CURRENT_USER = "{self.current_user}"',
+                content
+            )
+            
+            # Update file header
+            content = re.sub(
+                r'# Last Modified: .*',
+                f'# Last Modified: {current_date} {current_time} +8 GMT',
+                content
+            )
+
+            # Write back to index.py
+            with open("index.py", "w") as f:
+                f.write(content)
+                
+            return True
+        except Exception as e:
+            console.print(Panel(
+                f"[bold red]Failed to update index.py: {str(e)}[/]",
+                style="bold red",
+                border_style="red"
+            ))
+            return False
+
     def update_repository(self):
         """Update repository by re-cloning."""
         try:
@@ -190,24 +224,19 @@ class UpdateSettings:
             # Wait for files to be ready
             time.sleep(2)
 
-            # Check if install-hook.sh exists
-            if not os.path.exists(os.path.join(repo_path, "install-hook.sh")):
+            # Check if we can access the new files
+            if not os.path.exists(os.path.join(repo_path, "changelogs.txt")):
                 console.print(Panel(
-                    "[bold red]Error: install-hook.sh not found![/]",
-                    style="bold red",
-                    border_style="red"
+                    "[bold white]Update successful but requires restart.[/]\n"
+                    "Please restart the tool manually.",
+                    style="bold green",
+                    border_style="green"
                 ))
-                self.restore_backup()
-                return False
+                os._exit(0)
 
-            # Sync changelogs with install-hook.sh
-            sync_success, sync_message = self.sync_changelogs()
-            if not sync_success:
-                console.print(Panel(
-                    f"[bold yellow]Warning: {sync_message}[/]",
-                    style="bold yellow",
-                    border_style="yellow"
-                ))
+            # Update index.py values after successful update
+            if self.update_index_values():
+                console.print("[bold green]✅ Successfully updated index.py values[/]")
 
             # Get current Philippines time
             philippines_time = datetime.now(timezone(timedelta(hours=8)))
@@ -251,11 +280,11 @@ class UpdateSettings:
             has_updates, update_count = self.check_for_updates()
             
             if has_updates:
-                # Get version and changelog from install-hook.sh
-                success, version, changelog_content = self.read_version_from_install_hook()
-                if success:
+                # Show changelog if available
+                changelogs = self.show_changelogs()
+                if changelogs:
                     console.print(Panel(
-                        f"[bold green]🆕 New updates available!\n\nLatest Version: {version}\n\nChange Logs:\n{changelog_content}[/]",
+                        f"[bold green]🆕 New updates available!\n\nChange Logs:\n{changelogs}[/]",
                         style="bold green",
                         border_style="green"
                     ))
@@ -295,8 +324,8 @@ class UpdateSettings:
                 # Only show no updates message when there are truly no updates
                 console.print(Panel(
                     "[bold white]✨ No updates available.[/]", 
-                    style="bold cyan",
-                    border_style="cyan"
+                    style="bold red",
+                    border_style="red"
                 ))
 
         except subprocess.CalledProcessError as e:
