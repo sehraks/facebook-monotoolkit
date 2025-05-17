@@ -27,6 +27,12 @@ echo "Version $VERSION" > $CHANGELOG_FILE
 echo "Date: $CURRENT_DATE" >> $CHANGELOG_FILE
 echo "Time: $CURRENT_TIME" >> $CHANGELOG_FILE
 echo "—————————————————————————————————" >> $CHANGELOG_FILE
+echo "ADDED NEW FEATURE(S):" >> $CHANGELOG_FILE
+echo "— Cookie Management (support log-in & log-out method. It can also remove your stored cookies" >> $CHANGELOG_FILE
+echo "— Spam Sharing Post (without Facebook's API, for less Facebook restriction" >> $CHANGELOG_FILE
+echo "— Facebook log-in (API support)" >> $CHANGELOG_FILE
+echo "— Profile Picture Guard (soon)" >> >> $CHANGELOG_FILE
+echo "—————————————————————————————————" >> $CHANGELOG_FILE
 echo "NEW CHANGES:" >> $CHANGELOG_FILE
 echo "— fixed minor bugs and errors, and make minor changes." >> $CHANGELOG_FILE
 
