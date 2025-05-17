@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 16, 2025 02:31 PM +8 GMT
+# Last Modified: May 17, 2025 10:55 AM +8 GMT
 # Author: sehraks
 
 import os
@@ -12,8 +12,26 @@ import shutil
 from datetime import datetime, timezone, timedelta
 from rich.console import Console
 from rich.panel import Panel
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
+from rich.live import Live
+from rich.spinner import Spinner
 
 console = Console()
+
+class AnimatedProgress:
+    def __init__(self, description: str):
+        self.spinner = Spinner("dots", text=description)
+        self.live = Live(self.spinner, refresh_per_second=10)
+
+    def __enter__(self):
+        self.live.start()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.live.stop()
+
+    def update(self, new_text: str):
+        self.spinner.text = new_text
 
 class UpdateSettings:
     def __init__(self, display_banner_func):
@@ -30,7 +48,7 @@ class UpdateSettings:
             # Clear screen and show banner
             os.system('clear')
             self.display_banner()
-            
+
             # Display menu
             menu_panel = Panel(
                 "[bold green][1] Check updates[/]\n"
@@ -43,7 +61,7 @@ class UpdateSettings:
 
             # Get user choice
             choice = console.input("[bold yellow]Select an option (1-2): [/]")
-            
+
             # Handle user choice
             if choice == "1":
                 self.check_updates()
@@ -57,6 +75,18 @@ class UpdateSettings:
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
 
+    def show_indeterminate_progress(self, description: str, callback, *args, **kwargs):
+        """Show an indeterminate progress spinner while executing a callback."""
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[bold blue]{task.description}"),
+            TimeElapsedColumn(),
+        ) as progress:
+            task = progress.add_task(description, total=None)
+            result = callback(*args, **kwargs)
+            progress.update(task, completed=True)
+            return result
+
     def run_command(self, command):
         """Run a shell command and return its status and output."""
         try:
@@ -67,14 +97,18 @@ class UpdateSettings:
 
     def check_for_updates(self):
         """Check if updates are available."""
-        if not self.run_command("git fetch origin")[0]:
-            return False, "Failed to fetch updates"
-        
-        status, output = self.run_command("git rev-list HEAD..origin/main --count")
-        if not status:
-            return False, "Failed to check update status"
-        
-        return int(output.strip()) > 0, output.strip()
+        with AnimatedProgress("🔄 Checking Git repository...") as progress:
+            if not self.run_command("git fetch origin")[0]:
+                progress.update("❌ Failed to fetch updates")
+                return False, "Failed to fetch updates"
+            
+            status, output = self.run_command("git rev-list HEAD..origin/main --count")
+            if not status:
+                progress.update("❌ Failed to check update status")
+                return False, "Failed to check update status"
+            
+            progress.update("✅ Update check complete!")
+            return int(output.strip()) > 0, output.strip()
 
     def show_changelogs(self):
         """Show changelog content if available."""
@@ -86,140 +120,188 @@ class UpdateSettings:
 
     def backup_current_data(self):
         """Create backup of important data before update."""
-        try:
-            backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
-            os.makedirs(backup_dir, exist_ok=True)
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[bold blue]{task.description}"),
+            BarColumn(),
+            TextColumn("[bold blue]{task.percentage:>3.0f}%"),
+            TimeElapsedColumn(),
+        ) as progress:
+            backup_task = progress.add_task("📦 Creating backup...", total=100)
             
-            # Backup cookies and logs
-            for directory in ['cookies-storage', 'logs']:
-                src = directory
-                dst = os.path.join(backup_dir, directory)
-                if os.path.exists(src):
-                    if os.path.exists(dst):
-                        shutil.rmtree(dst)
-                    shutil.copytree(src, dst)
-            
-            return True
-        except Exception as e:
-            console.print(Panel(
-                f"[bold red]Failed to create backup: {str(e)}[/]",
-                style="bold red",
-                border_style="red"
-            ))
-            return False
+            try:
+                backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
+                os.makedirs(backup_dir, exist_ok=True)
+                progress.update(backup_task, advance=30)
+
+                # Backup cookies and logs
+                for idx, directory in enumerate(['cookies-storage', 'logs']):
+                    src = directory
+                    dst = os.path.join(backup_dir, directory)
+                    if os.path.exists(src):
+                        if os.path.exists(dst):
+                            shutil.rmtree(dst)
+                        shutil.copytree(src, dst)
+                    progress.update(backup_task, advance=35)  # Split remaining progress
+
+                progress.update(backup_task, completed=100)
+                progress.update(backup_task, description="✅ Backup complete!")
+                return True
+
+            except Exception as e:
+                progress.update(backup_task, description="❌ Backup failed!")
+                console.print(Panel(
+                    f"[bold red]Failed to create backup: {str(e)}[/]",
+                    style="bold red",
+                    border_style="red"
+                ))
+                return False
 
     def restore_backup(self):
         """Restore data from backup if update fails."""
-        try:
-            backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
-            if not os.path.exists(backup_dir):
-                return False
-                
-            for directory in ['cookies-storage', 'logs']:
-                src = os.path.join(backup_dir, directory)
-                if os.path.exists(src):
-                    dst = directory
-                    if os.path.exists(dst):
-                        shutil.rmtree(dst)
-                    shutil.copytree(src, dst)
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[bold blue]{task.description}"),
+            BarColumn(),
+            TextColumn("[bold blue]{task.percentage:>3.0f}%"),
+            TimeElapsedColumn(),
+        ) as progress:
+            restore_task = progress.add_task("🔄 Restoring backup...", total=100)
             
-            return True
-        except Exception:
-            return False
+            try:
+                backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
+                if not os.path.exists(backup_dir):
+                    progress.update(restore_task, description="❌ No backup found!")
+                    return False
+
+                for idx, directory in enumerate(['cookies-storage', 'logs']):
+                    src = os.path.join(backup_dir, directory)
+                    if os.path.exists(src):
+                        dst = directory
+                        if os.path.exists(dst):
+                            shutil.rmtree(dst)
+                        shutil.copytree(src, dst)
+                    progress.update(restore_task, advance=50)  # Split progress in half
+
+                progress.update(restore_task, completed=100)
+                progress.update(restore_task, description="✅ Restore complete!")
+                return True
+
+            except Exception:
+                progress.update(restore_task, description="❌ Restore failed!")
+                return False
 
     def update_index_values(self):
         """Update version and timestamps in index.py"""
-        try:
-            # Wait for files to be available
-            max_attempts = 5
-            for attempt in range(max_attempts):
-                if os.path.exists("changelogs.txt"):
-                    break
-                time.sleep(1)
-            else:
+        with AnimatedProgress("🔄 Updating index.py values...") as progress:
+            try:
+                # Wait for files to be available
+                max_attempts = 5
+                for attempt in range(max_attempts):
+                    if os.path.exists("changelogs.txt"):
+                        break
+                    time.sleep(1)
+                else:
+                    progress.update("❌ Failed to find changelogs.txt")
+                    return False
+
+                # Read current version from changelogs.txt
+                with open("changelogs.txt", "r") as f:
+                    first_line = f.readline().strip()
+                    version = first_line.replace("Version ", "")
+
+                # Get current Philippines time (GMT+8)
+                philippines_time = datetime.now(timezone(timedelta(hours=8)))
+                current_date = philippines_time.strftime("%B %d, %Y")
+                current_time = philippines_time.strftime("%I:%M %p")
+
+                # Read and update index.py
+                with open("index.py", "r") as f:
+                    content = f.read()
+
+                # Update the values using regex
+                content = re.sub(
+                    r'self\.VERSION = \".*\"',
+                    f'self.VERSION = "{version}"',
+                    content
+                )
+                content = re.sub(
+                    r'self\.LAST_UPDATED = \".*\"',
+                    f'self.LAST_UPDATED = "{current_date}"',
+                    content
+                )
+                content = re.sub(
+                    r'self\.CURRENT_TIME = \".*\"',
+                    f'self.CURRENT_TIME = "{current_time}"',
+                    content
+                )
+                content = re.sub(
+                    r'self\.CURRENT_USER = \".*\"',
+                    f'self.CURRENT_USER = "{self.current_user}"',
+                    content
+                )
+
+                # Update file header
+                content = re.sub(
+                    r'# Last Modified: .*',
+                    f'# Last Modified: {current_date} {current_time} +8 GMT',
+                    content
+                )
+
+                # Write back to index.py
+                with open("index.py", "w") as f:
+                    f.write(content)
+
+                progress.update("✅ Index.py updated successfully!")
+                return True
+
+            except Exception as e:
+                progress.update(f"❌ Failed to update index.py: {str(e)}")
                 return False
-
-            # Read current version from changelogs.txt
-            with open("changelogs.txt", "r") as f:
-                first_line = f.readline().strip()
-                version = first_line.replace("Version ", "")
-
-            # Get current Philippines time (GMT+8)
-            philippines_time = datetime.now(timezone(timedelta(hours=8)))
-            current_date = philippines_time.strftime("%B %d, %Y")
-            current_time = philippines_time.strftime("%I:%M %p")
-
-            # Read and update index.py
-            with open("index.py", "r") as f:
-                content = f.read()
-
-            # Update the values using regex
-            content = re.sub(
-                r'self\.VERSION = ".*"',
-                f'self.VERSION = "{version}"',
-                content
-            )
-            content = re.sub(
-                r'self\.LAST_UPDATED = ".*"',
-                f'self.LAST_UPDATED = "{current_date}"',
-                content
-            )
-            content = re.sub(
-                r'self\.CURRENT_TIME = ".*"',
-                f'self.CURRENT_TIME = "{current_time}"',
-                content
-            )
-            content = re.sub(
-                r'self\.CURRENT_USER = ".*"',
-                f'self.CURRENT_USER = "{self.current_user}"',
-                content
-            )
-            
-            # Update file header
-            content = re.sub(
-                r'# Last Modified: .*',
-                f'# Last Modified: {current_date} {current_time} +8 GMT',
-                content
-            )
-
-            # Write back to index.py
-            with open("index.py", "w") as f:
-                f.write(content)
-                
-            return True
-        except Exception as e:
-            console.print(Panel(
-                f"[bold red]Failed to update index.py: {str(e)}[/]",
-                style="bold red",
-                border_style="red"
-            ))
-            return False
 
     def update_repository(self):
         """Update repository by re-cloning."""
         try:
-            # Backup current data
+            # Backup current data with progress
             if not self.backup_current_data():
                 raise Exception("Failed to create backup")
 
             home = os.path.expanduser("~")
             repo_path = os.path.join(home, "facebook-monotoolkit")
-            
-            # Prepare commands with proper directory handling
-            commands = [
-                f"cd {home} && rm -rf facebook-monotoolkit",
-                f"cd {home} && git clone https://github.com/sehraks/facebook-monotoolkit.git",
-                f"cd {repo_path} && chmod +x index.py && chmod +x modules/*.py"
-            ]
-            
-            console.print("\n📥 Downloading latest changes...")
-            for cmd in commands:
-                status, output = self.run_command(cmd)
-                if not status:
-                    console.print(f"Command failed: {cmd}")
-                    console.print(f"Error: {output}")
-                    self.restore_backup()
-                    raise Exception("Failed to update repository")
+
+            # Create a progress bar for the update process
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[bold blue]{task.description}"),
+                BarColumn(),
+                TextColumn("[bold blue]{task.percentage:>3.0f}%"),
+                TimeElapsedColumn(),
+            ) as progress:
+                # Add tasks for each step
+                download_task = progress.add_task("📥 Downloading latest changes...", total=100)
+                
+                # Prepare commands with proper directory handling
+                commands = [
+                    f"cd {home} && rm -rf facebook-monotoolkit",
+                    f"cd {home} && git clone https://github.com/sehraks/facebook-monotoolkit.git",
+                    f"cd {repo_path} && chmod +x index.py && chmod +x modules/*.py"
+                ]
+
+                # Execute commands with progress updates
+                for i, cmd in enumerate(commands):
+                    progress.update(download_task, advance=33)  # Split progress into thirds
+                    status, output = self.run_command(cmd)
+                    if not status:
+                        progress.update(download_task, description="❌ Download failed!")
+                        console.print(f"Command failed: {cmd}")
+                        console.print(f"Error: {output}")
+                        self.restore_backup()
+                        raise Exception("Failed to update repository")
+                    time.sleep(0.5)  # Small delay for visual feedback
+
+                # Complete the progress bar
+                progress.update(download_task, completed=100)
+                progress.update(download_task, description="✅ Download complete!")
 
             # Wait for files to be ready
             time.sleep(2)
@@ -242,7 +324,7 @@ class UpdateSettings:
             philippines_time = datetime.now(timezone(timedelta(hours=8)))
             current_time = philippines_time.strftime("%I:%M %p")
             current_date = philippines_time.strftime("%B %d, %Y")
-            
+
             # Update success message with current Philippines time
             console.print(Panel(
                 "✅ Update completed! Please restart the tool to apply changes.\n\n"
@@ -253,10 +335,10 @@ class UpdateSettings:
                 border_style="green"
             ))
             console.print("\n[bold yellow]❕ The program will now exit. Please restart it.[/]")
-            
+
             # Force exit to ensure clean restart
             os._exit(0)
-            
+
             return True
         except Exception as e:
             console.print(Panel(
@@ -273,12 +355,16 @@ class UpdateSettings:
             os.system('clear')
             self.display_banner()
 
-            # Check for updates
-            console.print("🔄 Checking for updates...")
-            
-            # Check for updates
-            has_updates, update_count = self.check_for_updates()
-            
+            # Check for updates with animated progress
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[bold blue]{task.description}"),
+                TimeElapsedColumn(),
+            ) as progress:
+                check_task = progress.add_task("🔄 Checking for updates...", total=None)
+                has_updates, update_count = self.check_for_updates()
+                progress.update(check_task, completed=True)
+
             if has_updates:
                 # Show changelog if available
                 changelogs = self.show_changelogs()
@@ -294,7 +380,7 @@ class UpdateSettings:
                         style="bold green",
                         border_style="green"
                     ))
-                
+
                 # Ask for user confirmation
                 while True:
                     choice = console.input("\n[bold yellow]Do you want to update it now? (y/n): [/]").lower()
@@ -305,7 +391,7 @@ class UpdateSettings:
                         style="bold yellow",
                         border_style="yellow"
                     ))
-                
+
                 if choice == 'y':
                     success = self.update_repository()
                     if not success:
