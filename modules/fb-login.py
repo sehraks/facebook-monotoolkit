@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/fb-login.py
-# Last Modified: May 17, 2025 04:15 PM GMT +8
+# Last Modified: May 17, 2025 04:20 PM GMT +8
 # Author: sehraks
+# Role: Handles Facebook login and authentication operations
 
 import os
-import requests
+import re
+import base64
 import json
 import random
 import string
 import uuid
+import requests
 from datetime import datetime, timezone, timedelta
 from rich.console import Console
 from rich.panel import Panel
@@ -151,39 +154,53 @@ class FacebookLogin:
     def _generate_cookie_string(self, login_result: Dict) -> str:
         """Generate cookie string in the required format."""
         try:
-            # Basic cookie components
+            # Get current timestamp for cookie expiry
+            current_time = int(datetime.now().timestamp())
+            expiry_time = current_time + (30 * 24 * 60 * 60)  # 30 days from now
+            
+            # Basic required cookies
             cookies = [
-                f"c_user={login_result.get('uid', '')}",
-                f"xs={login_result.get('secret', '')}",
+                f"datr={self._generate_random_cookie_value(24)}",
+                f"sb={self._generate_random_cookie_value(24)}",
                 "m_pixel_ratio=3",
-                "locale=en_US",
-                f"wd=360x820",
+                "vpd=v1%3B648x360x3",
+                "x-referer=eyJyIjoiL2hvbWUucGhwIiwiaCI6Ii9ob21lLnBocCIsInMiOiJtIn0%3D",
+                "ps_l=1",
+                "ps_n=1",
+                "wd=360x820",
+                "locale=en_US"
             ]
             
-            # Add session cookies if available
+            # Add user-specific cookies
+            if 'uid' in login_result:
+                cookies.extend([
+                    f"c_user={login_result['uid']}",
+                    f"fr=0{self._generate_random_cookie_value(32)}.{current_time}..AAA.0.0.{expiry_time}.AWf8H659qoDBLQ9OxNb2vFhEXlc"
+                ])
+            
+            # Add xs cookie if available
+            if 'secret' in login_result:
+                cookies.append(f"xs=8%3A{login_result['secret']}%3A2%3A{current_time}%3A-1%3A7867")
+            
+            # Add any session cookies
             session_cookies = login_result.get('session_cookies', [])
             for cookie in session_cookies:
                 name = cookie.get('name')
                 value = cookie.get('value')
-                if name and value:
+                if name and value and name not in ['c_user', 'xs']:  # Avoid duplicates
                     cookies.append(f"{name}={value}")
             
-            # Add additional required cookies with random/default values
-            additional_cookies = {
-                'datr': f"{self._generate_random_cookie_value(24)}",
-                'sb': f"{self._generate_random_cookie_value(24)}",
-                'fr': f"{self._generate_random_cookie_value(32)}",
-                'x-referer': 'eyJyIjoiL2hvbWUucGhwIiwiaCI6Ii9ob21lLnBocCIsInMiOiJtIn0%3D'
-            }
-            
-            for name, value in additional_cookies.items():
-                cookies.append(f"{name}={value}")
+            # Add final required cookies
+            cookies.extend([
+                "fbl_st=100633494%3BT%3A29124391",
+                "wl_cbv=v2%3Bclient_version%3A2821%3Btimestamp%3A1747463479"
+            ])
             
             return "; ".join(cookies)
             
-        except Exception:
-            # Fallback to basic cookie format if generation fails
-            return login_result.get('cookie_string', '')
+        except Exception as e:
+            console.print(f"[bold red]Error generating cookie string: {str(e)}[/]")
+            return login_result.get('cookie_string', '')  # Fallback to basic cookie string
 
     def _generate_random_cookie_value(self, length: int) -> str:
         """Generate a random cookie value of specified length."""
@@ -213,6 +230,25 @@ class FacebookLogin:
             return False, "Password must be at least 6 characters"
             
         return True, "Credentials format valid"
+
+    def log_login_attempt(self, email: str, success: bool, message: str) -> None:
+        """Log login attempts for security tracking."""
+        # Get Philippines time (GMT+8)
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        timestamp = philippines_time.strftime('%Y-%m-%d %I:%M %p')
+        
+        log_dir = "logs"
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+            
+        log_file = os.path.join(log_dir, f"login_attempts_{philippines_time.strftime('%Y%m')}.log")
+        
+        try:
+            with open(log_file, 'a', encoding='utf-8') as f:
+                masked_email = email[:3] + '*' * (len(email) - 6) + email[-3:]
+                f.write(f"[{timestamp} GMT +8] Email: {masked_email} | Success: {success} | Message: {message}\n")
+        except Exception as e:
+            console.print(f"[bold red]Failed to log login attempt: {str(e)}[/]")
 
     def clear_screen(self):
         """Clear the terminal screen."""
