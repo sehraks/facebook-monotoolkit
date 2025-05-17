@@ -208,18 +208,23 @@ class FacebookLogin:
         return ''.join(random.choices(charset, k=length))
 
     def validate_credentials(self, email: str, password: str) -> Tuple[bool, str]:
-        """Validate email and password format."""
-        # Email validation
+        """Validate email/uid and password format."""
+        # Email/UID validation
         email = email.strip()
         if not email:
-            return False, "Email cannot be empty"
+            return False, "Email/UID cannot be empty"
         
-        if '@' not in email or '.' not in email:
-            return False, "Invalid email format"
+        # Check if input is UID (all digits)
+        is_uid = email.isdigit()
         
-        # Basic email format check (username@domain.tld)
-        if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
-            return False, "Invalid email format"
+        if not is_uid:
+            # Regular email validation
+            if '@' not in email or '.' not in email:
+                return False, "Invalid email format"
+            
+            # Basic email format check (username@domain.tld)
+            if not re.match(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", email):
+                return False, "Invalid email format"
         
         # Password validation
         password = password.strip()
