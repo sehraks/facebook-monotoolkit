@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 17, 2025 11:33 AM +8 GMT
+# Last Modified: May 17, 2025 11:39 AM +8 GMT
 # Author: sehraks
 
 import os
@@ -13,8 +13,20 @@ from datetime import datetime, timezone, timedelta
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, TextColumn, BarColumn
+from rich.spinner import Spinner
+from typing import Iterable
 
 console = Console()
+
+class TermuxSpinner(Spinner):
+    """Custom spinner with smooth animation that works in Termux."""
+    
+    def __init__(self):
+        super().__init__("dots2", "spinner")
+
+    def frames(self) -> Iterable[str]:
+        """Return spinning frames."""
+        return ["◜", "◠", "◝", "◞", "◡", "◟"]
 
 class UpdateSettings:
     def __init__(self, display_banner_func):
@@ -88,12 +100,12 @@ class UpdateSettings:
     def backup_current_data(self):
         """Create backup of important data before update."""
         with Progress(
-            TextColumn("⭘"),
+            TextColumn("{task.fields[spinner]}"),
             TextColumn("[bold blue]{task.description}"),
             BarColumn(),
             TextColumn("[bold blue]{task.percentage:>3.0f}%")
         ) as progress:
-            backup_task = progress.add_task("📦 Creating backup...", total=100)
+            backup_task = progress.add_task("📦 Creating backup...", total=100, spinner=TermuxSpinner())
             
             try:
                 backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
@@ -127,12 +139,12 @@ class UpdateSettings:
     def restore_backup(self):
         """Restore data from backup if update fails."""
         with Progress(
-            TextColumn("⭘"),
+            TextColumn("{task.fields[spinner]}"),
             TextColumn("[bold blue]{task.description}"),
             BarColumn(),
             TextColumn("[bold blue]{task.percentage:>3.0f}%")
         ) as progress:
-            restore_task = progress.add_task("🔄 Restoring backup...", total=100)
+            restore_task = progress.add_task("🔄 Restoring backup...", total=100, spinner=TermuxSpinner())
             
             try:
                 backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
@@ -161,10 +173,10 @@ class UpdateSettings:
     def update_index_values(self):
         """Update version and timestamps in index.py"""
         with Progress(
-            TextColumn("⭘"),
+            TextColumn("{task.fields[spinner]}"),
             TextColumn("[bold blue]{task.description}")
         ) as progress:
-            update_task = progress.add_task("🔄 Updating index.py values...")
+            update_task = progress.add_task("🔄 Updating index.py values...", spinner=TermuxSpinner())
             
             try:
                 # Wait for files to be available
@@ -244,13 +256,13 @@ class UpdateSettings:
 
             # Create a progress bar for the update process
             with Progress(
-                TextColumn("⭘"),
+                TextColumn("{task.fields[spinner]}"),
                 TextColumn("[bold blue]{task.description}"),
                 BarColumn(),
                 TextColumn("[bold blue]{task.percentage:>3.0f}%")
             ) as progress:
                 # Add tasks for each step
-                download_task = progress.add_task("📥 Downloading latest changes...", total=100)
+                download_task = progress.add_task("📥 Downloading latest changes...", total=100, spinner=TermuxSpinner())
                 
                 # Prepare commands with proper directory handling
                 commands = [
@@ -330,11 +342,11 @@ class UpdateSettings:
 
             # Check for updates with animated progress
             with Progress(
-                TextColumn("⭘"),
+                TextColumn("{task.fields[spinner]}"),
                 TextColumn("[bold blue]{task.description}")
             ) as progress:
                 # Add task for checking updates
-                check_task = progress.add_task("🔄 Checking for updates...")
+                check_task = progress.add_task("🔄 Checking for updates...", spinner=TermuxSpinner())
                 
                 # Perform the actual update check
                 has_updates, update_count = self.check_for_updates()
