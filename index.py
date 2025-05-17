@@ -111,9 +111,10 @@ class FacebookMonoToolkit:
                 ))
 
             menu_panel = Panel(
-                "[bold yellow][1] Manage Cookies[/]\n"
-                "[bold cyan][2] Spam Sharing Post[/]\n"
-                "[bold white][3] Settings[/]\n"
+                "[bold white][1] Manage Cookies[/]\n"
+                "[bold white][2] Login your Facebook account[/]\n"
+                "[bold white][3] Spam Sharing Post[/]\n"
+                "[bold white][4] Settings[/]\n"
                 "[bold red][4] Exit[/]",
                 title="[bold white]Main Menu[/]",
                 style="bold magenta",
@@ -124,28 +125,29 @@ class FacebookMonoToolkit:
             choice = console.input("[bold yellow]Select an option (1-4): [/]")
             choice = choice.strip()
 
-            if choice == "1":
-                self.cookie_management_menu()
-            elif choice == "2":
-                if not self.check_cookie_required():
-                    continue
-                self.spam_sharing_menu()
-            elif choice == "3":
-                self.settings_menu()
-            elif choice == "4":
+        if choice == "1":
+            self.add_new_cookie()
+        elif choice == "2":
+            self.facebook_login()  # New method
+        elif choice == "3":
+            if not self.cookie_manager.has_cookies():
                 console.print(Panel(
-                    "[bold white]👋 Thank you for using Facebook MonoToolkit![/]", 
-                    style="bold cyan",
-                    border_style="cyan"
-                ))
-                sys.exit(0)
-            else:
-                console.print(Panel(
-                    "[bold white]❕ Invalid choice! Please try again.[/]", 
-                    style="bold red",
-                    border_style="red"
+                    "[bold red]❕ Add a cookie or login first.[/]",
+                    style="bold yellow",
+                    border_style="yellow"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
+                continue
+            self.cookie_settings_menu()
+        elif choice == "4":
+            break
+        else:
+            console.print(Panel(
+                "[bold white]❌ Invalid choice! Please try again.[/]", 
+                style="bold red",
+                border_style="red"
+            ))
+            console.input("[bold white]Press Enter to continue...[/]")
 
     def settings_menu(self):
         """Handle settings menu."""
