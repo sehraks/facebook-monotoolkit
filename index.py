@@ -27,7 +27,7 @@ class FacebookMonoToolkit:
         """Initialize the Facebook MonoToolkit."""
         # Read version from install-hook.sh
         try:
-            with open("install-hook.sh", "r") as f:
+            with open("install-hooks.sh", "r") as f:
                 content = f.read()
                 version_match = re.search(r'VERSION="([0-9.]+)"', content)
                 self.VERSION = version_match.group(1) if version_match else "4.62"  # Fallback version
@@ -75,7 +75,7 @@ class FacebookMonoToolkit:
         
         # Try to read latest version from install-hook.sh
         try:
-            with open("install-hook.sh", "r") as f:
+            with open("install-hooks.sh", "r") as f:
                 content = f.read()
                 version_match = re.search(r'VERSION="([0-9.]+)"', content)
                 if version_match:
