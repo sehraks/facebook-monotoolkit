@@ -250,8 +250,12 @@ class FacebookLogin:
         
         try:
             with open(log_file, 'a', encoding='utf-8') as f:
-                masked_email = email[:3] + '*' * (len(email) - 6) + email[-3:]
-                f.write(f"[{timestamp} GMT +8] Email: {masked_email} | Success: {success} | Message: {message}\n")
+                # Check if email is a UID (all digits)
+                if email.isdigit():
+                    masked_email = f"UID:{email[:2]}{'*' * (len(email) - 4)}{email[-2:]}"
+                else:
+                    masked_email = email[:3] + '*' * (len(email) - 6) + email[-3:]
+                f.write(f"[{timestamp} GMT +8] {'UID' if email.isdigit() else 'Email'}: {masked_email} | Success: {success} | Message: {message}\n")
         except Exception as e:
             console.print(f"[bold red]Failed to log login attempt: {str(e)}[/]")
 
