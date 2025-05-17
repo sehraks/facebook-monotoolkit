@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 17, 2025 11:21 AM +8 GMT
+# Last Modified: May 17, 2025 11:33 AM +8 GMT
 # Author: sehraks
 
 import os
@@ -12,7 +12,7 @@ import shutil
 from datetime import datetime, timezone, timedelta
 from rich.console import Console
 from rich.panel import Panel
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
+from rich.progress import Progress, TextColumn, BarColumn
 
 console = Console()
 
@@ -88,11 +88,10 @@ class UpdateSettings:
     def backup_current_data(self):
         """Create backup of important data before update."""
         with Progress(
-            SpinnerColumn(),
+            TextColumn("⭘"),
             TextColumn("[bold blue]{task.description}"),
             BarColumn(),
-            TextColumn("[bold blue]{task.percentage:>3.0f}%"),
-            TimeElapsedColumn(),
+            TextColumn("[bold blue]{task.percentage:>3.0f}%")
         ) as progress:
             backup_task = progress.add_task("📦 Creating backup...", total=100)
             
@@ -128,11 +127,10 @@ class UpdateSettings:
     def restore_backup(self):
         """Restore data from backup if update fails."""
         with Progress(
-            SpinnerColumn(),
+            TextColumn("⭘"),
             TextColumn("[bold blue]{task.description}"),
             BarColumn(),
-            TextColumn("[bold blue]{task.percentage:>3.0f}%"),
-            TimeElapsedColumn(),
+            TextColumn("[bold blue]{task.percentage:>3.0f}%")
         ) as progress:
             restore_task = progress.add_task("🔄 Restoring backup...", total=100)
             
@@ -163,11 +161,10 @@ class UpdateSettings:
     def update_index_values(self):
         """Update version and timestamps in index.py"""
         with Progress(
-            SpinnerColumn(),
-            TextColumn("[bold blue]{task.description}"),
-            TimeElapsedColumn(),
+            TextColumn("⭘"),
+            TextColumn("[bold blue]{task.description}")
         ) as progress:
-            update_task = progress.add_task("🔄 Updating index.py values...", total=None)
+            update_task = progress.add_task("🔄 Updating index.py values...")
             
             try:
                 # Wait for files to be available
@@ -247,11 +244,10 @@ class UpdateSettings:
 
             # Create a progress bar for the update process
             with Progress(
-                SpinnerColumn(),
+                TextColumn("⭘"),
                 TextColumn("[bold blue]{task.description}"),
                 BarColumn(),
-                TextColumn("[bold blue]{task.percentage:>3.0f}%"),
-                TimeElapsedColumn(),
+                TextColumn("[bold blue]{task.percentage:>3.0f}%")
             ) as progress:
                 # Add tasks for each step
                 download_task = progress.add_task("📥 Downloading latest changes...", total=100)
@@ -334,12 +330,11 @@ class UpdateSettings:
 
             # Check for updates with animated progress
             with Progress(
-                SpinnerColumn(),
-                TextColumn("[bold blue]{task.description}"),
-                TimeElapsedColumn(),
+                TextColumn("⭘"),
+                TextColumn("[bold blue]{task.description}")
             ) as progress:
                 # Add task for checking updates
-                check_task = progress.add_task("🔄 Checking for updates...", total=None)
+                check_task = progress.add_task("🔄 Checking for updates...")
                 
                 # Perform the actual update check
                 has_updates, update_count = self.check_for_updates()
