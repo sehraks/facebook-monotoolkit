@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 17, 2025 11:13 AM +8 GMT
+# Last Modified: May 17, 2025 11:21 AM +8 GMT
 # Author: sehraks
 
 import os
@@ -344,12 +344,9 @@ class UpdateSettings:
                 # Perform the actual update check
                 has_updates, update_count = self.check_for_updates()
                 
-                # Update the task status based on result
-                if has_updates:
-                    progress.update(check_task, description="🔄 Updates found!", completed=True)
-                else:
-                    progress.update(check_task, description="✨ No updates available", completed=True)
-
+                # Complete the task without changing the message
+                progress.update(check_task, completed=True)
+                
                 # Small delay for visual feedback
                 time.sleep(0.5)
 
