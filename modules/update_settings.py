@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 17, 2025 12:34 PM +8 GMT
+# Last Modified: May 17, 2025 12:03 PM +8 GMT
 # Author: sehraks
 
 import os
@@ -9,7 +9,6 @@ import subprocess
 import re
 import time
 import shutil
-import json
 from datetime import datetime, timezone, timedelta
 from rich.console import Console
 from rich.panel import Panel
@@ -110,11 +109,11 @@ class UpdateSettings:
                     if os.path.exists(dst):
                         shutil.rmtree(dst)
                     shutil.copytree(src, dst)
-                progress.update(backup_task, advance=70)
+                progress.update(backup_task, advance=70)  # Updated progress split
 
                 progress.update(backup_task, completed=100)
                 progress.update(backup_task, description="✅ Backup complete!")
-                time.sleep(0.5)
+                time.sleep(0.5)  # Small delay for visual feedback
                 return True
 
             except Exception as e:
@@ -149,46 +148,16 @@ class UpdateSettings:
                     if os.path.exists(dst):
                         shutil.rmtree(dst)
                     shutil.copytree(src, dst)
-                progress.update(restore_task, advance=100)
+                progress.update(restore_task, advance=100)  # Updated progress
 
                 progress.update(restore_task, completed=100)
                 progress.update(restore_task, description="✅ Restore complete!")
-                time.sleep(0.5)
+                time.sleep(0.5)  # Small delay for visual feedback
                 return True
 
             except Exception:
                 progress.update(restore_task, description="❌ Restore failed!")
                 return False
-
-    def initialize_empty_cookies_storage(self, repo_path):
-        """Initialize empty cookies storage with proper structure."""
-        try:
-            # Make sure the cookies-storage directory exists
-            cookies_dir = os.path.join(repo_path, "cookies-storage")
-            cookies_file = os.path.join(cookies_dir, "cookies.json")
-            
-            # Remove existing cookies directory and its contents if it exists
-            if os.path.exists(cookies_dir):
-                shutil.rmtree(cookies_dir)
-            
-            # Create fresh directory
-            os.makedirs(cookies_dir, exist_ok=True)
-            
-            # Create empty cookies file with proper structure
-            empty_data = {
-                "cookies": [],  # Completely empty cookies list
-                "metadata": {
-                    "last_update": datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S"),
-                    "updated_by": self.current_user
-                }
-            }
-            
-            # Write the empty structure to cookies.json
-            with open(cookies_file, 'w') as f:
-                json.dump(empty_data, f, indent=4)
-                
-        except Exception as e:
-            raise Exception(f"Failed to initialize cookies storage: {str(e)}")
 
     def update_index_values(self):
         """Update version and timestamps in index.py"""
@@ -249,12 +218,11 @@ class UpdateSettings:
                     content
                 )
 
-                # Update file header with fixed regex pattern
+                # Update file header
                 content = re.sub(
-                    r'# Last Modified:.*$',  # Add $ to match end of line
+                    r'# Last Modified: .*',
                     f'# Last Modified: {current_date} {current_time} +8 GMT',
-                    content,
-                    flags=re.MULTILINE  # Add multiline flag to handle line endings
+                    content
                 )
 
                 # Write back to index.py
@@ -262,7 +230,7 @@ class UpdateSettings:
                     f.write(content)
 
                 progress.update(update_task, description="✅ Index.py updated successfully!")
-                time.sleep(0.5)
+                time.sleep(0.5)  # Small delay for visual feedback
                 return True
 
             except Exception as e:
@@ -272,7 +240,7 @@ class UpdateSettings:
     def update_repository(self):
         """Update repository by re-cloning."""
         try:
-            # Only backup logs, not cookies
+            # Backup current data with progress
             if not self.backup_current_data():
                 raise Exception("Failed to create backup")
 
@@ -285,42 +253,32 @@ class UpdateSettings:
                 BarColumn(),
                 TextColumn("[bold blue]{task.percentage:>3.0f}%")
             ) as progress:
+                # Add tasks for each step
                 download_task = progress.add_task("📥 Downloading latest changes...", total=100)
                 
-                # Remove the entire repository
-                if os.path.exists(repo_path):
-                    shutil.rmtree(repo_path)
-                progress.update(download_task, advance=25)
+                # Prepare commands with proper directory handling
+                commands = [
+                    f"cd {home} && rm -rf facebook-monotoolkit",
+                    f"cd {home} && git clone https://github.com/sehraks/facebook-monotoolkit.git",
+                    f"cd {repo_path} && chmod +x index.py && chmod +x modules/*.py"
+                ]
 
-                # Clone the fresh repository
-                status, output = self.run_command(f"cd {home} && git clone https://github.com/sehraks/facebook-monotoolkit.git")
-                if not status:
-                    progress.update(download_task, description="❌ Download failed!")
-                    console.print(f"Error: {output}")
-                    self.restore_backup()
-                    raise Exception("Failed to clone repository")
-                progress.update(download_task, advance=25)
-
-                # Set permissions
-                status, output = self.run_command(f"cd {repo_path} && chmod +x index.py && chmod +x modules/*.py")
-                if not status:
-                    progress.update(download_task, description="❌ Permission setting failed!")
-                    console.print(f"Error: {output}")
-                    raise Exception("Failed to set permissions")
-                progress.update(download_task, advance=25)
-
-                # Initialize empty cookies storage
-                try:
-                    self.initialize_empty_cookies_storage(repo_path)
-                except Exception as e:
-                    progress.update(download_task, description="❌ Failed to initialize cookies storage!")
-                    raise Exception(f"Failed to initialize cookies storage: {str(e)}")
-                progress.update(download_task, advance=25)
+                # Execute commands with progress updates
+                for i, cmd in enumerate(commands):
+                    progress.update(download_task, advance=33)  # Split progress into thirds
+                    status, output = self.run_command(cmd)
+                    if not status:
+                        progress.update(download_task, description="❌ Download failed!")
+                        console.print(f"Command failed: {cmd}")
+                        console.print(f"Error: {output}")
+                        self.restore_backup()
+                        raise Exception("Failed to update repository")
+                    time.sleep(0.5)  # Small delay for visual feedback
 
                 # Complete the progress bar
                 progress.update(download_task, completed=100)
                 progress.update(download_task, description="✅ Download complete!")
-                time.sleep(0.5)
+                time.sleep(0.5)  # Small delay for visual feedback
 
             # Wait for files to be ready
             time.sleep(1)
@@ -378,6 +336,7 @@ class UpdateSettings:
             with Progress(
                 TextColumn("[bold blue]{task.description}")
             ) as progress:
+                # Add task for checking updates
                 check_task = progress.add_task("🔄 Checking for updates...")
                 
                 # Perform the actual update check
