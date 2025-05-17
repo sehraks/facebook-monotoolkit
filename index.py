@@ -212,7 +212,10 @@ class FacebookMonoToolkit:
             border_style="yellow"
         ))
         
-        email = console.input("[bold yellow]📧 Enter your email: [/]")
+        console.print("[bold yellow]Login using Email/UID:[/]")
+        console.print("[bold cyan]Note: You can use either your email address or Facebook UID[/]\n")
+        
+        email = console.input("[bold yellow]📧 Enter your email/UID: [/]")
         password = console.input("[bold yellow]🔑 Enter your password: [/]")
         
         # Validate credentials format
