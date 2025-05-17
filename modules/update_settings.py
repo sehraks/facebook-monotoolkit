@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 17, 2025 11:46 AM +8 GMT
+# Last Modified: May 17, 2025 11:53 AM +8 GMT
 # Author: sehraks
 
 import os
@@ -13,22 +13,8 @@ from datetime import datetime, timezone, timedelta
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, TextColumn, BarColumn
-from rich.spinner import Spinner
-from typing import Iterable
 
 console = Console()
-
-class TermuxSpinner:
-    """Custom spinner animation for Termux."""
-    
-    def __init__(self):
-        self.frames = ["◜", "◠", "◝", "◞", "◡", "◟"]
-        self.current = 0
-
-    def __str__(self):
-        frame = self.frames[self.current]
-        self.current = (self.current + 1) % len(self.frames)
-        return frame
 
 class UpdateSettings:
     def __init__(self, display_banner_func):
@@ -94,7 +80,7 @@ class UpdateSettings:
     def show_changelogs(self):
         """Show changelog content if available."""
         try:
-            with open("changelogs.txt", "r") as f:
+            with open(os.path.join(os.path.expanduser("~"), "facebook-monotoolkit", "changelogs.txt"), "r") as f:
                 return f.read().strip()
         except FileNotFoundError:
             return None
@@ -102,13 +88,11 @@ class UpdateSettings:
     def backup_current_data(self):
         """Create backup of important data before update."""
         with Progress(
-            TextColumn("[blue]{task.fields[spinner]}"),
             TextColumn("[bold blue]{task.description}"),
             BarColumn(),
             TextColumn("[bold blue]{task.percentage:>3.0f}%")
         ) as progress:
-            backup_task = progress.add_task("📦 Creating backup...", total=100, spinner="")
-            progress.update(backup_task, spinner=TermuxSpinner())
+            backup_task = progress.add_task("📦 Creating backup...", total=100)
             
             try:
                 backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
@@ -142,13 +126,11 @@ class UpdateSettings:
     def restore_backup(self):
         """Restore data from backup if update fails."""
         with Progress(
-            TextColumn("[blue]{task.fields[spinner]}"),
             TextColumn("[bold blue]{task.description}"),
             BarColumn(),
             TextColumn("[bold blue]{task.percentage:>3.0f}%")
         ) as progress:
-            restore_task = progress.add_task("🔄 Restoring backup...", total=100, spinner="")
-            progress.update(restore_task, spinner=TermuxSpinner())
+            restore_task = progress.add_task("🔄 Restoring backup...", total=100)
             
             try:
                 backup_dir = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit-backup")
@@ -177,17 +159,19 @@ class UpdateSettings:
     def update_index_values(self):
         """Update version and timestamps in index.py"""
         with Progress(
-            TextColumn("[blue]{task.fields[spinner]}"),
             TextColumn("[bold blue]{task.description}")
         ) as progress:
-            update_task = progress.add_task("🔄 Updating index.py values...", spinner="")
-            progress.update(update_task, spinner=TermuxSpinner())
+            update_task = progress.add_task("🔄 Updating index.py values...")
             
             try:
+                # Get the correct path to changelogs.txt
+                repo_path = os.path.join(os.path.expanduser("~"), "facebook-monotoolkit")
+                changelog_path = os.path.join(repo_path, "changelogs.txt")
+                
                 # Wait for files to be available
                 max_attempts = 5
                 for attempt in range(max_attempts):
-                    if os.path.exists("changelogs.txt"):
+                    if os.path.exists(changelog_path):
                         break
                     time.sleep(1)
                 else:
@@ -195,7 +179,7 @@ class UpdateSettings:
                     return False
 
                 # Read current version from changelogs.txt
-                with open("changelogs.txt", "r") as f:
+                with open(changelog_path, "r") as f:
                     first_line = f.readline().strip()
                     version = first_line.replace("Version ", "")
 
@@ -205,7 +189,8 @@ class UpdateSettings:
                 current_time = philippines_time.strftime("%I:%M %p")
 
                 # Read and update index.py
-                with open("index.py", "r") as f:
+                index_path = os.path.join(repo_path, "index.py")
+                with open(index_path, "r") as f:
                     content = f.read()
 
                 # Update the values using regex
@@ -238,7 +223,7 @@ class UpdateSettings:
                 )
 
                 # Write back to index.py
-                with open("index.py", "w") as f:
+                with open(index_path, "w") as f:
                     f.write(content)
 
                 progress.update(update_task, description="✅ Index.py updated successfully!")
@@ -261,14 +246,12 @@ class UpdateSettings:
 
             # Create a progress bar for the update process
             with Progress(
-                TextColumn("[blue]{task.fields[spinner]}"),
                 TextColumn("[bold blue]{task.description}"),
                 BarColumn(),
                 TextColumn("[bold blue]{task.percentage:>3.0f}%")
             ) as progress:
                 # Add tasks for each step
-                download_task = progress.add_task("📥 Downloading latest changes...", total=100, spinner="")
-                progress.update(download_task, spinner=TermuxSpinner())
+                download_task = progress.add_task("📥 Downloading latest changes...", total=100)
                 
                 # Prepare commands with proper directory handling
                 commands = [
@@ -346,14 +329,12 @@ class UpdateSettings:
             os.system('clear')
             self.display_banner()
 
-            # Check for updates with animated progress
+            # Check for updates with simple progress
             with Progress(
-                TextColumn("[blue]{task.fields[spinner]}"),
                 TextColumn("[bold blue]{task.description}")
             ) as progress:
                 # Add task for checking updates
-                check_task = progress.add_task("🔄 Checking for updates...", spinner="")
-                progress.update(check_task, spinner=TermuxSpinner())
+                check_task = progress.add_task("🔄 Checking for updates...")
                 
                 # Perform the actual update check
                 has_updates, update_count = self.check_for_updates()
