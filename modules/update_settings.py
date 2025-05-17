@@ -120,7 +120,7 @@ class UpdateSettings:
                 progress.update(backup_task, description="❌ Backup failed!")
                 console.print(Panel(
                     f"[bold red]Failed to create backup: {str(e)}[/]",
-                    style="bold red",
+                    style="bold white",
                     border_style="red"
                 ))
                 return False
@@ -128,9 +128,9 @@ class UpdateSettings:
     def restore_backup(self):
         """Restore data from backup if update fails."""
         with Progress(
-            TextColumn("[bold blue]{task.description}"),
+            TextColumn("[bold white]{task.description}"),
             BarColumn(),
-            TextColumn("[bold blue]{task.percentage:>3.0f}%")
+            TextColumn("[bold white]{task.percentage:>3.0f}%")
         ) as progress:
             restore_task = progress.add_task("🔄 Restoring backup...", total=100)
             
@@ -162,7 +162,7 @@ class UpdateSettings:
     def update_index_values(self):
         """Update version and timestamps in index.py"""
         with Progress(
-            TextColumn("[bold blue]{task.description}")
+            TextColumn("[bold white]{task.description}")
         ) as progress:
             update_task = progress.add_task("🔄 Updating index.py values...")
             
@@ -229,7 +229,7 @@ class UpdateSettings:
                 with open(index_path, "w") as f:
                     f.write(content)
 
-                progress.update(update_task, description="✅ Index.py updated successfully!")
+                progress.update(update_task, description="✅ Index updated!")
                 time.sleep(0.5)  # Small delay for visual feedback
                 return True
 
@@ -295,7 +295,7 @@ class UpdateSettings:
 
             # Update index.py values after successful update
             if self.update_index_values():
-                console.print("[bold green]✅ Successfully updated index.py values[/]")
+                console.print("[bold green]✅ Successfully updated![/]")
 
             # Get current Philippines time
             philippines_time = datetime.now(timezone(timedelta(hours=8)))
@@ -334,7 +334,7 @@ class UpdateSettings:
 
             # Check for updates with simple progress
             with Progress(
-                TextColumn("[bold blue]{task.description}")
+                TextColumn("[bold white]{task.description}")
             ) as progress:
                 # Add task for checking updates
                 check_task = progress.add_task("🔄 Checking for updates...")
