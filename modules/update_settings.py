@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/update_settings.py
-# Last Modified: May 17, 2025 10:55 AM +8 GMT
+# Last Modified: May 17, 2025 11:01 AM +8 GMT
 # Author: sehraks
 
 import os
@@ -13,25 +13,8 @@ from datetime import datetime, timezone, timedelta
 from rich.console import Console
 from rich.panel import Panel
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
-from rich.live import Live
-from rich.spinner import Spinner
 
 console = Console()
-
-class AnimatedProgress:
-    def __init__(self, description: str):
-        self.spinner = Spinner("dots", text=description)
-        self.live = Live(self.spinner, refresh_per_second=10)
-
-    def __enter__(self):
-        self.live.start()
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.live.stop()
-
-    def update(self, new_text: str):
-        self.spinner.text = new_text
 
 class UpdateSettings:
     def __init__(self, display_banner_func):
@@ -75,18 +58,6 @@ class UpdateSettings:
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
 
-    def show_indeterminate_progress(self, description: str, callback, *args, **kwargs):
-        """Show an indeterminate progress spinner while executing a callback."""
-        with Progress(
-            SpinnerColumn(),
-            TextColumn("[bold blue]{task.description}"),
-            TimeElapsedColumn(),
-        ) as progress:
-            task = progress.add_task(description, total=None)
-            result = callback(*args, **kwargs)
-            progress.update(task, completed=True)
-            return result
-
     def run_command(self, command):
         """Run a shell command and return its status and output."""
         try:
@@ -97,18 +68,14 @@ class UpdateSettings:
 
     def check_for_updates(self):
         """Check if updates are available."""
-        with AnimatedProgress("🔄 Checking Git repository...") as progress:
-            if not self.run_command("git fetch origin")[0]:
-                progress.update("❌ Failed to fetch updates")
-                return False, "Failed to fetch updates"
-            
-            status, output = self.run_command("git rev-list HEAD..origin/main --count")
-            if not status:
-                progress.update("❌ Failed to check update status")
-                return False, "Failed to check update status"
-            
-            progress.update("✅ Update check complete!")
-            return int(output.strip()) > 0, output.strip()
+        if not self.run_command("git fetch origin")[0]:
+            return False, "Failed to fetch updates"
+        
+        status, output = self.run_command("git rev-list HEAD..origin/main --count")
+        if not status:
+            return False, "Failed to check update status"
+        
+        return int(output.strip()) > 0, output.strip()
 
     def show_changelogs(self):
         """Show changelog content if available."""
@@ -146,6 +113,7 @@ class UpdateSettings:
 
                 progress.update(backup_task, completed=100)
                 progress.update(backup_task, description="✅ Backup complete!")
+                time.sleep(0.5)  # Small delay for visual feedback
                 return True
 
             except Exception as e:
@@ -185,6 +153,7 @@ class UpdateSettings:
 
                 progress.update(restore_task, completed=100)
                 progress.update(restore_task, description="✅ Restore complete!")
+                time.sleep(0.5)  # Small delay for visual feedback
                 return True
 
             except Exception:
@@ -193,7 +162,13 @@ class UpdateSettings:
 
     def update_index_values(self):
         """Update version and timestamps in index.py"""
-        with AnimatedProgress("🔄 Updating index.py values...") as progress:
+        with Progress(
+            SpinnerColumn(),
+            TextColumn("[bold blue]{task.description}"),
+            TimeElapsedColumn(),
+        ) as progress:
+            update_task = progress.add_task("🔄 Updating index.py values...", total=None)
+            
             try:
                 # Wait for files to be available
                 max_attempts = 5
@@ -202,7 +177,7 @@ class UpdateSettings:
                         break
                     time.sleep(1)
                 else:
-                    progress.update("❌ Failed to find changelogs.txt")
+                    progress.update(update_task, description="❌ Failed to find changelogs.txt")
                     return False
 
                 # Read current version from changelogs.txt
@@ -252,11 +227,12 @@ class UpdateSettings:
                 with open("index.py", "w") as f:
                     f.write(content)
 
-                progress.update("✅ Index.py updated successfully!")
+                progress.update(update_task, description="✅ Index.py updated successfully!")
+                time.sleep(0.5)  # Small delay for visual feedback
                 return True
 
             except Exception as e:
-                progress.update(f"❌ Failed to update index.py: {str(e)}")
+                progress.update(update_task, description=f"❌ Failed to update index.py: {str(e)}")
                 return False
 
     def update_repository(self):
@@ -302,9 +278,10 @@ class UpdateSettings:
                 # Complete the progress bar
                 progress.update(download_task, completed=100)
                 progress.update(download_task, description="✅ Download complete!")
+                time.sleep(0.5)  # Small delay for visual feedback
 
             # Wait for files to be ready
-            time.sleep(2)
+            time.sleep(1)
 
             # Check if we can access the new files
             if not os.path.exists(os.path.join(repo_path, "changelogs.txt")):
@@ -361,9 +338,20 @@ class UpdateSettings:
                 TextColumn("[bold blue]{task.description}"),
                 TimeElapsedColumn(),
             ) as progress:
+                # Add task for checking updates
                 check_task = progress.add_task("🔄 Checking for updates...", total=None)
+                
+                # Perform the actual update check
                 has_updates, update_count = self.check_for_updates()
-                progress.update(check_task, completed=True)
+                
+                # Update the task status based on result
+                if has_updates:
+                    progress.update(check_task, description="✅ Updates found!", completed=True)
+                else:
+                    progress.update(check_task, description="✨ No updates available", completed=True)
+
+                # Small delay for visual feedback
+                time.sleep(0.5)
 
             if has_updates:
                 # Show changelog if available
