@@ -1,11 +1,11 @@
-Version 4.69
-Date: May 15, 2025
-Time: 05:25 PM
+Version 5.10
+Date: May 17, 2025
+Time: 05:10 PM
   —————————————————————————————————
 ADDED NEW FEATURE(S):
 — Cookie Management (support log-in & log-out method. It can also remove your stored cookies
 — Spam Sharing Post (without Facebook's API, for less Facebook restriction
-— Facebook log-in (API support, soon)
+— Facebook log-in (API support)
 — Profile Picture Guard (soon)
   —————————————————————————————————
 NEW CHANGES:
