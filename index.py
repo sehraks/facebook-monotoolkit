@@ -243,7 +243,7 @@ class FacebookMonoToolkit:
             
         if success and account_data:
             self.account_data = account_data
-            success = self.cookie_manager.add_cookie(account_data['cookie'])[0]
+            success = self.cookie_manager.add_cookie(account_data['cookie'], account_data['name'])[0]
             
             if success:
                 self.current_account = None
