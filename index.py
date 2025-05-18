@@ -105,7 +105,7 @@ class FacebookMonoToolkit:
             
             if self.current_account:
                 console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {self.current_account['name']}[/]", 
+                    f"[bold cyan]💠 Current Account: {account_data['name']}[/]", 
                     style="bold cyan",
                     border_style="cyan"
                 ))
@@ -154,7 +154,7 @@ class FacebookMonoToolkit:
             
             if self.current_account:
                 console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {self.current_account['name']}[/]",
+                    f"[bold cyan]💠 Current Account: {account_data['name']}[/]",
                     style="bold cyan",
                     border_style="cyan"
                 ))
@@ -329,7 +329,7 @@ class FacebookMonoToolkit:
             
             if self.current_account:
                 console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {self.current_account['name'].split('Facebook_')[0].strip()}[/]",
+                    f"[bold cyan]💠 Current Account: {account_data['name']}[/]",
                     style="bold cyan",
                     border_style="cyan"
                 ))
