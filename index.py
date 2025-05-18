@@ -321,7 +321,7 @@ class FacebookMonoToolkit:
         Utils.log_activity("Add Cookie", success, message)
         console.input("[bold white]Press Enter to continue...[/]")
 
-def cookie_settings_menu(self):
+    def cookie_settings_menu(self):
         """Handle cookie settings and storage menu."""
         while True:
             self.clear_screen()
@@ -441,7 +441,7 @@ def cookie_settings_menu(self):
             
             console.input("[bold white]Press Enter to continue...[/]")
 
-    def spam_sharing_menu(self):
+        def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
         self.clear_screen()
         self.display_banner()
