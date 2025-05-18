@@ -118,7 +118,7 @@ class CookieManager:
         except Exception:
             return False
 
-    def add_cookie(self, cookie: str, account_name: Optional[str] = None) -> Tuple[bool, str]:
+    def add_cookie(self, cookie: str, account_name: str = None) -> Tuple[bool, str]:
         """Add a new cookie to storage."""
         try:
             cookie = cookie.strip()
@@ -126,16 +126,14 @@ class CookieManager:
             if not valid:
                 return False, message
 
-            user_id, default_name = self._extract_user_info(cookie)
+            user_id, _ = self._extract_user_info(cookie)
             if user_id == 'unknown':
                 return False, "Could not extract user ID from cookie"
 
-            # Use provided account name if available, otherwise use extracted name
-            name = account_name if account_name else default_name
-
+            # Create or update account data
             account_data = {
                 'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
-                'name': name,
+                'name': account_name if account_name else f"Facebook_{user_id}",
                 'user_id': user_id,
                 'cookie': cookie,
                 'added_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
@@ -144,10 +142,11 @@ class CookieManager:
                 'added_by': self.current_user
             }
 
+            # Update existing or add new
             for idx, existing in enumerate(self.cookies):
                 if existing['user_id'] == user_id:
-                    # Preserve the existing name if we're updating and no new name provided
-                    if not account_name and 'name' in existing:
+                    # Preserve the existing name if no new name provided
+                    if not account_name:
                         account_data['name'] = existing['name']
                     self.cookies[idx] = account_data
                     if self.save_cookies():
@@ -156,7 +155,7 @@ class CookieManager:
 
             self.cookies.append(account_data)
             if self.save_cookies():
-                return True, f"Added new account: {name}"
+                return True, f"Added new account: {account_data['name']}"
             return False, "Failed to save cookie data"
 
         except Exception as e:
