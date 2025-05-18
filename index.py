@@ -25,8 +25,9 @@ console = Console()
 class FacebookMonoToolkit:
     def __init__(self):
         """Initialize the Facebook MonoToolkit."""
-        # Add account_data as a class variable
+        # Initialize account_data
         self.account_data = None
+        
         # Read version from changelogs.txt
         try:
             with open("changelogs.txt", "r") as f:
@@ -48,7 +49,7 @@ class FacebookMonoToolkit:
         self.cookie_manager = CookieManager()
         self.spam_sharing = SpamSharing()
         self.update_settings = UpdateSettings(self.display_banner)
-        self.fb_login = FacebookLogin()  # New component
+        self.fb_login = FacebookLogin()
         self.current_account: Optional[Dict] = None
         
         # Create necessary directories
@@ -70,7 +71,6 @@ class FacebookMonoToolkit:
 
     def display_banner(self):
         """Display the tool banner."""
-        # Get current Philippines time for display
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
         current_time = philippines_time.strftime("%I:%M %p")
         current_date = philippines_time.strftime("%B %d, %Y")
@@ -100,6 +100,7 @@ class FacebookMonoToolkit:
         return True
 
     def main(self):
+        """Display and handle the main menu."""
         while True:
             self.clear_screen()
             self.display_banner()
@@ -148,6 +149,7 @@ class FacebookMonoToolkit:
         self.update_settings.display_settings_menu()
 
     def cookie_management_menu(self):
+        """Handle cookie management menu."""
         while True:
             self.clear_screen()
             self.display_banner()
@@ -239,10 +241,9 @@ class FacebookMonoToolkit:
         # Attempt login
         success, message, account_data = self.fb_login.login(email.strip(), password.strip())
             
-            # After successful login, store account_data as class variable
         if success and account_data:
-            self.account_data = account_data  # Store account_data in class
-            success = self.cookie_manager.add_cookie(account_data['cookie'])[0] # Add account to cookie manager
+            self.account_data = account_data
+            success = self.cookie_manager.add_cookie(account_data['cookie'])[0]
             
             if success:
                 self.current_account = None
@@ -323,128 +324,128 @@ class FacebookMonoToolkit:
 
     def cookie_settings_menu(self):
         """Handle cookie settings and storage menu."""
-    while True:
-        self.clear_screen()
-        self.display_banner()
-        
-        if self.current_account and self.account_data:
-            console.print(Panel(
-                f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
-                style="bold cyan",
-                border_style="cyan"
-            ))
+        while True:
+            self.clear_screen()
+            self.display_banner()
+            
+            if self.current_account and self.account_data:
+                console.print(Panel(
+                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
+                    style="bold cyan",
+                    border_style="cyan"
+                ))
 
-        console.print(Panel(
-            "[bold yellow]Cookie Settings and Storage[/]",
-            style="bold yellow",
-            border_style="yellow"
-        ))
-        
-        accounts = self.cookie_manager.get_all_accounts()
-        for idx, account in enumerate(accounts, 1):
-            status = "Logged in" if account == self.current_account else "Logged out"
-            status_color = "green" if status == "Logged in" else "red"
-            
-            if self.account_data and account['user_id'] == self.account_data['user_id']:
-                display_name = self.account_data['name']
-            else:
-                display_name = "Unknown User"
-            
-            account_panel = Panel(
-                f"[bold white]Name: {display_name}[/]\n"
-                f"[bold white]UID: {account['user_id']}[/]\n"
-                f"[bold {status_color}]Status: {status}[/]\n"
-                + (f"[bold yellow][{idx}] Select[/]\n" if account != self.current_account else "")
-                + f"[bold red][R{idx}] Remove[/]",
-                title=f"[bold yellow]📨 ACCOUNT {idx}[/]",
+            console.print(Panel(
+                "[bold yellow]Cookie Settings and Storage[/]",
                 style="bold yellow",
                 border_style="yellow"
-            )
-            console.print(account_panel)
-            console.print()
-
-        console.print("[bold white][0] Back[/]\n")
-
-        choice = console.input("[bold yellow]Select an option: [/]")
-        choice = choice.strip().upper()
-        
-        if choice == "0":
-            break
+            ))
             
-        if choice.startswith('R'):
-            try:
-                idx = int(choice[1:]) - 1
-                if 0 <= idx < len(accounts):
-                    account_to_remove = accounts[idx]
-                    if self.account_data and account_to_remove['user_id'] == self.account_data['user_id']:
-                        display_name = self.account_data['name']
+            accounts = self.cookie_manager.get_all_accounts()
+            for idx, account in enumerate(accounts, 1):
+                status = "Logged in" if account == self.current_account else "Logged out"
+                status_color = "green" if status == "Logged in" else "red"
+                
+                if self.account_data and account['user_id'] == self.account_data['user_id']:
+                    display_name = self.account_data['name']
+                else:
+                    display_name = "Unknown User"
+                
+                account_panel = Panel(
+                    f"[bold white]Name: {display_name}[/]\n"
+                    f"[bold white]UID: {account['user_id']}[/]\n"
+                    f"[bold {status_color}]Status: {status}[/]\n"
+                    + (f"[bold yellow][{idx}] Select[/]\n" if account != self.current_account else "")
+                    + f"[bold red][R{idx}] Remove[/]",
+                    title=f"[bold yellow]📨 ACCOUNT {idx}[/]",
+                    style="bold yellow",
+                    border_style="yellow"
+                )
+                console.print(account_panel)
+                console.print()
+
+            console.print("[bold white][0] Back[/]\n")
+
+            choice = console.input("[bold yellow]Select an option: [/]")
+            choice = choice.strip().upper()
+            
+            if choice == "0":
+                break
+                
+            if choice.startswith('R'):
+                try:
+                    idx = int(choice[1:]) - 1
+                    if 0 <= idx < len(accounts):
+                        account_to_remove = accounts[idx]
+                        if self.account_data and account_to_remove['user_id'] == self.account_data['user_id']:
+                            display_name = self.account_data['name']
+                        else:
+                            display_name = "Unknown User"
+                        confirm = console.input(f"[bold red]Are you sure you want to remove {display_name}? (y/N): [/]").strip().lower()
+                        if confirm == 'y':
+                            if account_to_remove == self.current_account:
+                                self.current_account = None
+                                self.account_data = None
+                            success = self.cookie_manager.remove_cookie(account_to_remove)
+                            if success:
+                                console.print(Panel(
+                                    f"[bold green]✅ Successfully removed account: {display_name}[/]",
+                                    style="bold green",
+                                    border_style="green"
+                                ))
+                            else:
+                                console.print(Panel(
+                                    "[bold white]❕ Failed to remove account![/]",
+                                    style="bold yellow",
+                                    border_style="yellow"
+                                ))
                     else:
-                        display_name = "Unknown User"
-                    confirm = console.input(f"[bold red]Are you sure you want to remove {display_name}? (y/N): [/]").strip().lower()
-                    if confirm == 'y':
-                        if account_to_remove == self.current_account:
-                            self.current_account = None
-                            self.account_data = None
-                        success = self.cookie_manager.remove_cookie(account_to_remove)
-                        if success:
+                        console.print(Panel(
+                            "[bold white]❕ Invalid selection![/]",
+                            style="bold red",
+                            border_style="red"
+                        ))
+                except (ValueError, IndexError):
+                    console.print(Panel(
+                        "[bold white]❕ Invalid input![/]",
+                        style="bold red",
+                        border_style="red"
+                    ))
+            else:
+                try:
+                    choice_idx = int(choice) - 1
+                    if 0 <= choice_idx < len(accounts):
+                        if accounts[choice_idx] != self.current_account:
+                            self.current_account = accounts[choice_idx]
+                            if self.account_data and self.current_account['user_id'] == self.account_data['user_id']:
+                                display_name = self.account_data['name']
+                            else:
+                                display_name = "Unknown User"
                             console.print(Panel(
-                                f"[bold green]✅ Successfully removed account: {display_name}[/]",
+                                f"[bold green]✅ Successfully switched to account: {display_name}[/]",
                                 style="bold green",
                                 border_style="green"
                             ))
                         else:
                             console.print(Panel(
-                                "[bold white]❕ Failed to remove account![/]",
+                                "[bold white]❕ This account is already selected.[/]",
                                 style="bold yellow",
                                 border_style="yellow"
                             ))
-                else:
-                    console.print(Panel(
-                        "[bold white]❕ Invalid selection![/]",
-                        style="bold red",
-                        border_style="red"
-                    ))
-            except (ValueError, IndexError):
-                console.print(Panel(
-                    "[bold white]❕ Invalid input![/]",
-                    style="bold red",
-                    border_style="red"
-                ))
-        else:
-            try:
-                choice_idx = int(choice) - 1
-                if 0 <= choice_idx < len(accounts):
-                    if accounts[choice_idx] != self.current_account:
-                        self.current_account = accounts[choice_idx]
-                        if self.account_data and self.current_account['user_id'] == self.account_data['user_id']:
-                            display_name = self.account_data['name']
-                        else:
-                            display_name = "Unknown User"
-                        console.print(Panel(
-                            f"[bold green]✅ Successfully switched to account: {display_name}[/]",
-                            style="bold green",
-                            border_style="green"
-                        ))
                     else:
                         console.print(Panel(
-                            "[bold white]❕ This account is already selected.[/]",
-                            style="bold yellow",
-                            border_style="yellow"
+                            "[bold white]❕ Invalid selection![/]",
+                            style="bold red",
+                            border_style="red"
                         ))
-                else:
+                except ValueError:
                     console.print(Panel(
-                        "[bold white]❕ Invalid selection![/]",
+                        "[bold white]❕ Invalid input![/]",
                         style="bold red",
                         border_style="red"
                     ))
-            except ValueError:
-                console.print(Panel(
-                    "[bold white]❕ Invalid input![/]",
-                    style="bold red",
-                    border_style="red"
-                ))
-        
-        console.input("[bold white]Press Enter to continue...[/]")
+            
+            console.input("[bold white]Press Enter to continue...[/]")
 
     def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
