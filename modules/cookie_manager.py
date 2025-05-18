@@ -84,10 +84,14 @@ class CookieManager:
         """Extract user ID and name from cookie string."""
         c_user_match = re.search(r'c_user=(\d+)', cookie_str)
         if not c_user_match:
-            return 'unknown', 'Unknown_User'
+            return 'unknown', 'Unknown User'
         
         user_id = c_user_match.group(1)
-        name = f"Facebook_{user_id}"
+        
+        # Try to extract name from cookie if available
+        name_match = re.search(r'name=([^;]+)', cookie_str)
+        name = name_match.group(1) if name_match else f"Facebook_{user_id}"
+        
         return user_id, name
 
     def _validate_cookie(self, cookie_str: str) -> Tuple[bool, str]:
@@ -114,7 +118,7 @@ class CookieManager:
         except Exception:
             return False
 
-    def add_cookie(self, cookie: str) -> Tuple[bool, str]:
+    def add_cookie(self, cookie: str, account_name: Optional[str] = None) -> Tuple[bool, str]:
         """Add a new cookie to storage."""
         try:
             cookie = cookie.strip()
@@ -122,9 +126,12 @@ class CookieManager:
             if not valid:
                 return False, message
 
-            user_id, name = self._extract_user_info(cookie)
+            user_id, default_name = self._extract_user_info(cookie)
             if user_id == 'unknown':
                 return False, "Could not extract user ID from cookie"
+
+            # Use provided account name if available, otherwise use extracted name
+            name = account_name if account_name else default_name
 
             account_data = {
                 'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
@@ -139,9 +146,12 @@ class CookieManager:
 
             for idx, existing in enumerate(self.cookies):
                 if existing['user_id'] == user_id:
+                    # Preserve the existing name if we're updating and no new name provided
+                    if not account_name and 'name' in existing:
+                        account_data['name'] = existing['name']
                     self.cookies[idx] = account_data
                     if self.save_cookies():
-                        return True, f"Updated existing account: {name}"
+                        return True, f"Updated existing account: {account_data['name']}"
                     return False, "Failed to save cookie data"
 
             self.cookies.append(account_data)
