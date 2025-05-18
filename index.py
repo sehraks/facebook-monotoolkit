@@ -302,7 +302,14 @@ class FacebookMonoToolkit:
             console.input("[bold white]Press Enter to continue...[/]")
             return
 
-        success, message = self.cookie_manager.add_cookie(cookie)
+        # Ask for account name if not in cookie
+        account_name = None
+        if "name=" not in cookie:
+            account_name = console.input("[bold green]Account Name (optional): [/]").strip()
+            if not account_name:
+                account_name = None
+
+        success, message = self.cookie_manager.add_cookie(cookie, account_name)
         
         if success:
             if not self.current_account:
