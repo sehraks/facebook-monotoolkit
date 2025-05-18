@@ -149,6 +149,9 @@ class FacebookMonoToolkit:
     def cookie_management_menu(self):
         """Handle cookie management menu."""
         while True:
+            self.clear_screen()
+            self.display_banner()
+            
             if self.current_account:
                 console.print(Panel(
                     f"[bold cyan]💠 Current Account: {self.current_account['name']}[/]",
@@ -156,8 +159,6 @@ class FacebookMonoToolkit:
                     border_style="cyan"
                 ))
 
-            self.clear_screen()
-            self.display_banner()
             console.print(Panel(
                 "[bold yellow]🔑 Cookie Management[/]",
                 style="bold yellow",
