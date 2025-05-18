@@ -322,8 +322,8 @@ class FacebookMonoToolkit:
         console.input("[bold white]Press Enter to continue...[/]")
 
     def cookie_settings_menu(self):
-    """Handle cookie settings and storage menu."""
-    while True:
+        """Handle cookie settings and storage menu."""
+        while True:
         self.clear_screen()
         self.display_banner()
         
@@ -345,7 +345,6 @@ class FacebookMonoToolkit:
             status = "Logged in" if account == self.current_account else "Logged out"
             status_color = "green" if status == "Logged in" else "red"
             
-            # Use account_data name if available
             if self.account_data and account['user_id'] == self.account_data['user_id']:
                 display_name = self.account_data['name']
             else:
@@ -362,12 +361,12 @@ class FacebookMonoToolkit:
                 border_style="yellow"
             )
             console.print(account_panel)
-            console.print()  # Add space between accounts
+            console.print()
 
             console.print("[bold white][0] Back[/]\n")
 
             choice = console.input("[bold yellow]Select an option: [/]")
-            choice = choice.strip().upper()
+            choice = choice.strip().upper() # Space between accounts
             
             if choice == "0":
                 break
