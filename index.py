@@ -446,19 +446,17 @@ class FacebookMonoToolkit:
                     ))
             else:
                 try:
-                    choice_idx = int(choice) - 1
-                    if 0 <= choice_idx < len(accounts):
-                        if accounts[choice_idx] != self.current_account:
-                            self.current_account = accounts[choice_idx]
-                            if self.account_data and self.current_account['user_id'] == self.account_data['user_id']:
-                                display_name = self.account_data['name']
-                            else:
-                                display_name = "Unknown User"
-                            console.print(Panel(
-                                f"[bold green]✅ Successfully switched to account: {display_name}[/]",
-                                style="bold green",
-                                border_style="green"
-                            ))
+            choice_idx = int(choice) - 1
+            if 0 <= choice_idx < len(accounts):
+                if accounts[choice_idx] != self.current_account:
+                    self.current_account = accounts[choice_idx]
+                    self._load_account_data(self.current_account)
+                    display_name = self.current_account['name']
+                    console.print(Panel(
+                        f"[bold green]✅ Successfully switched to account: {display_name}[/]",
+                        style="bold green",
+                        border_style="green"
+                    ))
                         else:
                             console.print(Panel(
                                 "[bold white]❕ This account is already selected.[/]",
