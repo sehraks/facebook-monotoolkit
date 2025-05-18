@@ -322,47 +322,47 @@ class FacebookMonoToolkit:
         console.input("[bold white]Press Enter to continue...[/]")
 
     def cookie_settings_menu(self):
-        while True:
-            self.clear_screen()
-            self.display_banner()
-            
-            if self.current_account and self.account_data:
-                console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
-                    style="bold cyan",
-                    border_style="cyan"
-                ))
-
+    """Handle cookie settings and storage menu."""
+    while True:
+        self.clear_screen()
+        self.display_banner()
+        
+        if self.current_account and self.account_data:
             console.print(Panel(
-                "[bold yellow]Cookie Settings and Storage[/]",
+                f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
+                style="bold cyan",
+                border_style="cyan"
+            ))
+
+        console.print(Panel(
+            "[bold yellow]Cookie Settings and Storage[/]",
+            style="bold yellow",
+            border_style="yellow"
+        ))
+        
+        accounts = self.cookie_manager.get_all_accounts()
+        for idx, account in enumerate(accounts, 1):
+            status = "Logged in" if account == self.current_account else "Logged out"
+            status_color = "green" if status == "Logged in" else "red"
+            
+            # Use account_data name if available
+            if self.account_data and account['user_id'] == self.account_data['user_id']:
+                display_name = self.account_data['name']
+            else:
+                display_name = "Unknown User"
+            
+            account_panel = Panel(
+                f"[bold white]Name: {display_name}[/]\n"
+                f"[bold white]UID: {account['user_id']}[/]\n"
+                f"[bold {status_color}]Status: {status}[/]\n"
+                + (f"[bold yellow][{idx}] Select[/]\n" if account != self.current_account else "")
+                + f"[bold red][R{idx}] Remove[/]",
+                title=f"[bold yellow]📨 ACCOUNT {idx}[/]",
                 style="bold yellow",
                 border_style="yellow"
-            ))
-            
-            accounts = self.cookie_manager.get_all_accounts()
-            for idx, account in enumerate(accounts, 1):
-                status = "Logged in" if account == self.current_account else "Logged out"
-                status_color = "green" if status == "Logged in" else "red"
-                
-                # Clean up the name to remove Facebook_ prefix if it exists
-                display_name = account['name']
-                if 'Facebook_' in display_name:
-                    display_name = display_name.split('Facebook_')[0].strip()
-                if not display_name:  # If name becomes empty after cleanup
-                    display_name = "Unknown User"
-                
-                account_panel = Panel(
-                    f"[bold white]Name: {display_name}[/]\n"
-                    f"[bold white]UID: {account['user_id']}[/]\n"
-                    f"[bold {status_color}]Status: {status}[/]\n"
-                    + (f"[bold yellow][{idx}] Select[/]\n" if account != self.current_account else "")
-                    + f"[bold red][R{idx}] Remove[/]",
-                    title=f"[bold yellow]📨 ACCOUNT {idx}[/]",
-                    style="bold yellow",
-                    border_style="yellow"
-                )
-                console.print(account_panel)
-                console.print()  # Add space between accounts
+            )
+            console.print(account_panel)
+            console.print()  # Add space between accounts
 
             console.print("[bold white][0] Back[/]\n")
 
