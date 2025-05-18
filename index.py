@@ -441,7 +441,7 @@ class FacebookMonoToolkit:
             
             console.input("[bold white]Press Enter to continue...[/]")
 
-        def spam_sharing_menu(self):
+    def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
         self.clear_screen()
         self.display_banner()
