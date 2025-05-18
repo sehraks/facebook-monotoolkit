@@ -25,6 +25,8 @@ console = Console()
 class FacebookMonoToolkit:
     def __init__(self):
         """Initialize the Facebook MonoToolkit."""
+        # Add account_data as a class variable
+        self.account_data = None
         # Read version from changelogs.txt
         try:
             with open("changelogs.txt", "r") as f:
@@ -98,14 +100,13 @@ class FacebookMonoToolkit:
         return True
 
     def main(self):
-        """Display and handle the main menu."""
         while True:
             self.clear_screen()
             self.display_banner()
             
-            if self.current_account:
+            if self.current_account and self.account_data:
                 console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {account_data['name']}[/]", 
+                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
                     style="bold cyan",
                     border_style="cyan"
                 ))
@@ -147,14 +148,13 @@ class FacebookMonoToolkit:
         self.update_settings.display_settings_menu()
 
     def cookie_management_menu(self):
-        """Handle cookie management menu."""
         while True:
             self.clear_screen()
             self.display_banner()
             
-            if self.current_account:
+            if self.current_account and self.account_data:
                 console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {account_data['name']}[/]",
+                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
                     style="bold cyan",
                     border_style="cyan"
                 ))
@@ -238,23 +238,23 @@ class FacebookMonoToolkit:
 
         # Attempt login
         success, message, account_data = self.fb_login.login(email.strip(), password.strip())
-        
+            
+            # After successful login, store account_data as class variable
         if success and account_data:
-            # Add account to cookie manager
-            success = self.cookie_manager.add_cookie(account_data['cookie'])[0]
+            self.account_data = account_data  # Store account_data in class
+            success = self.cookie_manager.add_cookie(account_data['cookie'])[0] # Add account to cookie manager
             
             if success:
-                # Set as current account immediately after successful login
-                self.current_account = None  # Clear current selection first
+                self.current_account = None
                 accounts = self.cookie_manager.get_all_accounts()
                 for account in accounts:
-                    if account['user_id'] == account_data['user_id']:
+                    if account['user_id'] == self.account_data['user_id']:
                         self.current_account = account
                         break
                 
                 console.print(Panel(
                     f"[bold green]✅ {message}[/]\n"
-                    f"[bold green]👤 Account: {account_data['name']} / {account_data['user_id']}[/]\n"
+                    f"[bold green]👤 Account: {self.account_data['name']} / {self.account_data['user_id']}[/]\n"
                     "[bold green]✓ Account automatically selected[/]",
                     style="bold green",
                     border_style="green"
@@ -322,14 +322,13 @@ class FacebookMonoToolkit:
         console.input("[bold white]Press Enter to continue...[/]")
 
     def cookie_settings_menu(self):
-        """Handle cookie settings and storage menu."""
         while True:
             self.clear_screen()
             self.display_banner()
             
-            if self.current_account:
+            if self.current_account and self.account_data:
                 console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {account_data['name']}[/]",
+                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
                     style="bold cyan",
                     border_style="cyan"
                 ))
