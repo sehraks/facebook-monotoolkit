@@ -105,9 +105,9 @@ class FacebookMonoToolkit:
             
             if self.current_account:
                 console.print(Panel(
-                    f"[bold green]Current Account: {self.current_account['name']}[/]", 
-                    style="bold green",
-                    border_style="green"
+                    f"[bold cyan]💠 Current Account: {self.current_account['name']}[/]", 
+                    style="bold cyan",
+                    border_style="cyan"
                 ))
 
             menu_panel = Panel(
