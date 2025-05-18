@@ -244,10 +244,18 @@ class FacebookMonoToolkit:
             success = self.cookie_manager.add_cookie(account_data['cookie'])[0]
             
             if success:
-                self.current_account = account_data
+                # Set as current account immediately after successful login
+                self.current_account = None  # Clear current selection first
+                accounts = self.cookie_manager.get_all_accounts()
+                for account in accounts:
+                    if account['user_id'] == account_data['user_id']:
+                        self.current_account = account
+                        break
+                
                 console.print(Panel(
                     f"[bold green]✅ {message}[/]\n"
-                    f"[bold green]👤 Account: {account_data['name']} / {account_data['user_id']}[/]",
+                    f"[bold green]👤 Account: {account_data['name']} / {account_data['user_id']}[/]\n"
+                    "[bold green]✓ Account automatically selected[/]",
                     style="bold green",
                     border_style="green"
                 ))
