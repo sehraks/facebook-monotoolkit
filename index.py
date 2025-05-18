@@ -322,7 +322,7 @@ class FacebookMonoToolkit:
         console.input("[bold white]Press Enter to continue...[/]")
 
     def cookie_settings_menu(self):
-    """Handle cookie settings and storage menu."""
+        """Handle cookie settings and storage menu."""
     while True:
         self.clear_screen()
         self.display_banner()
