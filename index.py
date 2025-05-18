@@ -27,6 +27,7 @@ class FacebookMonoToolkit:
         """Initialize the Facebook MonoToolkit."""
         # Initialize account_data
         self.account_data = None
+        self.current_account = None
         
         # Read version from changelogs.txt
         try:
@@ -43,18 +44,37 @@ class FacebookMonoToolkit:
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
         self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")
         self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")
-        self.CURRENT_USER = "sehraks"
+        self.CURRENT_USER = "sehraks1"  # Updated user login
         
         # Initialize components
         self.cookie_manager = CookieManager()
         self.spam_sharing = SpamSharing()
         self.update_settings = UpdateSettings(self.display_banner)
         self.fb_login = FacebookLogin()
-        self.current_account: Optional[Dict] = None
         
         # Create necessary directories
         self._init_directories()
+        
+        # Load initial account if available
+        accounts = self.cookie_manager.get_all_accounts()
+        if accounts:
+            self.current_account = accounts[0]
+            if self.current_account:
+                self.account_data = {
+                    'name': self.current_account['name'],
+                    'user_id': self.current_account['user_id']
+                }
 
+    def _load_account_data(self, account: Dict) -> None:
+        """Load account data for the current account."""
+        if account:
+            self.account_data = {
+                'name': account['name'],
+                'user_id': account['user_id']
+            }
+        else:
+            self.account_data = None
+            
     def _init_directories(self):
         """Initialize necessary directories."""
         directories = ['cookies-storage', 'logs']
@@ -242,8 +262,14 @@ class FacebookMonoToolkit:
         success, message, account_data = self.fb_login.login(email.strip(), password.strip())
             
         if success and account_data:
+            # Store the account data before adding the cookie
             self.account_data = account_data
-            success = self.cookie_manager.add_cookie(account_data['cookie'], account_data['name'])[0]
+            
+            # Pass both cookie and name to add_cookie
+            success = self.cookie_manager.add_cookie(
+                account_data['cookie'],
+                account_data['name']
+            )[0]
             
             if success:
                 self.current_account = None
