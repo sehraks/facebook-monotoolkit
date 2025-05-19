@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/spam_sharing.py
-# Last Modified: 2025-05-19 07:32:37 UTC
+# Last Modified: 2025-05-19 07:39:02 UTC
 # Author: sehraks1
 
 import aiohttp
@@ -18,7 +18,7 @@ console = Console()
 class SpamSharing:
     def __init__(self):
         """Initialize SpamSharing with necessary configurations."""
-        self.last_update = "2025-05-19 07:32:37"  # Current UTC time
+        self.last_update = "2025-05-19 07:39:02"  # Current UTC time
         self.current_user = "sehraks1"  # Current user's login
         self.share_api_url = "https://b-graph.facebook.com/me/feed"
         self.max_shares_per_day = 200000
@@ -65,49 +65,64 @@ class SpamSharing:
             "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
             "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
             "accept-language": "en-US,en;q=0.9",
+            "sec-ch-ua": '"Chromium";v="124", "Not-A.Brand";v="99"',
+            "sec-ch-ua-mobile": "?1",
+            "sec-ch-ua-platform": "Android",
+            "sec-fetch-dest": "document",
+            "sec-fetch-mode": "navigate",
+            "sec-fetch-site": "none",
+            "sec-fetch-user": "?1",
             "cookie": cookie
         }
 
         try:
-            # Extract c_user from cookie
-            c_user_match = re.search(r'c_user=(\d+)', cookie)
-            if not c_user_match:
-                return None, "Could not find c_user in cookie"
-            
-            # Extract xs from cookie
-            xs_match = re.search(r'xs=([^;]+)', cookie)
-            if not xs_match:
-                return None, "Could not find xs in cookie"
-
-            # Make request to business.facebook.com with specific parameters
-            params = {
-                'business_id': c_user_match.group(1),
-                'client_version': '2823',  # Match the client version from working cookie
-                'locale': 'en_US'
-            }
-
+            # First, get initial cookies from business.facebook.com
             async with session.get(
-                "https://business.facebook.com/content_management",
+                "https://business.facebook.com/",
                 headers=headers,
-                params=params
+                allow_redirects=True
             ) as response:
                 if response.status != 200:
-                    return None, f"Failed to fetch token: HTTP {response.status}"
+                    return None, f"Failed to access business.facebook.com: HTTP {response.status}"
+                
+                # Update cookies from response
+                cookies = response.cookies
+                cookie_string = "; ".join([f"{k}={v.value}" for k, v in cookies.items()])
+                if cookie_string:
+                    headers["cookie"] = f"{cookie}; {cookie_string}"
+
+            # Now try content management with updated cookies
+            async with session.get(
+                "https://business.facebook.com/content_management/",
+                headers=headers,
+                allow_redirects=True
+            ) as response:
+                if response.status != 200:
+                    return None, f"Failed to access content management: HTTP {response.status}"
                 
                 data = await response.text()
                 
-                # Try to find EAAG token with more specific pattern
-                match = re.search(r'"(EAAG[^"]+)"', data)
-                if not match:
-                    # Try alternative pattern
-                    match = re.search(r'EAAG\w{50,}', data)
+                # Try multiple token patterns
+                patterns = [
+                    r'"EAAG[^"]+?"',  # JSON format
+                    r'EAAG\w{50,}',   # Raw token
+                    r'accessToken":"(EAAG[^"]+)"',  # JSON property
+                    r'access_token=(EAAG[^&]+)'     # URL parameter
+                ]
                 
-                if match:
-                    token = match.group(1) if '"' in match.group(0) else match.group(0)
-                    return token, ""
+                for pattern in patterns:
+                    matches = re.findall(pattern, data)
+                    if matches:
+                        for match in matches:
+                            # Clean up the token
+                            token = match.strip('"')
+                            if token.startswith('EAAG'):
+                                return token, ""
                 
                 return None, "Could not extract access token. Cookie may be invalid."
                 
+        except aiohttp.ClientError as e:
+            return None, f"Network error: {str(e)}"
         except Exception as e:
             return None, f"Failed to get token: {str(e)}"
 
