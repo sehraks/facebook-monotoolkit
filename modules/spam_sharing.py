@@ -58,28 +58,60 @@ class SpamSharing:
                 style="bold red"
             ))
 
-    async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str, stored_token: str = None) -> Tuple[Optional[str], str]:
-        """Get Facebook access token from cookie or use stored token."""
-        if stored_token and stored_token.startswith('EAAG'):
-            return stored_token, ""
-        
-        headers = self.default_headers.copy()
-        headers["cookie"] = cookie
+    async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str) -> Tuple[Optional[str], str]:
+        """Get Facebook access token from business.facebook.com."""
+        headers = {
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "accept-language": "en-US,en;q=0.9",
+            "cookie": cookie
+        }
 
         try:
-            async with session.get("https://business.facebook.com/content_management", headers=headers) as response:
+            # First, get business.facebook.com homepage to get initial cookies
+            async with session.get("https://business.facebook.com/", headers=headers) as response:
                 if response.status != 200:
-                    return None, f"Failed to fetch token: HTTP {response.status}"
-            
-                data = await response.text()
-                match = re.search(r'EAAG(.*?)\",', data)
-            
-                if not match:
-                    return None, "Could not extract access token. Cookie may be invalid."
-            
-                access_token = f"EAAG{match.group(1)}"
-                return access_token, ""
-            
+                    return None, f"Failed to access business.facebook.com: HTTP {response.status}"
+
+                # Get cookies from the response
+                cookies = response.cookies
+                cookie_string = "; ".join([f"{k}={v.value}" for k, v in cookies.items()])
+
+                # Update headers with new cookies
+                headers["cookie"] = cookie_string if cookie_string else cookie
+
+            # Now try to get the content management page
+            async with session.get(
+                "https://business.facebook.com/content_management/",
+                headers=headers,
+                allow_redirects=True
+            ) as response:
+                if response.status != 200:
+                    return None, f"Failed to access content management: HTTP {response.status}"
+
+                text = await response.text()
+
+                # Try different token patterns
+                patterns = [
+                    r'EAAG\w+',  # Standard EAAG token
+                    r'"accessToken":"(EAAG[^"]+)"',  # JSON format
+                    r'access_token=(EAAG[^&]+)',  # URL parameter format
+                ]
+
+                for pattern in patterns:
+                    matches = re.findall(pattern, text)
+                    if matches:
+                        token = matches[0]
+                        if isinstance(token, tuple):
+                            token = token[0]
+                        # Verify token format
+                        if token.startswith('EAAG'):
+                            return token, ""
+
+                return None, "Could not extract access token. Cookie may be invalid."
+
+        except aiohttp.ClientError as e:
+            return None, f"Network error: {str(e)}"
         except Exception as e:
             return None, f"Failed to get token: {str(e)}"
 
