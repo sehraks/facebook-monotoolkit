@@ -112,7 +112,7 @@ class FacebookLogin:
                 return False, f"Connection error (HTTP {response.status_code})", None
 
             result = response.json()
-            
+
             if 'error' in result:
                 error_msg = result['error'].get('message', 'Unknown error')
                 return False, f"Login failed: {error_msg}", None
@@ -126,16 +126,18 @@ class FacebookLogin:
             if not user_id or not name:
                 return False, "Failed to get user information", None
 
-            # Generate cookies in the required format
-            cookies = self._generate_cookie_string(result)
-            
+            # Get working cookie using the access token
+            cookie = self._get_working_cookie(access_token)
+            if not cookie:
+                return False, "Failed to get working cookie", None
+
             # Create account data
             philippines_time = datetime.now(timezone(timedelta(hours=8)))
             account_data = {
                 'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
                 'name': name,
                 'user_id': user_id,
-                'cookie': cookies,
+                'cookie': cookie,
                 'added_date': philippines_time.strftime('%Y-%m-%d %H:%M:%S'),
                 'last_used': None,
                 'status': 'active',
@@ -150,6 +152,39 @@ class FacebookLogin:
             return False, "Invalid response from Facebook", None
         except Exception as e:
             return False, f"Unexpected error: {str(e)}", None
+
+    def _get_working_cookie(self, access_token: str) -> Optional[str]:
+        """Get a working cookie using the access token."""
+        try:
+            headers = {
+                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'accept-language': 'en-US,en;q=0.9'
+            }
+
+            # First request to get initial cookies
+            session = requests.Session()
+            session.get('https://business.facebook.com/', headers=headers)
+
+            # Second request with access token
+            params = {'access_token': access_token}
+            response = session.get('https://business.facebook.com/content_management', params=params, headers=headers)
+
+            if response.status_code != 200:
+                return None
+
+            # Get all cookies from the session
+            cookies = session.cookies.get_dict()
+
+            # Format cookies into string
+            cookie_parts = []
+            for name, value in cookies.items():
+                cookie_parts.append(f"{name}={value}")
+
+            return "; ".join(cookie_parts)
+
+        except Exception:
+            return None
 
     def _generate_cookie_string(self, login_result: Dict) -> str:
         """Generate cookie string in the required format."""
