@@ -308,13 +308,13 @@ class FacebookMonoToolkit:
             style="bold yellow",
             border_style="yellow"
         ))
-        
+
         console.print("[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
         console.print("[bold yellow]Note: Cookie must contain c_user and xs values[/]\n")
-        
+
         cookie = console.input("[bold green]Cookie: [/]")
         cookie = cookie.strip()
-        
+
         if not cookie:
             console.print(Panel(
                 "[bold white]❕ Cookie cannot be empty![/]",
@@ -332,12 +332,21 @@ class FacebookMonoToolkit:
                 account_name = None
 
         success, message = self.cookie_manager.add_cookie(cookie, account_name)
-        
+
         if success:
-            if not self.current_account:
-                self.current_account = self.cookie_manager.get_all_accounts()[-1]
+            # Get the newly added account
+            accounts = self.cookie_manager.get_all_accounts()
+            new_account = accounts[-1]  # The newest account is the last one added
+
+            # Set it as the current account
+            self.current_account = new_account
+            self.cookie_manager.set_current_account(new_account['id'])
+            self._load_account_data(new_account)
+
             console.print(Panel(
-                "[bold green]✅ Cookie added successfully![/]",
+                "[bold green]✅ Cookie added successfully![/]\n"
+                f"[bold green]👤 Account: {new_account['name']} / {new_account['user_id']}[/]\n"
+                "[bold green]✓ Account automatically selected[/]",
                 style="bold green",
                 border_style="green"
             ))
@@ -347,7 +356,7 @@ class FacebookMonoToolkit:
                 style="bold red",
                 border_style="red"
             ))
-        
+
         Utils.log_activity("Add Cookie", success, message)
         console.input("[bold white]Press Enter to continue...[/]")
 
