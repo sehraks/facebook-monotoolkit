@@ -450,7 +450,7 @@ class FacebookMonoToolkit:
                         if accounts[choice_idx] != self.current_account:
                             self.current_account = accounts[choice_idx]
                             self._load_account_data(self.current_account)
-                                display_name = self.current_account['name']
+                            display_name = self.current_account['name']
                             console.print(Panel(
                                 f"[bold green]✅ Successfully switched to account: {display_name}[/]",
                                 style="bold green",
