@@ -126,14 +126,14 @@ class CookieManager:
             if not valid:
                 return False, message
 
-            user_id, _ = self._extract_user_info(cookie)
+            user_id, default_name = self._extract_user_info(cookie)
             if user_id == 'unknown':
                 return False, "Could not extract user ID from cookie"
 
             # Create or update account data
             account_data = {
                 'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
-                'name': account_name if account_name else f"Facebook_{user_id}",
+                'name': account_name if account_name else default_name,
                 'user_id': user_id,
                 'cookie': cookie,
                 'added_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
@@ -145,8 +145,8 @@ class CookieManager:
             # Update existing or add new
             for idx, existing in enumerate(self.cookies):
                 if existing['user_id'] == user_id:
-                    # Preserve the existing name if no new name provided
-                    if not account_name:
+                    # Always preserve the existing name unless explicitly provided
+                    if not account_name and 'name' in existing:
                         account_data['name'] = existing['name']
                     self.cookies[idx] = account_data
                     if self.save_cookies():
