@@ -101,6 +101,7 @@ class FacebookLogin:
                 'fb_api_req_friendly_name': 'authenticate'
             }
 
+            # Initial login to get access token
             response = requests.post(
                 self.auth_url,
                 data=data,
@@ -127,9 +128,9 @@ class FacebookLogin:
                 return False, "Failed to get user information", None
 
             # Get working cookie using the access token
-            cookie = self._get_working_cookie(access_token)
+            cookie, cookie_message = self._get_working_cookie(access_token)
             if not cookie:
-                return False, "Failed to get working cookie", None
+                return False, f"Failed to get working cookie: {cookie_message}", None
 
             # Create account data
             philippines_time = datetime.now(timezone(timedelta(hours=8)))
@@ -153,7 +154,7 @@ class FacebookLogin:
         except Exception as e:
             return False, f"Unexpected error: {str(e)}", None
 
-    def _get_working_cookie(self, access_token: str) -> Optional[str]:
+    def _get_working_cookie(self, access_token: str) -> Tuple[Optional[str], str]:
         """Get a working cookie using the access token."""
         try:
             headers = {
@@ -164,27 +165,45 @@ class FacebookLogin:
 
             # First request to get initial cookies
             session = requests.Session()
-            session.get('https://business.facebook.com/', headers=headers)
+            initial_response = session.get('https://business.facebook.com/', headers=headers, timeout=self.timeout)
+            if initial_response.status_code != 200:
+                return None, f"Failed to access business.facebook.com: HTTP {initial_response.status_code}"
 
             # Second request with access token
             params = {'access_token': access_token}
-            response = session.get('https://business.facebook.com/content_management', params=params, headers=headers)
+            response = session.get(
+                'https://business.facebook.com/content_management',
+                params=params,
+                headers=headers,
+                timeout=self.timeout
+            )
 
             if response.status_code != 200:
-                return None
+                return None, f"Failed to get content management: HTTP {response.status_code}"
 
             # Get all cookies from the session
             cookies = session.cookies.get_dict()
+            if not cookies:
+                return None, "No cookies received from Facebook"
+
+            # Check for required cookies
+            if 'c_user' not in cookies or 'xs' not in cookies:
+                return None, "Missing required cookies (c_user or xs)"
 
             # Format cookies into string
             cookie_parts = []
             for name, value in cookies.items():
                 cookie_parts.append(f"{name}={value}")
 
-            return "; ".join(cookie_parts)
+            cookie_string = "; ".join(cookie_parts)
+            return cookie_string, "Successfully obtained working cookie"
 
-        except Exception:
-            return None
+        except requests.Timeout:
+            return None, "Connection timed out while getting cookies"
+        except requests.RequestException as e:
+            return None, f"Network error while getting cookies: {str(e)}"
+        except Exception as e:
+            return None, f"Unexpected error while getting cookies: {str(e)}"
 
     def _generate_cookie_string(self, login_result: Dict) -> str:
         """Generate cookie string in the required format."""
