@@ -474,8 +474,17 @@ class FacebookMonoToolkit:
 
     def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
-        self.clear_screen()
-        self.display_banner()
+        while True:
+            self.clear_screen()
+            self.display_banner()
+            
+            if self.current_account and self.account_data:
+                console.print(Panel(
+                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
+                    style="bold cyan",
+                    border_style="cyan"
+                ))
+        
         console.print(Panel(
             "[bold cyan]Spam Sharing[/]",
             style="bold white",
