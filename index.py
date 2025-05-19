@@ -68,8 +68,8 @@ class FacebookMonoToolkit:
         """Load account data for the current account."""
         if account:
             self.account_data = {
-                'name': account['name'],
-                'user_id': account['user_id']
+                'name': account.get('name', 'Unknown User'),
+                'user_id': account.get('user_id')
             }
         else:
             self.account_data = None
@@ -378,10 +378,8 @@ class FacebookMonoToolkit:
                 status = "Logged in" if account == self.current_account else "Logged out"
                 status_color = "green" if status == "Logged in" else "red"
                 
-                if self.account_data and account['user_id'] == self.account_data['user_id']:
-                    display_name = self.account_data['name']
-                else:
-                    display_name = "Unknown User"
+                # Use the account's stored name directly
+                display_name = account.get('name', 'Unknown User')
                 
                 account_panel = Panel(
                     f"[bold white]Name: {display_name}[/]\n"
@@ -394,7 +392,6 @@ class FacebookMonoToolkit:
                     border_style="yellow"
                 )
                 console.print(account_panel)
-                console.print()
 
             console.print("[bold white][0] Back[/]\n")
 
