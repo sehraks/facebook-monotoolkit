@@ -491,17 +491,20 @@ class FacebookMonoToolkit:
         self.display_banner()
 
         if self.current_account and self.account_data:
-            console.print(Panel(
-                f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                console.print(Panel(
+                        f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+
+        share_panel = Panel(
+                "[bold yellow]Note:[/] [bold white]This code does not use Facebook's API for fewer restrictions[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]Do not turn off your internet while the process is ongoing[/]",
+                title="[bold white]𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]",
                 style="bold cyan",
                 border_style="cyan"
-            ))
-
-        console.print(Panel(
-            "[bold cyan]🧑‍🧑‍🧒‍🧒 𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]",
-            style="bold white",
-            border_style="cyan"
-        ))
+        )
+        console.print(share_panel)
 
         post_url = console.input("[bold green]🔗 Enter the Facebook post URL: [/]")
         post_url = post_url.strip()
