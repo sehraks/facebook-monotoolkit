@@ -58,17 +58,8 @@ class FacebookMonoToolkit:
         self.current_account = self.cookie_manager.get_current_account()
         if self.current_account:
             self._load_account_data(self.current_account)
-        
-        # Load initial account if available
-        accounts = self.cookie_manager.get_all_accounts()
-        if accounts:
-            self.current_account = accounts[0]
-            if self.current_account:
-                self.account_data = {
-                    'name': self.current_account['name'],
-                    'user_id': self.current_account['user_id']
-                }
 
+    
     def _load_account_data(self, account: Dict) -> None:
         """Load account data for the current account."""
         if account:
