@@ -122,7 +122,7 @@ class FacebookMonoToolkit:
             
             if self.current_account and self.account_data:
                 console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
+                    f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
                     style="bold cyan",
                     border_style="cyan"
                 ))
@@ -132,7 +132,7 @@ class FacebookMonoToolkit:
                 "[bold white][2] Spam Sharing Post[/]\n"
                 "[bold white][3] Settings[/]\n"
                 "[bold red][4] Exit[/]",
-                title="[bold white]Main Menu[/]",
+                title="[bold white]𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨[/]",
                 style="bold magenta",
                 border_style="cyan"
             )
@@ -171,13 +171,13 @@ class FacebookMonoToolkit:
 
             if self.current_account and self.account_data:
                 console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
+                    f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
                     style="bold cyan",
                     border_style="cyan"
                 ))
 
             console.print(Panel(
-                "[bold yellow]🔑 Accounts Management[/]",  # Updated title
+                "[bold yellow]🔑 𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]",  # Updated title
                 style="bold yellow",
                 border_style="yellow"
             ))
@@ -188,7 +188,7 @@ class FacebookMonoToolkit:
                 "[bold white][3] Access your Facebook accounts[/]\n"  # Changed from "Cookie Settings and Storage"
                 "[bold white][4] Cookies Database[/]\n"              # New option
                 "[bold white][5] Back to Main Menu[/]",             # Changed from [4] to [5]
-                title="[bold white]Accounts Management[/]",          # Updated title
+                title="[bold white]𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]",          # Updated title
                 style="bold yellow",
                 border_style="yellow"
             )
@@ -229,14 +229,14 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         console.print(Panel(
-            "[bold yellow]Facebook Login\nNote: You can use either your email address or
-Facebook UID\nCaution: Do not use your main account![/]",
+            "[bold yellow]𝗟𝗢𝗚𝗜𝗡 𝗬𝗢𝗨𝗥 𝗔𝗖𝗖𝗢𝗨𝗡𝗧[/]\n"
+            "[bold yellow]Note: You can use either your email address or Facebook UID[/]\n"
+            "[bold yellow]Caution: Do not use your main account![/]",
             style="bold yellow",
             border_style="yellow"
         ))
         
         console.print("[bold yellow]Login using Email/UID:[/]")
-        console.print("[bold cyan]Note: You can use either your email address or Facebook UID[/]\n")
         
         email = console.input("[bold yellow]📧 Enter your email/UID: [/]")
         password = console.input("[bold yellow]🔑 Enter your password: [/]")
@@ -373,13 +373,13 @@ Facebook UID\nCaution: Do not use your main account![/]",
             
             if self.current_account and self.account_data:
                 console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
+                    f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
                     style="bold cyan",
                     border_style="cyan"
                 ))
 
             console.print(Panel(
-                "[bold yellow]Facebook Access[/]",
+                "[bold yellow]📇 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗔𝗖𝗖𝗘𝗦𝗦[/]",
                 style="bold cyan",
                 border_style="cyan"
             ))
@@ -493,13 +493,13 @@ Facebook UID\nCaution: Do not use your main account![/]",
 
         if self.current_account and self.account_data:
             console.print(Panel(
-                f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
+                f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
                 style="bold cyan",
                 border_style="cyan"
             ))
 
         console.print(Panel(
-            "[bold cyan]Spam Sharing[/]",
+            "[bold cyan]🖇️ 𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]",
             style="bold white",
             border_style="cyan"
         ))
