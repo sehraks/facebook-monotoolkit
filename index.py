@@ -474,26 +474,25 @@ class FacebookMonoToolkit:
 
     def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
-        while True:
-            self.clear_screen()
-            self.display_banner()
-            
-            if self.current_account and self.account_data:
-                console.print(Panel(
-                    f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
-                    style="bold cyan",
-                    border_style="cyan"
-                ))
-        
+        self.clear_screen()
+        self.display_banner()
+
+        if self.current_account and self.account_data:
+            console.print(Panel(
+                f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
+                style="bold cyan",
+                border_style="cyan"
+            ))
+
         console.print(Panel(
             "[bold cyan]Spam Sharing[/]",
             style="bold white",
             border_style="cyan"
         ))
-        
+
         post_url = console.input("[bold green]🔗 Enter the Facebook post URL: [/]")
         post_url = post_url.strip()
-        
+
         if not Utils.validate_url(post_url):
             console.print(Panel(
                 "[bold white]❕ Invalid Facebook URL![/]",
@@ -509,7 +508,7 @@ class FacebookMonoToolkit:
             min_val=1,
             max_val=100000
         )
-        
+
         if not success:
             console.input("[bold white]Press Enter to continue...[/]")
             return
@@ -520,18 +519,18 @@ class FacebookMonoToolkit:
             min_val=1,
             max_val=60
         )
-        
+
         if not success:
             console.input("[bold white]Press Enter to continue...[/]")
             return
-        
+
         success, message = self.spam_sharing.share_post(
             self.current_account['cookie'],
             post_url,
             share_count,
             delay
         )
-        
+
         if success:
             console.print(Panel(
                 f"[bold green]✅ {message}[/]",
@@ -544,7 +543,7 @@ class FacebookMonoToolkit:
                 style="bold yellow",
                 border_style="yellow"
             ))
-        
+
         Utils.log_activity("Share Post", success, message)
         console.input("[bold white]Press Enter to continue...[/]")
 
