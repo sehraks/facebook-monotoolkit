@@ -106,7 +106,7 @@ class FacebookMonoToolkit:
         """Check if cookie is available."""
         if not self.current_account:
             console.print(Panel(
-                "[bold white]❕ Please login first using the Manage Cookies option.[/]",
+                "[bold white]❕ Please login first using the Accounts Management option.[/]",
                 style="bold red",
                 border_style="red"
             ))
@@ -229,8 +229,8 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         login_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobile phone and username are currently not supported yet[/]\n"
-                "[bold indian_red]Caution:[/] [bold white]Refrain from using your main account, as doing so may cause lockout or suspension[/]",
+                "[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobiles phone and usernames are currently not supported yet.[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]Refrain from using your main account, as doing so may cause lockout or suspension.[/]",
                 title="[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]",
                 style="bold yellow",
                 border_style="yellow"
@@ -309,8 +309,8 @@ class FacebookMonoToolkit:
         self.display_banner()
 
         cookie_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]Use semi-colon separated format, cookie must contain c_user and xs values[/]\n"
-                "[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason[/]",
+                "[bold yellow]Note:[/] [bold white]Use semi-colon separated format, cookie must contain c_user and xs values.[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason.[/]",
                 title="[bold white]𝗔𝗗𝗗 𝗬𝗢𝗨𝗥 𝗖𝗢𝗢𝗞𝗜𝗘[/]",
                 style="bold yellow",
                 border_style="yellow"
