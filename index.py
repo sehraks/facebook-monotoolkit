@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: index.py
-# Last Modified: May 16, 2025 04:40 PM +8 GMT
 # Author: sehraks
 
 import os
