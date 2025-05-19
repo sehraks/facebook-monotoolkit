@@ -307,14 +307,15 @@ class FacebookMonoToolkit:
         """Handle adding a new cookie."""
         self.clear_screen()
         self.display_banner()
-        console.print(Panel(
-            "[bold yellow]Add New Cookie[/]",
-            style="bold yellow",
-            border_style="yellow"
-        ))
 
-        console.print("[bold]Enter your Facebook cookie (JSON or semicolon-separated format):[/]")
-        console.print("[bold yellow]Note: Cookie must contain c_user and xs values[/]\n")
+        cookie_panel = Panel(
+                "[bold yellow]Note:[/] [bold white]Use semi-colon separated format. Cookie must contain c_user and xs values[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason[/]",
+                title="[bold white]𝗔𝗗𝗗 𝗬𝗢𝗨𝗥 𝗖𝗢𝗢𝗞𝗜𝗘[/]",
+                style="bold yellow",
+                border_style="yellow"
+        )
+        console.print(cookie_panel)
 
         cookie = console.input("[bold green]Cookie: [/]")
         cookie = cookie.strip()
@@ -331,7 +332,7 @@ class FacebookMonoToolkit:
         # Ask for account name if not in cookie
         account_name = None
         if "name=" not in cookie:
-            account_name = console.input("[bold green]Account Name (optional): [/]").strip()
+            account_name = console.input("[bold green]Account Name (required): [/]").strip()
             if not account_name:
                 account_name = None
 
