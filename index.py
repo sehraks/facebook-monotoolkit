@@ -229,7 +229,8 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         console.print(Panel(
-            "[bold yellow]Facebook Login[/]",
+            "[bold yellow]Facebook Login\nNote: You can use either your email address or
+Facebook UID\nCaution: Do not use your main account![/]",
             style="bold yellow",
             border_style="yellow"
         ))
