@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/spam_sharing.py
+# Last Modified: 2025-05-19 07:32:37 UTC
 # Author: sehraks1
 
 import aiohttp
@@ -17,7 +18,7 @@ console = Console()
 class SpamSharing:
     def __init__(self):
         """Initialize SpamSharing with necessary configurations."""
-        self.last_update = "2025-05-19 07:10:00"  # Current UTC time
+        self.last_update = "2025-05-19 07:32:37"  # Current UTC time
         self.current_user = "sehraks1"  # Current user's login
         self.share_api_url = "https://b-graph.facebook.com/me/feed"
         self.max_shares_per_day = 200000
@@ -61,54 +62,54 @@ class SpamSharing:
     async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str) -> Tuple[Optional[str], str]:
         """Get Facebook access token from business.facebook.com."""
         headers = {
-        "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
-        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
-        "accept-language": "en-US,en;q=0.9",
-        "cookie": cookie
-    }
-
-    try:
-        # Extract c_user from cookie
-        c_user_match = re.search(r'c_user=(\d+)', cookie)
-        if not c_user_match:
-            return None, "Could not find c_user in cookie"
-        
-        # Extract xs from cookie
-        xs_match = re.search(r'xs=([^;]+)', cookie)
-        if not xs_match:
-            return None, "Could not find xs in cookie"
-
-        # Make request to business.facebook.com with specific parameters
-        params = {
-            'business_id': c_user_match.group(1),
-            'client_version': '2823',  # Match the client version from working cookie
-            'locale': 'en_US'
+            "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
+            "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "accept-language": "en-US,en;q=0.9",
+            "cookie": cookie
         }
 
-        async with session.get(
-            "https://business.facebook.com/content_management",
-            headers=headers,
-            params=params
-        ) as response:
-            if response.status != 200:
-                return None, f"Failed to fetch token: HTTP {response.status}"
+        try:
+            # Extract c_user from cookie
+            c_user_match = re.search(r'c_user=(\d+)', cookie)
+            if not c_user_match:
+                return None, "Could not find c_user in cookie"
             
-            data = await response.text()
-            
-            # Try to find EAAG token with more specific pattern
-            match = re.search(r'"(EAAG[^"]+)"', data)
-            if not match:
-                # Try alternative pattern
-                match = re.search(r'EAAG\w{50,}', data)
-            
-            if match:
-                token = match.group(1) if '"' in match.group(0) else match.group(0)
-                return token, ""
-            
-            return None, "Could not extract access token. Cookie may be invalid."
-            
-    except Exception as e:
-        return None, f"Failed to get token: {str(e)}"
+            # Extract xs from cookie
+            xs_match = re.search(r'xs=([^;]+)', cookie)
+            if not xs_match:
+                return None, "Could not find xs in cookie"
+
+            # Make request to business.facebook.com with specific parameters
+            params = {
+                'business_id': c_user_match.group(1),
+                'client_version': '2823',  # Match the client version from working cookie
+                'locale': 'en_US'
+            }
+
+            async with session.get(
+                "https://business.facebook.com/content_management",
+                headers=headers,
+                params=params
+            ) as response:
+                if response.status != 200:
+                    return None, f"Failed to fetch token: HTTP {response.status}"
+                
+                data = await response.text()
+                
+                # Try to find EAAG token with more specific pattern
+                match = re.search(r'"(EAAG[^"]+)"', data)
+                if not match:
+                    # Try alternative pattern
+                    match = re.search(r'EAAG\w{50,}', data)
+                
+                if match:
+                    token = match.group(1) if '"' in match.group(0) else match.group(0)
+                    return token, ""
+                
+                return None, "Could not extract access token. Cookie may be invalid."
+                
+        except Exception as e:
+            return None, f"Failed to get token: {str(e)}"
 
     async def _perform_share(self, 
                            session: aiohttp.ClientSession,
@@ -204,30 +205,6 @@ class SpamSharing:
             async with aiohttp.ClientSession() as session:
                 # Get access token
                 token, token_error = await self._get_access_token(session, cookie)
-                if not token:
-                    return False, token_error
-
-                # Perform sharing
-                shares_completed, share_message = await self._perform_share(
-                    session, token, cookie, post_path, share_count, delay
-                )
-
-                if shares_completed == share_count:
-                    return True, f"Successfully completed {shares_completed} shares"
-                elif shares_completed > 0:
-                    return False, f"Partially completed: {shares_completed}/{share_count} shares. {share_message}"
-                else:
-                    return False, share_message
-
-        try:
-            return asyncio.run(_share())
-        except Exception as e:
-            return False, f"Share operation failed: {str(e)}"
-
-        async def _share():
-            async with aiohttp.ClientSession() as session:
-                # Get access token
-                token, token_error = await self._get_access_token(session, cookie, stored_token)
                 if not token:
                     return False, token_error
 
