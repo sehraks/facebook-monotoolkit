@@ -230,14 +230,14 @@ class FacebookMonoToolkit:
         self.display_banner()
         login_panel = Panel(
                 "[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobile phone and username are currently not supported yet[/]\n"
-                "[bold indian_red]Caution:[/] [bold white]Do not use your main account![/]",
-                title="[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗞𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]",
+                "[bold indian_red]Caution:[/] [bold white]Refrain from using your main account, as doing so may cause lockout or suspension[/]",
+                title="[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]",
                 style="bold yellow",
                 border_style="yellow"
         )
         console.print(login_panel)
 
-        email = console.input("[bold yellow]📧 Enter your credential: [/]")
+        email = console.input("[bold yellow]🪪 Enter your credential: [/]")
         password = console.input("[bold yellow]🔑 Enter your password: [/]")
         
         # Validate credentials format
