@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/cookie_manager.py
-# Last Modified: 2025-05-15 05:14:02 UTC
 # Author: sehraks
 
 import json
