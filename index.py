@@ -309,7 +309,7 @@ class FacebookMonoToolkit:
         self.display_banner()
 
         cookie_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]Use semi-colon separated format. Cookie must contain c_user and xs values[/]\n"
+                "[bold yellow]Note:[/] [bold white]Use semi-colon separated format, your cookie must contain c_user and xs values[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason[/]",
                 title="[bold white]𝗔𝗗𝗗 𝗬𝗢𝗨𝗥 𝗖𝗢𝗢𝗞𝗜𝗘[/]",
                 style="bold yellow",
