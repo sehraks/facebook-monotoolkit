@@ -176,6 +176,25 @@ class CookieManager:
         except Exception:
             return []
 
+    def set_current_account(self, account_id: str) -> None:
+        """Set the current account ID."""
+        self.current_account_id = account_id
+        self.save_cookies()
+
+    def get_current_account(self) -> Optional[Dict]:
+        """Get the currently active account."""
+        try:
+            with open(self.cookies_file, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                last_active_id = data.get("metadata", {}).get("last_active_account")
+                if last_active_id:
+                    for cookie in self.cookies:
+                        if cookie.get('id') == last_active_id:
+                            return cookie
+        except Exception:
+            pass
+        return None if not self.cookies else self.cookies[0]
+
     def remove_cookie(self, account: Dict) -> bool:
         """Remove a cookie from storage."""
         try:
