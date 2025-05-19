@@ -332,9 +332,15 @@ class FacebookMonoToolkit:
         # Ask for account name if not in cookie
         account_name = None
         if "name=" not in cookie:
-            account_name = console.input("[bold yellow]💳 Account Name (required): [/]").strip()
+            account_name = console.input("[bold yellow]💳 Account Name: [/]").strip()
             if not account_name:
-                account_name = None
+                console.print(Panel(
+                    "[bold white]❕ Please enter your Facebook account name[/]",
+                    style="bold red",
+                    border_style="red"
+                ))
+                console.input("[bold white]Press Enter to continue...[/]")
+                return
 
         success, message = self.cookie_manager.add_cookie(cookie, account_name)
 
