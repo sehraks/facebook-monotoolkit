@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/spam_sharing.py
-# Last Modified: 2025-05-13 15:57:24 UTC
-# Author: sehraks
+# Author: sehraks1
 
 import aiohttp
 import asyncio
@@ -18,8 +17,8 @@ console = Console()
 class SpamSharing:
     def __init__(self):
         """Initialize SpamSharing with necessary configurations."""
-        self.last_update = "2025-05-13 15:57:24"  # Current UTC time
-        self.current_user = "sehraks"  # Current user's login
+        self.last_update = "2025-05-19 07:10:00"  # Current UTC time
+        self.current_user = "sehraks1"  # Current user's login
         self.share_api_url = "https://b-graph.facebook.com/me/feed"
         self.max_shares_per_day = 200000
         self.default_headers = {
@@ -62,7 +61,7 @@ class SpamSharing:
     async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str, stored_token: str = None) -> Tuple[Optional[str], str]:
         """Get Facebook access token from cookie or use stored token."""
         if stored_token and stored_token.startswith('EAAG'):
-        return stored_token, ""
+            return stored_token, ""
         
         headers = self.default_headers.copy()
         headers["cookie"] = cookie
@@ -178,24 +177,6 @@ class SpamSharing:
             async with aiohttp.ClientSession() as session:
                 # Get access token
                 token, token_error = await self._get_access_token(session, cookie, stored_token)
-                if not token:
-                    return False, token_error
-
-                # Rest of the method remains the same...
-
-    async def _share():
-        async with aiohttp.ClientSession() as session:
-            # Get access token
-            token, token_error = await self._get_access_token(session, cookie, stored_token)
-            if not token:
-                return False, token_error
-
-            # Rest of the method remains the same...
-
-        async def _share():
-            async with aiohttp.ClientSession() as session:
-                # Get access token
-                token, token_error = await self._get_access_token(session, cookie)
                 if not token:
                     return False, token_error
 
