@@ -157,8 +157,9 @@ class FacebookLogin:
             # Get current timestamp for cookie expiry
             current_time = int(datetime.now().timestamp())
             expiry_time = current_time + (30 * 24 * 60 * 60)  # 30 days from now
-            
-            # Basic required cookies
+            timestamp_30days = current_time + (30 * 24 * 60 * 60)
+            client_version = "2823"  # Updated client version
+
             cookies = [
                 f"datr={self._generate_random_cookie_value(24)}",
                 f"sb={self._generate_random_cookie_value(24)}",
@@ -167,37 +168,29 @@ class FacebookLogin:
                 "x-referer=eyJyIjoiL2hvbWUucGhwIiwiaCI6Ii9ob21lLnBocCIsInMiOiJtIn0%3D",
                 "ps_l=1",
                 "ps_n=1",
-                "wd=360x820",
-                "locale=en_US"
+                "wd=360x820"
             ]
-            
+
             # Add user-specific cookies
             if 'uid' in login_result:
                 cookies.extend([
                     f"c_user={login_result['uid']}",
-                    f"fr=0{self._generate_random_cookie_value(32)}.{current_time}..AAA.0.0.{expiry_time}.AWf8H659qoDBLQ9OxNb2vFhEXlc"
+                    f"fr=0{self._generate_random_cookie_value(24)}.{current_time}..AAA.0.0.{timestamp_30days}.AWf8H659qoDBLQ9OxNb2vFhEXlc"
                 ])
-            
+
             # Add xs cookie if available
             if 'secret' in login_result:
                 cookies.append(f"xs=8%3A{login_result['secret']}%3A2%3A{current_time}%3A-1%3A7867")
-            
-            # Add any session cookies
-            session_cookies = login_result.get('session_cookies', [])
-            for cookie in session_cookies:
-                name = cookie.get('name')
-                value = cookie.get('value')
-                if name and value and name not in ['c_user', 'xs']:  # Avoid duplicates
-                    cookies.append(f"{name}={value}")
-            
-            # Add final required cookies
+
+            # Add locale and final required cookies
             cookies.extend([
-                "fbl_st=100633494%3BT%3A29124391",
-                "wl_cbv=v2%3Bclient_version%3A2821%3Btimestamp%3A1747463479"
+                "locale=en_US",
+                f"fbl_st=101632993%3BT%3A{current_time}",
+                f"wl_cbv=v2%3Bclient_version%3A{client_version}%3Btimestamp%3A{current_time}"
             ])
-            
+
             return "; ".join(cookies)
-            
+
         except Exception as e:
             console.print(f"[bold red]Error generating cookie string: {str(e)}[/]")
             return login_result.get('cookie_string', '')  # Fallback to basic cookie string
