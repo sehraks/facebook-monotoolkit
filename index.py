@@ -229,7 +229,7 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         login_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobiles phone and usernames are currently not supported yet.[/]\n"
+                "[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobile numbers and usernames are currently not supported yet.[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]Refrain from using your main account, as doing so may cause lockout or suspension.[/]",
                 title="[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]",
                 style="bold yellow",
@@ -499,8 +499,8 @@ class FacebookMonoToolkit:
                 ))
 
         share_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]This code does not use Facebook's API for fewer restrictions[/]\n"
-                "[bold indian_red]Caution:[/] [bold white]Do not turn off your internet while the process is ongoing[/]",
+                "[bold yellow]Note:[/] [bold white]This code does not use Facebook's API for fewer restrictions.[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]Do not turn off your internet while the process is ongoing.[/]",
                 title="[bold white]𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]",
                 style="bold cyan",
                 border_style="cyan"
