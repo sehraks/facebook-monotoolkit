@@ -229,11 +229,11 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         login_panel = Panel(
-            "[bold white]Note: You can use either your email address or Facebook UID[/]\n"
-            "[bold indian_red]Caution: Do not use your main account![/]",
-            title="[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]",
-            style="bold yellow",
-            border_style="yellow"
+                "[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]Do not use your main account![/]",
+                title="[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗞𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]",
+                style="bold yellow",
+                border_style="yellow"
         )
         console.print(login_panel)
 
