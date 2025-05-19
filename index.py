@@ -378,9 +378,9 @@ class FacebookMonoToolkit:
                 ))
 
             console.print(Panel(
-                "[bold yellow]Cookie Settings and Storage[/]",
-                style="bold yellow",
-                border_style="yellow"
+                "[bold yellow]Facebook Access[/]",
+                style="bold cyan",
+                border_style="cyan"
             ))
             
             accounts = self.cookie_manager.get_all_accounts()
