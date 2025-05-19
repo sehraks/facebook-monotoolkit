@@ -71,7 +71,8 @@ class CookieManager:
                 "cookies": self.cookies,
                 "metadata": {
                     "last_update": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
-                    "updated_by": self.current_user
+                    "updated_by": self.current_user,
+                    "last_active_account": self.current_account_id if hasattr(self, 'current_account_id') else None
                 }
             }
             with open(self.cookies_file, 'w', encoding='utf-8') as f:
