@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/fb-login.py
-# Last Modified: May 17, 2025 04:20 PM GMT +8
 # Author: sehraks
 # Role: Handles Facebook login and authentication operations
 
