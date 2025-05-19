@@ -168,7 +168,7 @@ class FacebookMonoToolkit:
         while True:
             self.clear_screen()
             self.display_banner()
-            
+
             if self.current_account and self.account_data:
                 console.print(Panel(
                     f"[bold cyan]💠 Current Account: {self.account_data['name']}[/]",
@@ -177,22 +177,23 @@ class FacebookMonoToolkit:
                 ))
 
             console.print(Panel(
-                "[bold yellow]🔑 Cookie Management[/]",
+                "[bold yellow]🔑 Accounts Management[/]",  # Updated title
                 style="bold yellow",
                 border_style="yellow"
             ))
-            
+
             menu_panel = Panel(
                 "[bold white][1] Enter your cookie[/]\n"
                 "[bold white][2] Login your Facebook account[/]\n"
-                "[bold white][3] Cookie Settings and Storage[/]\n"
-                "[bold white][4] Back to Main Menu[/]",
-                title="[bold white]Cookie Management[/]",
+                "[bold white][3] Access your Facebook accounts[/]\n"  # Changed from "Cookie Settings and Storage"
+                "[bold white][4] Cookies Database[/]\n"              # New option
+                "[bold white][5] Back to Main Menu[/]",             # Changed from [4] to [5]
+                title="[bold white]Accounts Management[/]",          # Updated title
                 style="bold yellow",
                 border_style="yellow"
             )
             console.print(menu_panel)
-            
+
             choice = console.input("[bold yellow]Select an option: [/]")
             choice = choice.strip()
 
@@ -211,6 +212,9 @@ class FacebookMonoToolkit:
                     continue
                 self.cookie_settings_menu()
             elif choice == "4":
+                # TODO: Add cookies database functionality
+                pass
+            elif choice == "5":  # Changed from 4 to 5
                 break
             else:
                 console.print(Panel(
