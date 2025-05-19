@@ -53,6 +53,11 @@ class FacebookMonoToolkit:
         
         # Create necessary directories
         self._init_directories()
+
+        # Load the last active account
+        self.current_account = self.cookie_manager.get_current_account()
+        if self.current_account:
+            self._load_account_data(self.current_account)
         
         # Load initial account if available
         accounts = self.cookie_manager.get_all_accounts()
@@ -275,6 +280,7 @@ class FacebookMonoToolkit:
                 accounts = self.cookie_manager.get_all_accounts()
                 for account in accounts:
                     if account['user_id'] == self.account_data['user_id']:
+                        self.cookie_manager.set_current_account(account['id'])
                         self.current_account = account
                         break
                 
@@ -446,6 +452,7 @@ class FacebookMonoToolkit:
                     if 0 <= choice_idx < len(accounts):
                         if accounts[choice_idx] != self.current_account:
                             self.current_account = accounts[choice_idx]
+                            self.cookie_manager.set_current_account(self.current_account['id'])
                             self._load_account_data(self.current_account)
                             display_name = self.current_account['name']
                             console.print(Panel(
