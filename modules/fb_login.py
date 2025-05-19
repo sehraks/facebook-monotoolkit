@@ -83,27 +83,28 @@ class FacebookLogin:
             if not valid:
                 return False, message, None
 
+            # Use the b-api endpoint directly
+            login_url = 'https://b-api.facebook.com/method/auth.login'
             data = {
                 'adid': self._generate_adid(),
-                'format': 'json',
-                'device_id': self._generate_device_id(),
                 'email': email,
                 'password': password,
-                'generate_analytics_claims': '1',
-                'credentials_type': 'password',
-                'source': 'login',
-                'error_detail_type': 'button_with_disabled',
-                'enroll_misauth': 'false',
+                'format': 'json',
+                'device_id': self._generate_device_id(),
+                'cpl': 'true',
+                'family_device_id': self._generate_device_id(),
+                'credentials_type': 'device_based_login_password',
                 'generate_session_cookies': '1',
+                'generate_analytics_claim': '1',
                 'generate_machine_id': '1',
-                'meta_inf_fbmeta': '',
-                'currently_logged_in_userid': '0',
-                'fb_api_req_friendly_name': 'authenticate'
+                'locale': 'en_US',
+                'client_country_code': 'US',
+                'api_key': '882a8490361da98702bf97a021ddc14d',
+                'access_token': '350685531728|62f8ce9f74b12f84c123cc23437a4a32'
             }
 
-            # Initial login to get access token
             response = requests.post(
-                self.auth_url,
+                login_url,
                 data=data,
                 headers=self._get_headers(),
                 timeout=self.timeout
@@ -114,38 +115,44 @@ class FacebookLogin:
 
             result = response.json()
 
-            if 'error' in result:
-                error_msg = result['error'].get('message', 'Unknown error')
-                return False, f"Login failed: {error_msg}", None
+            if 'error_msg' in result:
+                return False, f"Login failed: {result['error_msg']}", None
 
             access_token = result.get('access_token')
             if not access_token:
                 return False, "Failed to get access token", None
 
             # Get user info
-            user_id, name = self.get_user_info(access_token)
-            if not user_id or not name:
+            user_info_url = f"https://graph.facebook.com/me?fields=id,name&access_token={access_token}"
+            user_info = requests.get(user_info_url).json()
+
+            if 'error' in user_info:
                 return False, "Failed to get user information", None
 
-            # Get working cookie using the access token
-            cookie, cookie_message = self._get_working_cookie(access_token)
-            if not cookie:
-                return False, f"Failed to get working cookie: {cookie_message}", None
+            # Generate cookie string
+            cookie_string = (
+                f"c_user={user_info['id']}; "
+                f"xs={result.get('session_cookies', [{'value': ''}])[0]['value']}; "
+                f"fr={self._generate_random_cookie_value(32)}; "
+                "sb=abc123; "
+                "datr=xyz789; "
+                "presence=EDvF3EtimeF1557226574EuserFA21B00000000000F2EstateFDutF0CEchF_7bCC"
+            )
 
             # Create account data
             philippines_time = datetime.now(timezone(timedelta(hours=8)))
             account_data = {
                 'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
-                'name': name,
-                'user_id': user_id,
-                'cookie': cookie,
+                'name': user_info['name'],
+                'user_id': user_info['id'],
+                'cookie': cookie_string,
                 'added_date': philippines_time.strftime('%Y-%m-%d %H:%M:%S'),
                 'last_used': None,
                 'status': 'active',
                 'added_by': self.CURRENT_USER
             }
 
-            return True, f"Successfully logged in as {name}", account_data
+            return True, f"Successfully logged in as {user_info['name']}", account_data
 
         except requests.RequestException as e:
             return False, f"Network error: {str(e)}", None
