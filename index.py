@@ -228,14 +228,15 @@ class FacebookMonoToolkit:
         """Handle Facebook login functionality."""
         self.clear_screen()
         self.display_banner()
-        console.print(Panel(
-            "[bold yellow]𝗟𝗢𝗚𝗜𝗡 𝗬𝗢𝗨𝗥 𝗔𝗖𝗖𝗢𝗨𝗡𝗧[/]\n"
-            "[bold yellow]Note: You can use either your email address or Facebook UID[/]\n"
-            "[bold yellow]Caution: Do not use your main account![/]",
+        login_panel = Panel(
+            "[bold white]Note: You can use either your email address or Facebook UID[/]\n"
+            "[bold indian_red]Caution: Do not use your main account![/]",
+            title="[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]",
             style="bold yellow",
             border_style="yellow"
-        ))
-        
+        )
+        console.print(login_panel)
+
         email = console.input("[bold yellow]📧 Enter your email/UID: [/]")
         password = console.input("[bold yellow]🔑 Enter your password: [/]")
         
