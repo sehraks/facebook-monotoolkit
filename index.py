@@ -332,7 +332,7 @@ class FacebookMonoToolkit:
         # Ask for account name if not in cookie
         account_name = None
         if "name=" not in cookie:
-            account_name = console.input("[bold green]💳 Account Name (required): [/]").strip()
+            account_name = console.input("[bold yellow]💳 Account Name (required): [/]").strip()
             if not account_name:
                 account_name = None
 
