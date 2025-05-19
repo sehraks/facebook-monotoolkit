@@ -128,7 +128,7 @@ class FacebookMonoToolkit:
                 ))
 
             menu_panel = Panel(
-                "[bold white][1] Manage Cookies[/]\n"
+                "[bold white][1] Accounts Management[/]\n"
                 "[bold white][2] Spam Sharing Post[/]\n"
                 "[bold white][3] Settings[/]\n"
                 "[bold red][4] Exit[/]",
