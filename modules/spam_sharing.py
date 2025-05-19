@@ -59,8 +59,11 @@ class SpamSharing:
                 style="bold red"
             ))
 
-    async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str) -> Tuple[Optional[str], str]:
-        """Get Facebook access token from business.facebook.com."""
+    async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str, stored_token: str = None) -> Tuple[Optional[str], str]:
+        """Get Facebook access token from cookie or use stored token."""
+        if stored_token and stored_token.startswith('EAAG'):
+        return stored_token, ""
+        
         headers = self.default_headers.copy()
         headers["cookie"] = cookie
 
@@ -68,16 +71,16 @@ class SpamSharing:
             async with session.get("https://business.facebook.com/content_management", headers=headers) as response:
                 if response.status != 200:
                     return None, f"Failed to fetch token: HTTP {response.status}"
-                
+            
                 data = await response.text()
-                match = re.search(r'EAAG(.*?)",', data)
-                
+                match = re.search(r'EAAG(.*?)\",', data)
+            
                 if not match:
                     return None, "Could not extract access token. Cookie may be invalid."
-                
+            
                 access_token = f"EAAG{match.group(1)}"
                 return access_token, ""
-                
+            
         except Exception as e:
             return None, f"Failed to get token: {str(e)}"
 
@@ -161,7 +164,7 @@ class SpamSharing:
         path = url.replace("https://www.facebook.com/", "")
         return path.rstrip('/')
 
-    def share_post(self, cookie: str, post_url: str, share_count: int, delay: int) -> Tuple[bool, str]:
+    def share_post(self, cookie: str, post_url: str, share_count: int, delay: int, stored_token: str = None) -> Tuple[bool, str]:
         """Share a Facebook post multiple times."""
         if share_count > self.max_shares_per_day:
             return False, f"Share count exceeds maximum limit of {self.max_shares_per_day}"
@@ -170,6 +173,24 @@ class SpamSharing:
         valid_url, post_path = self.validate_post_url(post_url)
         if not valid_url:
             return False, post_path
+
+        async def _share():
+            async with aiohttp.ClientSession() as session:
+                # Get access token
+                token, token_error = await self._get_access_token(session, cookie, stored_token)
+                if not token:
+                    return False, token_error
+
+                # Rest of the method remains the same...
+
+    async def _share():
+        async with aiohttp.ClientSession() as session:
+            # Get access token
+            token, token_error = await self._get_access_token(session, cookie, stored_token)
+            if not token:
+                return False, token_error
+
+            # Rest of the method remains the same...
 
         async def _share():
             async with aiohttp.ClientSession() as session:
