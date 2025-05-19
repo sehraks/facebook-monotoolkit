@@ -118,7 +118,7 @@ class CookieManager:
         except Exception:
             return False
 
-    def add_cookie(self, cookie: str, account_name: str = None) -> Tuple[bool, str]:
+    def add_cookie(self, cookie: str, account_name: str = None, access_token: str = None) -> Tuple[bool, str]:
         """Add a new cookie to storage."""
         try:
             cookie = cookie.strip()
@@ -136,6 +136,7 @@ class CookieManager:
                 'name': account_name if account_name else default_name,
                 'user_id': user_id,
                 'cookie': cookie,
+                'access_token': access_token,  # Store the access token
                 'added_date': datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
                 'last_used': None,
                 'status': 'active',
