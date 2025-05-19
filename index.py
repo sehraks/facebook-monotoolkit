@@ -97,7 +97,7 @@ class FacebookMonoToolkit:
             f"[white]Date: {current_date}[/]\n"
             f"[white]Time: {current_time} GMT+8[/]",
             style="bold magenta",
-            title="[bold yellow]Facebook MonoToolkit[/]",
+            title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
             border_style="cyan"
         )
         console.print(banner)
@@ -185,10 +185,10 @@ class FacebookMonoToolkit:
             menu_panel = Panel(
                 "[bold white][1] Enter your cookie[/]\n"
                 "[bold white][2] Login your Facebook account[/]\n"
-                "[bold white][3] Access your Facebook accounts[/]\n"  # Changed from "Cookie Settings and Storage"
-                "[bold white][4] Cookies Database[/]\n"              # New option
-                "[bold white][5] Back to Main Menu[/]",             # Changed from [4] to [5]
-                title="[bold white]𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]",          # Updated title
+                "[bold white][3] Access your Facebook accounts[/]\n"
+                "[bold white][4] Cookies Database[/]\n"
+                "[bold white][5] Back to Main Menu[/]",
+                title="[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]",
                 style="bold yellow",
                 border_style="yellow"
             )
@@ -235,8 +235,6 @@ class FacebookMonoToolkit:
             style="bold yellow",
             border_style="yellow"
         ))
-        
-        console.print("[bold yellow]Login using Email/UID:[/]")
         
         email = console.input("[bold yellow]📧 Enter your email/UID: [/]")
         password = console.input("[bold yellow]🔑 Enter your password: [/]")
@@ -379,7 +377,7 @@ class FacebookMonoToolkit:
                 ))
 
             console.print(Panel(
-                "[bold yellow]📇 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗔𝗖𝗖𝗘𝗦𝗦[/]",
+                "[bold cyan]📇 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗔𝗖𝗖𝗘𝗦𝗦[/]",
                 style="bold cyan",
                 border_style="cyan"
             ))
@@ -499,7 +497,7 @@ class FacebookMonoToolkit:
             ))
 
         console.print(Panel(
-            "[bold cyan]🖇️ 𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]",
+            "[bold cyan]🧑‍🧑‍🧒‍🧒 𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]",
             style="bold white",
             border_style="cyan"
         ))
