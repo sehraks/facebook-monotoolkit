@@ -309,7 +309,7 @@ class FacebookMonoToolkit:
         self.display_banner()
 
         cookie_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]Use semi-colon separated format, your cookie must contain c_user and xs values[/]\n"
+                "[bold yellow]Note:[/] [bold white]Use semi-colon separated format, cookie must contain c_user and xs values[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason[/]",
                 title="[bold white]𝗔𝗗𝗗 𝗬𝗢𝗨𝗥 𝗖𝗢𝗢𝗞𝗜𝗘[/]",
                 style="bold yellow",
@@ -317,7 +317,7 @@ class FacebookMonoToolkit:
         )
         console.print(cookie_panel)
 
-        cookie = console.input("[bold green]Cookie: [/]")
+        cookie = console.input("[bold yellow]🍪 Enter your cookie: [/]")
         cookie = cookie.strip()
 
         if not cookie:
@@ -332,7 +332,7 @@ class FacebookMonoToolkit:
         # Ask for account name if not in cookie
         account_name = None
         if "name=" not in cookie:
-            account_name = console.input("[bold green]Account Name (required): [/]").strip()
+            account_name = console.input("[bold green]💳 Account Name (required): [/]").strip()
             if not account_name:
                 account_name = None
 
