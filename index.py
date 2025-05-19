@@ -229,7 +229,7 @@ class FacebookMonoToolkit:
         self.clear_screen()
         self.display_banner()
         login_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID[/]\n"
+                "[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobile phone and username are currently not supported yet[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]Do not use your main account![/]",
                 title="[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗞𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]",
                 style="bold yellow",
@@ -237,7 +237,7 @@ class FacebookMonoToolkit:
         )
         console.print(login_panel)
 
-        email = console.input("[bold yellow]📧 Enter your email/UID: [/]")
+        email = console.input("[bold yellow]📧 Enter your credential: [/]")
         password = console.input("[bold yellow]🔑 Enter your password: [/]")
         
         # Validate credentials format
@@ -332,7 +332,7 @@ class FacebookMonoToolkit:
         # Ask for account name if not in cookie
         account_name = None
         if "name=" not in cookie:
-            account_name = console.input("[bold yellow]💳 Account Name: [/]").strip()
+            account_name = console.input("[bold yellow]💳 Enter your name: [/]").strip()
             if not account_name:
                 console.print(Panel(
                     "[bold white]❕ Please enter your Facebook account name[/]",
@@ -383,12 +383,6 @@ class FacebookMonoToolkit:
                     style="bold cyan",
                     border_style="cyan"
                 ))
-
-            console.print(Panel(
-                "[bold cyan]📇 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗔𝗖𝗖𝗘𝗦𝗦[/]",
-                style="bold cyan",
-                border_style="cyan"
-            ))
             
             accounts = self.cookie_manager.get_all_accounts()
             for idx, account in enumerate(accounts, 1):
