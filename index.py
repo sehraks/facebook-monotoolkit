@@ -214,8 +214,7 @@ class FacebookMonoToolkit:
                     continue
                 self.cookie_settings_menu()
             elif choice == "4":
-                # TODO: Add cookies database functionality
-                pass
+                self.cookie_database()
             elif choice == "5":  # Changed from 4 to 5
                 break
             else:
