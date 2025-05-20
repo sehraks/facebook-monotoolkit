@@ -168,62 +168,70 @@ class FacebookMonoToolkit:
     def cookie_management_menu(self):
         """Handle cookie management menu."""
         while True:
-            self.clear_screen()
-            self.display_banner()
+                self.clear_screen()
+                self.display_banner()
 
-            if self.current_account and self.account_data:
+                if self.current_account and self.account_data:
+                        console.print(Panel(
+                                f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                style="bold cyan",
+                                border_style="cyan"
+                        ))
+
                 console.print(Panel(
-                    f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
-                    style="bold cyan",
-                    border_style="cyan"
-                ))
-
-            console.print(Panel(
-                "[bold yellow]🔑 𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]",  # Updated title
-                style="bold yellow",
-                border_style="yellow"
-            ))
-
-            menu_panel = Panel(
-                "[bold white][1] Enter your cookie[/]\n"
-                "[bold white][2] Login your Facebook account[/]\n"
-                "[bold white][3] Access your Facebook accounts[/]\n"
-                "[bold white][4] Cookies Database[/]\n"
-                "[bold white][5] Back to Main Menu[/]",
-                title="[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]",
-                style="bold yellow",
-                border_style="yellow"
-            )
-            console.print(menu_panel)
-
-            choice = console.input("[bold yellow]Select an option: [/]")
-            choice = choice.strip()
-
-            if choice == "1":
-                self.add_new_cookie()
-            elif choice == "2":
-                self.facebook_login()
-            elif choice == "3":
-                if not self.cookie_manager.has_cookies():
-                    console.print(Panel(
-                        "[bold red]❕ Add a cookie or login first.[/]",
+                        "[bold yellow]🔑 𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]",
                         style="bold yellow",
                         border_style="yellow"
-                    ))
-                    console.input("[bold white]Press Enter to continue...[/]")
-                    continue
-                self.cookie_settings_menu()
-            elif choice == "4":
-                self.cookie_database()
-            elif choice == "5":  # Changed from 4 to 5
-                break
-            else:
-                console.print(Panel(
-                    "[bold white]❌ Invalid choice! Please try again.[/]", 
-                    style="bold white",
-                    border_style="red"
                 ))
-                console.input("[bold white]Press Enter to continue...[/]")
+
+                menu_panel = Panel(
+                        "[bold white][1] Enter your cookie[/]\n"
+                        "[bold white][2] Login your Facebook account[/]\n"
+                        "[bold white][3] Access your Facebook accounts[/]\n"
+                        "[bold white][4] Cookies Database[/]\n"
+                        "[bold white][5] Back to Main Menu[/]",
+                        title="[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]",
+                        style="bold yellow",
+                        border_style="yellow"
+                )
+                console.print(menu_panel)
+
+                choice = console.input("[bold yellow]Select an option: [/]")
+                choice = choice.strip()
+
+                if choice == "1":
+                        self.add_new_cookie()
+                elif choice == "2":
+                        self.facebook_login()
+                elif choice == "3":
+                        if not self.cookie_manager.has_cookies():
+                                console.print(Panel(
+                                        "[bold red]❕ Add a cookie or login first.[/]",
+                                        style="bold yellow",
+                                        border_style="yellow"
+                                ))
+                                console.input("[bold white]Press Enter to continue...[/]")
+                                continue
+                        self.cookie_settings_menu()
+                elif choice == "4":
+                        if not self.cookie_manager.has_cookies():
+                                console.print(Panel(
+                                        "[bold red]❕ Add a cookie or login first.[/]",
+                                        style="bold yellow",
+                                        border_style="yellow"
+                                ))
+                                console.input("[bold white]Press Enter to continue...[/]")
+                                continue
+                        self.view_cookie_database()
+                elif choice == "5":
+                        break
+                else:
+                        console.print(Panel(
+                                "[bold white]❌ Invalid choice! Please try again.[/]", 
+                                style="bold white",
+                                border_style="red"
+                        ))
+                        console.input("[bold white]Press Enter to continue...[/]")
 
     def facebook_login(self):
         """Handle Facebook login functionality."""
@@ -487,7 +495,7 @@ class FacebookMonoToolkit:
             
             console.input("[bold white]Press Enter to continue...[/]")
 
-    def cookie_database(self):
+    def view_cookie_database(self):
         """Handle cookie database functionality."""
         self.clear_screen()
         self.display_banner()
@@ -529,7 +537,7 @@ class FacebookMonoToolkit:
                         border_style="red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
-                self.cookie_database()
+                self.view_cookie_database()
 
     def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
