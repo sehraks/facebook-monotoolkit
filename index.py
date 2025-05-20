@@ -17,6 +17,7 @@ from modules.spam_sharing import SpamSharing
 from modules.utils import Utils
 from modules.update_settings import UpdateSettings
 from modules.fb_login import FacebookLogin
+from modules.cookie_database import CookieDatabase
 
 # Initialize rich console
 console = Console()
@@ -50,6 +51,7 @@ class FacebookMonoToolkit:
         self.spam_sharing = SpamSharing()
         self.update_settings = UpdateSettings(self.display_banner)
         self.fb_login = FacebookLogin()
+        self.cookie_database = CookieDatabase(self.cookie_manager)
         
         # Create necessary directories
         self._init_directories()
@@ -485,6 +487,50 @@ class FacebookMonoToolkit:
                     ))
             
             console.input("[bold white]Press Enter to continue...[/]")
+
+    def cookie_database(self):
+        """Handle cookie database functionality."""
+        self.clear_screen()
+        self.display_banner()
+        
+        database_panel = Panel(
+                "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies here[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
+                title="[bold white]𝗖𝗢𝗢𝗞𝗜𝗘 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]",
+                style="bold cyan",
+                border_style="cyan"
+        )
+        console.print(database_panel)
+
+        if self.current_account and self.account_data:
+                console.print(Panel(
+                        f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+
+        menu_panel = Panel(
+                "[bold white][1] View All Cookies[/]\n"
+                "[bold white][2] Back to Main Menu[/]",
+                style="bold cyan",
+                border_style="cyan"
+        )
+        console.print(menu_panel)
+
+        choice = console.input("[bold cyan]Enter your choice: [/]")
+        
+        if choice == "1":
+                self.cookie_database.view_all_cookies()
+        elif choice == "2":
+                return
+        else:
+                console.print(Panel(
+                        "[bold white]❕ Invalid choice![/]",
+                        style="bold red",
+                        border_style="red"
+                ))
+                console.input("[bold white]Press Enter to continue...[/]")
+                self.cookie_database()
 
     def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
