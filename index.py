@@ -248,25 +248,8 @@ class FacebookMonoToolkit:
 
         email = console.input("[bold yellow]🪪 Enter your credential: [/]")
         password = console.input("[bold yellow]🔑 Enter your password: [/]")
-        
-        # Validate credentials format
-        valid, message = self.fb_login.validate_credentials(email.strip(), password.strip())
-        if not valid:
-            console.print(Panel(
-                f"[bold white]❕ {message}[/]",
-                style="bold red",
-                border_style="red"
-            ))
-            console.input("[bold white]Press Enter to continue...[/]")
-            return
 
-        console.print(Panel(
-            "[bold cyan]🔄 Logging in to Facebook...[/]",
-            style="bold cyan",
-            border_style="cyan"
-        ))
-
-        # Attempt login
+        # Attempt login with delay handling being managed by fb_login.py
         success, message, account_data = self.fb_login.login(email.strip(), password.strip())
             
         if success and account_data:
@@ -287,26 +270,6 @@ class FacebookMonoToolkit:
                         self.cookie_manager.set_current_account(account['id'])
                         self.current_account = account
                         break
-                
-                console.print(Panel(
-                    f"[bold green]✅ {message}[/]\n"
-                    f"[bold green]👤 Account: {self.account_data['name']} / {self.account_data['user_id']}[/]\n"
-                    "[bold green]✓ Account automatically selected[/]",
-                    style="bold green",
-                    border_style="green"
-                ))
-            else:
-                console.print(Panel(
-                    "[bold red]❌ Failed to save account data[/]",
-                    style="bold red",
-                    border_style="red"
-                ))
-        else:
-            console.print(Panel(
-                f"[bold red]❌ {message}[/]",
-                style="bold red",
-                border_style="red"
-            ))
         
         # Log the login attempt
         self.fb_login.log_login_attempt(email, success, message)
