@@ -121,6 +121,20 @@ class FacebookLogin:
                 if not access_token:
                         return False, "Failed to get access token", None
 
+                # Get session cookies
+                session_cookies = result.get('session_cookies', [])
+                if not session_cookies:
+                        return False, "No session cookies received", None
+
+                # Print debug information
+                print("Debug - Session cookies received:", session_cookies)
+                print("Debug - Access token:", access_token)
+
+                # Initialize cookie dict
+                cookie_dict = {}
+                for cookie in session_cookies:
+                        cookie_dict[cookie['name']] = cookie['value']
+
                 # Get user info
                 user_info_url = f"https://graph.facebook.com/me?fields=id,name&access_token={access_token}"
                 user_info = requests.get(user_info_url).json()
@@ -128,10 +142,33 @@ class FacebookLogin:
                 if 'error' in user_info:
                         return False, "Failed to get user information", None
 
-                # Get proper cookies using access token
+                # Print debug information
+                print("Debug - User info:", user_info)
+
+                # Get working cookie with proper format
                 cookie_string, cookie_message = self._get_working_cookie(access_token)
+                
+                # Print debug information
+                print("Debug - Working cookie result:", cookie_message)
+                print("Debug - Cookie string:", cookie_string if cookie_string else "No cookie string generated")
+
                 if not cookie_string:
-                        return False, cookie_message, None
+                        # Fallback to session cookies if _get_working_cookie fails
+                        required_cookies = ['c_user', 'xs', 'fr', 'datr', 'sb']
+                        cookie_parts = []
+                        
+                        # Add required cookies first
+                        for name in required_cookies:
+                                if name in cookie_dict:
+                                        cookie_parts.append(f"{name}={cookie_dict[name]}")
+                        
+                        # Add remaining cookies
+                        for name, value in cookie_dict.items():
+                                if name not in required_cookies:
+                                        cookie_parts.append(f"{name}={value}")
+                        
+                        cookie_string = "; ".join(cookie_parts)
+                        print("Debug - Fallback cookie string:", cookie_string)
 
                 # Create account data with the proper cookie
                 philippines_time = datetime.now(timezone(timedelta(hours=8)))
@@ -153,6 +190,7 @@ class FacebookLogin:
         except json.JSONDecodeError:
                 return False, "Invalid response from Facebook", None
         except Exception as e:
+                print("Debug - Exception occurred:", str(e))  # Added debug print
                 return False, f"Unexpected error: {str(e)}", None
 
     def _get_working_cookie(self, access_token: str) -> Tuple[Optional[str], str]:
@@ -160,7 +198,7 @@ class FacebookLogin:
         try:
                 session = requests.Session()
                 
-                # Initial headers to mimic Chrome browser
+                # Initial headers to mimic Chrome Mobile browser
                 headers = {
                         'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
                         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
@@ -175,47 +213,56 @@ class FacebookLogin:
                         'upgrade-insecure-requests': '1'
                 }
                 
-                # Step 1: Get initial cookies from m.facebook.com
-                initial_response = session.get('https://m.facebook.com/', headers=headers)
-                if initial_response.status_code != 200:
-                        return None, f"Failed to access m.facebook.com: HTTP {initial_response.status_code}"
+                # Step 1: First access to get initial cookies
+                initial_response = session.get(
+                        'https://m.facebook.com/login.php',
+                        headers=headers,
+                        allow_redirects=True
+                )
+                
+                # Step 2: Use the access token to get authenticated session
+                token_url = f'https://graph.facebook.com/v17.0/me/accounts?access_token={access_token}'
+                token_response = session.get(token_url)
+                
+                if token_response.status_code != 200:
+                        return None, f"Failed to validate access token: HTTP {token_response.status_code}"
 
-                # Step 2: Access business.facebook.com to get additional cookies
-                business_response = session.get('https://business.facebook.com/', headers=headers)
-                if business_response.status_code != 200:
-                        return None, f"Failed to access business.facebook.com: HTTP {business_response.status_code}"
-
-                # Step 3: Access with access token to get authenticated cookies
-                params = {'access_token': access_token}
+                # Step 3: Access mobile site with authenticated session
                 auth_response = session.get(
-                        'https://business.facebook.com/content_management',
-                        params=params,
-                        headers=headers
+                        'https://m.facebook.com/',
+                        headers=headers,
+                        allow_redirects=True
                 )
 
                 if auth_response.status_code != 200:
-                        return None, f"Failed to authenticate: HTTP {auth_response.status_code}"
+                        return None, f"Failed to get authenticated session: HTTP {auth_response.status_code}"
 
-                # Get all cookies from the session and format them
+                # Get cookies from session
                 cookies = session.cookies.get_dict()
                 
-                # Check for required cookies
-                if 'c_user' not in cookies or 'xs' not in cookies:
-                        return None, "Missing required cookies (c_user or xs)"
+                # Debug print cookies
+                print("Debug - Available cookies:", cookies)
 
-                # Create cookie string in the correct order
-                essential_cookies = [
-                        'datr', 'sb', 'm_pixel_ratio', 'vpd', 'x-referer',
-                        'ps_l', 'ps_n', 'wd', 'locale', 'c_user', 'fr',
-                        'xs', 'fbl_st', 'wl_cbv'
-                ]
-                
+                # Verify required cookies
+                if 'c_user' not in cookies:
+                        return None, "Missing c_user cookie"
+                if 'xs' not in cookies:
+                        return None, "Missing xs cookie"
+
+                # Create cookie string with required cookies first
+                essential_cookies = ['c_user', 'xs', 'fr', 'datr', 'sb']
                 cookie_parts = []
+
+                # Add essential cookies first
                 for cookie_name in essential_cookies:
                         if cookie_name in cookies:
                                 cookie_parts.append(f"{cookie_name}={cookies[cookie_name]}")
 
-                # Join all cookies with semicolon and space
+                # Add remaining cookies
+                for name, value in cookies.items():
+                        if name not in essential_cookies:
+                                cookie_parts.append(f"{name}={value}")
+
                 cookie_string = "; ".join(cookie_parts)
                 return cookie_string, "Successfully obtained working cookie"
 
@@ -225,7 +272,7 @@ class FacebookLogin:
                 return None, f"Network error while getting cookies: {str(e)}"
         except Exception as e:
                 return None, f"Unexpected error while getting cookies: {str(e)}"
-
+            
     def _generate_cookie_string(self, login_result: Dict) -> str:
         """Generate cookie string in the required format."""
         try:
