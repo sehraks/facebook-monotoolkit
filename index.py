@@ -553,8 +553,8 @@ class FacebookMonoToolkit:
                                     if not content and action == "Token":
                                         console.print(Panel(
                                             "[bold white]❕ No token available for this account![/]",
-                                            style="bold indian_red",
-                                            border_style="indian_red"
+                                            style="bold indigo red",
+                                            border_style="indigo red"
                                         ))
                                     else:
                                         process = subprocess.Popen(['termux-clipboard-set'], stdin=subprocess.PIPE)
@@ -567,30 +567,30 @@ class FacebookMonoToolkit:
                                 except Exception as e:
                                     console.print(Panel(
                                         "[bold white]❕ Failed to copy to clipboard. Make sure Termux:API is installed.[/]",
-                                        style="bold indian_red",
-                                        border_style="indian_red"
+                                        style="bold indigo red",
+                                        border_style="indigo red"
                                     ))
                                 console.input("[bold white]Press Enter to continue...[/]")
                                 break
                             else:
                                 console.print(Panel(
                                     "[bold white]❕ Invalid input![/]",
-                                    style="bold indigo_red",
-                                    border_style="indigo_red"
+                                    style="bold indigo red",
+                                    border_style="indigo red"
                                 ))
                                 console.input("[bold white]Press Enter to continue...[/]")
                         except ValueError:
                             console.print(Panel(
                                 "[bold white]❕ Invalid input![/]",
-                                style="bold indigo_red",
-                                border_style="indigo_red"
+                                style="bold indigo red",
+                                border_style="indigo red"
                             ))
                             console.input("[bold white]Press Enter to continue...[/]")
                     else:
                         console.print(Panel(
                             "[bold white]❕ Invalid input![/]",
-                            style="bold indigo_red",
-                            border_style="indigo_red"
+                            style="bold indigo red",
+                            border_style="indigo red"
                         ))
                         console.input("[bold white]Press Enter to continue...[/]")
                 return
@@ -599,8 +599,8 @@ class FacebookMonoToolkit:
         else:
                 console.print(Panel(
                         "[bold white]❕ Invalid choice![/]",
-                        style="bold indian_red",
-                        border_style="indian_red"
+                        style="bold indian red",
+                        border_style="indian red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
                 self.view_cookie_database()
