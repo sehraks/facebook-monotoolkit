@@ -78,11 +78,34 @@ class FacebookLogin:
         """
         try:
                 # First validate credentials format
+                console.print(Panel(
+                        "[bold white]🔄 Checking account credentials...[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+
                 valid, message = self.validate_credentials(email, password)
                 if not valid:
+                        console.print(Panel(
+                                "[bold white]❕ The account you provided are Incorrect[/]",
+                                style="bold indian_red",
+                                border_style="indian_red"
+                        ))
                         return False, message, None
 
-                # Use the b-api endpoint directly
+                console.print(Panel(
+                        "[bold white]✅ The account you provided are correct[/]",
+                        style="bold green",
+                        border_style="green"
+                ))
+
+                # Login attempt
+                console.print(Panel(
+                        "[bold white]🔄 Getting account's cookie and token...[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+
                 login_url = 'https://b-api.facebook.com/method/auth.login'
                 data = {
                         'adid': self._generate_adid(),
@@ -110,25 +133,62 @@ class FacebookLogin:
                 )
 
                 if response.status_code != 200:
+                        console.print(Panel(
+                                "[bold white]❕ Connection error occurred while logging in[/]",
+                                style="bold indian_red",
+                                border_style="indian_red"
+                        ))
                         return False, f"Connection error (HTTP {response.status_code})", None
 
                 result = response.json()
 
+                # Handle specific error cases
                 if 'error_msg' in result:
-                        return False, f"Login failed: {result['error_msg']}", None
+                        error_msg = result['error_msg'].lower()
+                        if '2-factor authentication' in error_msg or '2fa' in error_msg:
+                                console.print(Panel(
+                                        "[bold white]❕ This account has 2FA enabled. Please disable 2FA and try again[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
+                                ))
+                        elif 'account disabled' in error_msg or 'suspended' in error_msg:
+                                console.print(Panel(
+                                        "[bold white]❕ This account has been disabled or suspended[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
+                                ))
+                        elif 'locked' in error_msg:
+                                console.print(Panel(
+                                        "[bold white]❕ This account is temporarily locked. Please unlock it first[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
+                                ))
+                        else:
+                                console.print(Panel(
+                                        f"[bold white]❕ {result['error_msg']}[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
+                                ))
+                        return False, result['error_msg'], None
 
                 access_token = result.get('access_token')
                 if not access_token:
+                        console.print(Panel(
+                                "[bold white]❕ Failed to get access token[/]",
+                                style="bold indian_red",
+                                border_style="indian_red"
+                        ))
                         return False, "Failed to get access token", None
 
-                # Get session cookies
+                # Get session cookies and handle response
                 session_cookies = result.get('session_cookies', [])
                 if not session_cookies:
+                        console.print(Panel(
+                                "[bold white]❕ No session cookies received[/]",
+                                style="bold indian_red",
+                                border_style="indian_red"
+                        ))
                         return False, "No session cookies received", None
-
-                # Print debug information
-                print("Debug - Session cookies received:", session_cookies)
-                print("Debug - Access token:", access_token)
 
                 # Initialize cookie dict
                 cookie_dict = {}
@@ -140,43 +200,52 @@ class FacebookLogin:
                 user_info = requests.get(user_info_url).json()
 
                 if 'error' in user_info:
+                        console.print(Panel(
+                                "[bold white]❕ Failed to get user information[/]",
+                                style="bold indian_red",
+                                border_style="indian_red"
+                        ))
                         return False, "Failed to get user information", None
 
-                # Print debug information
-                print("Debug - User info:", user_info)
-
-                # Get working cookie with proper format
-                cookie_string, cookie_message = self._get_working_cookie(access_token)
+                # Format cookie string
+                required_cookies = ['c_user', 'xs', 'fr', 'datr', 'sb']
+                cookie_parts = []
                 
-                # Print debug information
-                print("Debug - Working cookie result:", cookie_message)
-                print("Debug - Cookie string:", cookie_string if cookie_string else "No cookie string generated")
+                # Add required cookies first
+                for name in required_cookies:
+                        if name in cookie_dict:
+                                cookie_parts.append(f"{name}={cookie_dict[name]}")
+                
+                # Add remaining cookies
+                for name, value in cookie_dict.items():
+                        if name not in required_cookies:
+                                cookie_parts.append(f"{name}={value}")
+                
+                cookie_string = "; ".join(cookie_parts)
 
-                if not cookie_string:
-                        # Fallback to session cookies if _get_working_cookie fails
-                        required_cookies = ['c_user', 'xs', 'fr', 'datr', 'sb']
-                        cookie_parts = []
-                        
-                        # Add required cookies first
-                        for name in required_cookies:
-                                if name in cookie_dict:
-                                        cookie_parts.append(f"{name}={cookie_dict[name]}")
-                        
-                        # Add remaining cookies
-                        for name, value in cookie_dict.items():
-                                if name not in required_cookies:
-                                        cookie_parts.append(f"{name}={value}")
-                        
-                        cookie_string = "; ".join(cookie_parts)
-                        print("Debug - Fallback cookie string:", cookie_string)
+                # Success messages
+                console.print(Panel(
+                        "[bold white]🗃️ Successfully stored the cookie and token credentials from cookie database.[/]",
+                        style="bold green",
+                        border_style="green"
+                ))
 
-                # Create account data with the proper cookie
+                console.print(Panel(
+                        f"[bold white]✅ You can now use your account from Facebook MonoToolkit!\n"
+                        f"👤 Account: {user_info['name']}\n"
+                        f" UID: {user_info['id']}[/]",
+                        style="bold green",
+                        border_style="green"
+                ))
+
+                # Create account data
                 philippines_time = datetime.now(timezone(timedelta(hours=8)))
                 account_data = {
                         'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
                         'name': user_info['name'],
                         'user_id': user_info['id'],
                         'cookie': cookie_string,
+                        'token': access_token,
                         'added_date': philippines_time.strftime('%Y-%m-%d %H:%M:%S'),
                         'last_used': None,
                         'status': 'active',
@@ -186,11 +255,25 @@ class FacebookLogin:
                 return True, f"Successfully logged in as {user_info['name']}", account_data
 
         except requests.RequestException as e:
+                console.print(Panel(
+                        "[bold white]❕ Network error occurred while connecting to Facebook[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                ))
                 return False, f"Network error: {str(e)}", None
         except json.JSONDecodeError:
+                console.print(Panel(
+                        "[bold white]❕ Received invalid response from Facebook[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                ))
                 return False, "Invalid response from Facebook", None
         except Exception as e:
-                print("Debug - Exception occurred:", str(e))  # Added debug print
+                console.print(Panel(
+                        f"[bold white]❕ An unexpected error occurred: {str(e)}[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                ))
                 return False, f"Unexpected error: {str(e)}", None
 
     def _get_working_cookie(self, access_token: str) -> Tuple[Optional[str], str]:
@@ -377,3 +460,4 @@ class FacebookLogin:
     def clear_screen(self):
         """Clear the terminal screen."""
         os.system('cls' if os.name == 'nt' else 'clear')
+        
