@@ -242,7 +242,7 @@ class FacebookLogin:
 
                 # Success messages
                 console.print(Panel(
-                        "[bold white]🗃️ Successfully stored the cookie and token credentials from cookie database.[/]",
+                        "[bold white]🗃️ Successfully stored your account data.[/]",
                         style="bold green",
                         border_style="green"
                 ))
