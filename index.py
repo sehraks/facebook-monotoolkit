@@ -5,7 +5,6 @@
 
 import os
 import sys
-import pyperclip
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Optional
 from rich.console import Console
@@ -572,8 +571,90 @@ class FacebookMonoToolkit:
                                 console.print(Panel(
                                     f"[bold green]✅ Cookie {idx + 1} copied to clipboard![/]",
                                     style="bold green",
-                                    border_style="green"
-                                ))
+     def view_cookie_database(self):
+        """Handle cookie database functionality."""
+        self.clear_screen()
+        self.display_banner()
+        
+        # Display selected account panel first
+        if self.current_account and self.account_data:
+                console.print(Panel(
+                        f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+        
+        database_panel = Panel(
+                "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies here[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
+                title="[bold white]𝗖𝗢𝗢𝗞𝗜𝗘 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]",
+                style="bold cyan",
+                border_style="cyan"
+        )
+        console.print(database_panel)
+
+        menu_panel = Panel(
+                "[bold white][1] View All Cookies[/]\n"
+                "[bold white][2] Back to Main Menu[/]",
+                style="bold cyan",
+                border_style="cyan"
+        )
+        console.print(menu_panel)
+
+        choice = console.input("[bold cyan]Enter your choice: [/]")
+        
+        if choice == "1":
+                self.clear_screen()
+                self.display_banner()
+                
+                # Display selected account panel first
+                if self.current_account and self.account_data:
+                        console.print(Panel(
+                                f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                style="bold cyan",
+                                border_style="cyan"
+                        ))
+                
+                console.print(database_panel)
+                
+                accounts = self.cookie_manager.get_all_accounts()
+                
+                for idx, account in enumerate(accounts, 1):
+                    cookie_panel = Panel(
+                        f"[bold white]Name: {account.get('name', 'Unknown User')}[/]\n"
+                        f"[bold white]Cookie: {account['cookie']}[/]\n"
+                        f"[bold yellow][C{idx}] Copy this cookie[/]",
+                        title=f"[bold yellow]𝗖𝗢𝗢𝗞𝗜𝗘 {idx}[/]",
+                        style="bold yellow",
+                        border_style="yellow"
+                    )
+                    console.print(cookie_panel)
+                
+                while True:
+                    copy_choice = console.input("[bold yellow]Enter C# to copy a cookie (or press Enter to go back): [/]").strip().upper()
+                    
+                    if not copy_choice:  # If user just presses Enter
+                        break
+                        
+                    if copy_choice.startswith('C'):
+                        try:
+                            idx = int(copy_choice[1:]) - 1
+                            if 0 <= idx < len(accounts):
+                                try:
+                                    import subprocess
+                                    process = subprocess.Popen(['termux-clipboard-set'], stdin=subprocess.PIPE)
+                                    process.communicate(input=accounts[idx]['cookie'].encode())
+                                    console.print(Panel(
+                                        f"[bold green]✅ Cookie {idx + 1} copied to clipboard![/]",
+                                        style="bold green",
+                                        border_style="green"
+                                    ))
+                                except Exception as e:
+                                    console.print(Panel(
+                                        "[bold red]❌ Failed to copy to clipboard. Make sure Termux:API is installed.[/]",
+                                        style="bold red",
+                                        border_style="red"
+                                    ))
                                 console.input("[bold white]Press Enter to continue...[/]")
                                 break
                             else:
