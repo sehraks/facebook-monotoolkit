@@ -574,21 +574,21 @@ class FacebookMonoToolkit:
                                 break
                             else:
                                 console.print(Panel(
-                                    "[bold white]❕ Invalid input![/]",
+                                    "[bold white]❕ Invalid choice! Please try again.[/]",
                                     style="bold indigo indian_red",
                                     border_style="indian_red"
                                 ))
                                 console.input("[bold white]Press Enter to continue...[/]")
                         except ValueError:
                             console.print(Panel(
-                                "[bold white]❕ Invalid input![/]",
+                                "[bold white]❕ Invalid choice! Please try again.[/]",
                                 style="bold indian_red",
                                 border_style="indian_red"
                             ))
                             console.input("[bold white]Press Enter to continue...[/]")
                     else:
                         console.print(Panel(
-                            "[bold white]❕ Invalid input![/]",
+                            "[bold white]❕ Invalid choice! Please try again.[/]",
                             style="bold indian_red",
                             border_style="indian_red"
                         ))
@@ -598,7 +598,7 @@ class FacebookMonoToolkit:
                 return
         else:
                 console.print(Panel(
-                        "[bold white]❕ Invalid choice![/]",
+                        "[bold white]❕ Invalid choice! Please try again.[/]",
                         style="bold indian_red",
                         border_style="indian_red"
                 ))
