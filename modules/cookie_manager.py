@@ -246,10 +246,23 @@ class CookieManager:
                         return False
 
     def format_cookie_display(self, cookie: str, token: str = None) -> Tuple[str, str]:
-                """Format cookie and token strings for display (masked version)."""
-                masked_cookie = cookie[:20] + "..." + cookie[-10:] if len(cookie) > 30 else cookie
-                masked_token = token[:20] + "..." + token[-10:] if token and len(token) > 30 else (token or "N/A")
-                return masked_cookie, masked_token
+        """Format cookie and token strings for display (masked version)."""
+        try:
+            # Handle cookie masking
+            if cookie and len(cookie) > 30:
+                masked_cookie = cookie[:20] + "..." + cookie[-10:]
+            else:
+                masked_cookie = cookie if cookie else "N/A"
+
+            # Handle token masking
+            if token and len(token) > 30:
+                masked_token = token[:20] + "..." + token[-10:]
+            else:
+                masked_token = token if token else "N/A"
+
+            return masked_cookie, masked_token
+        except Exception:
+            return "Error masking cookie", "Error masking token"
 
     def validate_all_cookies(self) -> List[Dict]:
         """Validate all stored cookies and return status report."""
