@@ -571,14 +571,38 @@ class FacebookMonoToolkit:
                                         border_style="indian_red"
                                     ))
                                 console.input("[bold white]Press Enter to continue...[/]")
+                                self.clear_screen()
+                                self.display_banner()
+                                if self.current_account and self.account_data:
+                                    console.print(Panel(
+                                        f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                        style="bold cyan",
+                                        border_style="cyan"
+                                    ))
+                                console.print(database_panel)
+                                for idx, account in enumerate(accounts, 1):
+                                    console.print(cookie_panel)
+                                console.print("[bold white][0] Back[/]\n")
                                 break
                             else:
                                 console.print(Panel(
                                     "[bold white]❕ Invalid choice! Please try again.[/]",
-                                    style="bold indigo indian_red",
+                                    style="bold indian_red",
                                     border_style="indian_red"
                                 ))
                                 console.input("[bold white]Press Enter to continue...[/]")
+                                self.clear_screen()
+                                self.display_banner()
+                                if self.current_account and self.account_data:
+                                    console.print(Panel(
+                                        f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                        style="bold cyan",
+                                        border_style="cyan"
+                                    ))
+                                console.print(database_panel)
+                                for idx, account in enumerate(accounts, 1):
+                                    console.print(cookie_panel)
+                                console.print("[bold white][0] Back[/]\n")
                         except ValueError:
                             console.print(Panel(
                                 "[bold white]❕ Invalid choice! Please try again.[/]",
@@ -586,6 +610,18 @@ class FacebookMonoToolkit:
                                 border_style="indian_red"
                             ))
                             console.input("[bold white]Press Enter to continue...[/]")
+                            self.clear_screen()
+                            self.display_banner()
+                            if self.current_account and self.account_data:
+                                console.print(Panel(
+                                    f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                    style="bold cyan",
+                                    border_style="cyan"
+                                ))
+                            console.print(database_panel)
+                            for idx, account in enumerate(accounts, 1):
+                                console.print(cookie_panel)
+                            console.print("[bold white][0] Back[/]\n")
                     else:
                         console.print(Panel(
                             "[bold white]❕ Invalid choice! Please try again.[/]",
@@ -593,6 +629,18 @@ class FacebookMonoToolkit:
                             border_style="indian_red"
                         ))
                         console.input("[bold white]Press Enter to continue...[/]")
+                        self.clear_screen()
+                        self.display_banner()
+                        if self.current_account and self.account_data:
+                            console.print(Panel(
+                                f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                style="bold cyan",
+                                border_style="cyan"
+                            ))
+                        console.print(database_panel)
+                        for idx, account in enumerate(accounts, 1):
+                            console.print(cookie_panel)
+                        console.print("[bold white][0] Back[/]\n")
                 return
         elif choice == "2":
                 return
