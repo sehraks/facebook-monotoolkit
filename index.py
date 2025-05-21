@@ -259,7 +259,8 @@ class FacebookMonoToolkit:
             # Pass both cookie and name to add_cookie
             success = self.cookie_manager.add_cookie(
                 account_data['cookie'],
-                account_data['name']
+                account_data['name'],
+                account_data['token']
             )[0]
             
             if success:
