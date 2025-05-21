@@ -503,13 +503,13 @@ class FacebookMonoToolkit:
         # Display selected account panel first
         if self.current_account and self.account_data:
                 console.print(Panel(
-                        f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                        f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
                         style="bold cyan",
                         border_style="cyan"
                 ))
         
         database_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies here[/]\n"
+                "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies and tokens here[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
                 title="[bold white]𝗖𝗢𝗢𝗞𝗜𝗘 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]",
                 style="bold cyan",
@@ -534,7 +534,7 @@ class FacebookMonoToolkit:
                 # Display selected account panel first
                 if self.current_account and self.account_data:
                         console.print(Panel(
-                                f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
                                 style="bold cyan",
                                 border_style="cyan"
                         ))
@@ -544,54 +544,80 @@ class FacebookMonoToolkit:
                 accounts = self.cookie_manager.get_all_accounts()
                 
                 for idx, account in enumerate(accounts, 1):
+                    # Format date and time
+                    philippines_time = datetime.now(timezone(timedelta(hours=8)))
+                    added_date = philippines_time.strftime("%B %d, %Y")
+                    added_time = philippines_time.strftime("%I:%M %p +8 GMT (PH)")
+
+                    # Mask cookie and token
+                    cookie = account['cookie']
+                    token = account.get('token', 'N/A')
+                    masked_cookie = cookie[:20] + "..." + cookie[-10:] if len(cookie) > 30 else cookie
+                    masked_token = token[:20] + "..." + token[-10:] if len(token) > 30 else token
+
                     cookie_panel = Panel(
                         f"[bold white]Name: {account.get('name', 'Unknown User')}[/]\n"
-                        f"[bold white]Cookie: {account['cookie']}[/]\n"
-                        f"[bold yellow][C{idx}] Copy this cookie[/]",
-                        title=f"[bold yellow]𝗖𝗢𝗢𝗞𝗜𝗘 {idx}[/]",
+                        f"[bold white]Cookie: {masked_cookie}[/]\n"
+                        f"[bold white]Token: {masked_token}[/]\n"
+                        f"[bold white]Added Date: {added_date}[/]\n"
+                        f"[bold white]Added Time: {added_time}[/]\n"
+                        f"[bold white]Added by: {account.get('added_by', 'sehraks')}[/]\n\n"
+                        f"[bold yellow][C{idx}] Copy cookie[/]\n"
+                        f"[bold yellow][T{idx}] Copy token[/]",
+                        title=f"[bold yellow]𝗖𝗢𝗢𝗞𝗜𝗘 #{idx}[/]",
                         style="bold yellow",
                         border_style="yellow"
                     )
                     console.print(cookie_panel)
                 
                 while True:
-                    copy_choice = console.input("[bold yellow]Enter C# to copy a cookie (or press Enter to go back): [/]").strip().upper()
+                    copy_choice = console.input("[bold yellow]Enter C# to copy cookie or T# to copy token (or press Enter to go back): [/]").strip().upper()
                     
                     if not copy_choice:  # If user just presses Enter
                         break
                         
-                    if copy_choice.startswith('C'):
+                    if copy_choice.startswith(('C', 'T')):
                         try:
                             idx = int(copy_choice[1:]) - 1
                             if 0 <= idx < len(accounts):
                                 try:
                                     import subprocess
-                                    process = subprocess.Popen(['termux-clipboard-set'], stdin=subprocess.PIPE)
-                                    process.communicate(input=accounts[idx]['cookie'].encode())
-                                    console.print(Panel(
-                                        f"[bold green]✅ Cookie {idx + 1} copied to clipboard![/]",
-                                        style="bold green",
-                                        border_style="green"
-                                    ))
+                                    content = accounts[idx]['cookie'] if copy_choice.startswith('C') else accounts[idx].get('token', '')
+                                    action = "Cookie" if copy_choice.startswith('C') else "Token"
+                                    
+                                    if not content and action == "Token":
+                                        console.print(Panel(
+                                            "[bold white]❕ No token available for this account![/]",
+                                            style="bold indian_red",
+                                            border_style="indian_red"
+                                        ))
+                                    else:
+                                        process = subprocess.Popen(['termux-clipboard-set'], stdin=subprocess.PIPE)
+                                        process.communicate(input=content.encode())
+                                        console.print(Panel(
+                                            f"[bold white]✅ {action} {idx + 1} copied to clipboard![/]",
+                                            style="bold green",
+                                            border_style="green"
+                                        ))
                                 except Exception as e:
                                     console.print(Panel(
-                                        "[bold red]❌ Failed to copy to clipboard. Make sure Termux:API is installed.[/]",
-                                        style="bold red",
-                                        border_style="red"
+                                        "[bold white]❕ Failed to copy to clipboard. Make sure Termux:API is installed.[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
                                     ))
                                 console.input("[bold white]Press Enter to continue...[/]")
                                 break
                             else:
                                 console.print(Panel(
-                                    "[bold white]❕ Invalid cookie number![/]",
-                                    style="bold red",
-                                    border_style="red"
+                                    "[bold white]❕ Invalid selection number![/]",
+                                    style="bold indian_red",
+                                    border_style="indian_red"
                                 ))
                         except ValueError:
                             console.print(Panel(
                                 "[bold white]❕ Invalid input![/]",
-                                style="bold red",
-                                border_style="red"
+                                style="bold indian_red",
+                                border_style="indian_red"
                             ))
                 return
         elif choice == "2":
@@ -599,8 +625,8 @@ class FacebookMonoToolkit:
         else:
                 console.print(Panel(
                         "[bold white]❕ Invalid choice![/]",
-                        style="bold red",
-                        border_style="red"
+                        style="bold indian_red",
+                        border_style="indian_red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
                 self.view_cookie_database()
