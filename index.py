@@ -499,7 +499,14 @@ class FacebookMonoToolkit:
         """Handle cookie database functionality."""
         self.clear_screen()
         self.display_banner()
-        
+
+        if self.current_account and self.account_data:
+                console.print(Panel(
+                        f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+            
         database_panel = Panel(
                 "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies here[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
@@ -508,14 +515,7 @@ class FacebookMonoToolkit:
                 border_style="cyan"
         )
         console.print(database_panel)
-
-        if self.current_account and self.account_data:
-                console.print(Panel(
-                        f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
-                        style="bold cyan",
-                        border_style="cyan"
-                ))
-
+        
         menu_panel = Panel(
                 "[bold white][1] View All Cookies[/]\n"
                 "[bold white][2] Back to Main Menu[/]",
