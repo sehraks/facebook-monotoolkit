@@ -77,139 +77,154 @@ class FacebookLogin:
         Returns: (success, message, account_data)
         """
         try:
-            # First validate credentials format
-            valid, message = self.validate_credentials(email, password)
-            if not valid:
-                return False, message, None
+                # First validate credentials format
+                valid, message = self.validate_credentials(email, password)
+                if not valid:
+                        return False, message, None
 
-            # Use the b-api endpoint directly
-            login_url = 'https://b-api.facebook.com/method/auth.login'
-            data = {
-                'adid': self._generate_adid(),
-                'email': email,
-                'password': password,
-                'format': 'json',
-                'device_id': self._generate_device_id(),
-                'cpl': 'true',
-                'family_device_id': self._generate_device_id(),
-                'credentials_type': 'device_based_login_password',
-                'generate_session_cookies': '1',
-                'generate_analytics_claim': '1',
-                'generate_machine_id': '1',
-                'locale': 'en_US',
-                'client_country_code': 'US',
-                'api_key': '882a8490361da98702bf97a021ddc14d',
-                'access_token': '350685531728|62f8ce9f74b12f84c123cc23437a4a32'
-            }
+                # Use the b-api endpoint directly
+                login_url = 'https://b-api.facebook.com/method/auth.login'
+                data = {
+                        'adid': self._generate_adid(),
+                        'email': email,
+                        'password': password,
+                        'format': 'json',
+                        'device_id': self._generate_device_id(),
+                        'cpl': 'true',
+                        'family_device_id': self._generate_device_id(),
+                        'credentials_type': 'device_based_login_password',
+                        'generate_session_cookies': '1',
+                        'generate_analytics_claim': '1',
+                        'generate_machine_id': '1',
+                        'locale': 'en_US',
+                        'client_country_code': 'US',
+                        'api_key': '882a8490361da98702bf97a021ddc14d',
+                        'access_token': '350685531728|62f8ce9f74b12f84c123cc23437a4a32'
+                }
 
-            response = requests.post(
-                login_url,
-                data=data,
-                headers=self._get_headers(),
-                timeout=self.timeout
-            )
+                response = requests.post(
+                        login_url,
+                        data=data,
+                        headers=self._get_headers(),
+                        timeout=self.timeout
+                )
 
-            if response.status_code != 200:
-                return False, f"Connection error (HTTP {response.status_code})", None
+                if response.status_code != 200:
+                        return False, f"Connection error (HTTP {response.status_code})", None
 
-            result = response.json()
+                result = response.json()
 
-            if 'error_msg' in result:
-                return False, f"Login failed: {result['error_msg']}", None
+                if 'error_msg' in result:
+                        return False, f"Login failed: {result['error_msg']}", None
 
-            access_token = result.get('access_token')
-            if not access_token:
-                return False, "Failed to get access token", None
+                access_token = result.get('access_token')
+                if not access_token:
+                        return False, "Failed to get access token", None
 
-            # Get user info
-            user_info_url = f"https://graph.facebook.com/me?fields=id,name&access_token={access_token}"
-            user_info = requests.get(user_info_url).json()
+                # Get user info
+                user_info_url = f"https://graph.facebook.com/me?fields=id,name&access_token={access_token}"
+                user_info = requests.get(user_info_url).json()
 
-            if 'error' in user_info:
-                return False, "Failed to get user information", None
+                if 'error' in user_info:
+                        return False, "Failed to get user information", None
 
-            # Generate cookie string
-            cookie_string = (
-                f"c_user={user_info['id']}; "
-                f"xs={result.get('session_cookies', [{'value': ''}])[0]['value']}; "
-                f"fr={self._generate_random_cookie_value(32)}; "
-                "sb=abc123; "
-                "datr=xyz789; "
-                "presence=EDvF3EtimeF1557226574EuserFA21B00000000000F2EstateFDutF0CEchF_7bCC"
-            )
+                # Get proper cookies using access token
+                cookie_string, cookie_message = self._get_working_cookie(access_token)
+                if not cookie_string:
+                        return False, cookie_message, None
 
-            # Create account data
-            philippines_time = datetime.now(timezone(timedelta(hours=8)))
-            account_data = {
-                'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
-                'name': user_info['name'],
-                'user_id': user_info['id'],
-                'cookie': cookie_string,
-                'added_date': philippines_time.strftime('%Y-%m-%d %H:%M:%S'),
-                'last_used': None,
-                'status': 'active',
-                'added_by': self.CURRENT_USER
-            }
+                # Create account data with the proper cookie
+                philippines_time = datetime.now(timezone(timedelta(hours=8)))
+                account_data = {
+                        'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
+                        'name': user_info['name'],
+                        'user_id': user_info['id'],
+                        'cookie': cookie_string,
+                        'added_date': philippines_time.strftime('%Y-%m-%d %H:%M:%S'),
+                        'last_used': None,
+                        'status': 'active',
+                        'added_by': self.CURRENT_USER
+                }
 
-            return True, f"Successfully logged in as {user_info['name']}", account_data
+                return True, f"Successfully logged in as {user_info['name']}", account_data
 
         except requests.RequestException as e:
-            return False, f"Network error: {str(e)}", None
+                return False, f"Network error: {str(e)}", None
         except json.JSONDecodeError:
-            return False, "Invalid response from Facebook", None
+                return False, "Invalid response from Facebook", None
         except Exception as e:
-            return False, f"Unexpected error: {str(e)}", None
+                return False, f"Unexpected error: {str(e)}", None
 
     def _get_working_cookie(self, access_token: str) -> Tuple[Optional[str], str]:
         """Get a working cookie using the access token."""
         try:
-            headers = {
-                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                'accept-language': 'en-US,en;q=0.9'
-            }
+                session = requests.Session()
+                
+                # Initial headers to mimic Chrome browser
+                headers = {
+                        'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+                        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                        'accept-language': 'en-US,en;q=0.9',
+                        'sec-ch-ua': '"Chromium";v="124", "Not-A.Brand";v="99"',
+                        'sec-ch-ua-mobile': '?1',
+                        'sec-ch-ua-platform': 'Android',
+                        'sec-fetch-dest': 'document',
+                        'sec-fetch-mode': 'navigate',
+                        'sec-fetch-site': 'none',
+                        'sec-fetch-user': '?1',
+                        'upgrade-insecure-requests': '1'
+                }
+                
+                # Step 1: Get initial cookies from m.facebook.com
+                initial_response = session.get('https://m.facebook.com/', headers=headers)
+                if initial_response.status_code != 200:
+                        return None, f"Failed to access m.facebook.com: HTTP {initial_response.status_code}"
 
-            # First request to get initial cookies
-            session = requests.Session()
-            initial_response = session.get('https://business.facebook.com/', headers=headers, timeout=self.timeout)
-            if initial_response.status_code != 200:
-                return None, f"Failed to access business.facebook.com: HTTP {initial_response.status_code}"
+                # Step 2: Access business.facebook.com to get additional cookies
+                business_response = session.get('https://business.facebook.com/', headers=headers)
+                if business_response.status_code != 200:
+                        return None, f"Failed to access business.facebook.com: HTTP {business_response.status_code}"
 
-            # Second request with access token
-            params = {'access_token': access_token}
-            response = session.get(
-                'https://business.facebook.com/content_management',
-                params=params,
-                headers=headers,
-                timeout=self.timeout
-            )
+                # Step 3: Access with access token to get authenticated cookies
+                params = {'access_token': access_token}
+                auth_response = session.get(
+                        'https://business.facebook.com/content_management',
+                        params=params,
+                        headers=headers
+                )
 
-            if response.status_code != 200:
-                return None, f"Failed to get content management: HTTP {response.status_code}"
+                if auth_response.status_code != 200:
+                        return None, f"Failed to authenticate: HTTP {auth_response.status_code}"
 
-            # Get all cookies from the session
-            cookies = session.cookies.get_dict()
-            if not cookies:
-                return None, "No cookies received from Facebook"
+                # Get all cookies from the session and format them
+                cookies = session.cookies.get_dict()
+                
+                # Check for required cookies
+                if 'c_user' not in cookies or 'xs' not in cookies:
+                        return None, "Missing required cookies (c_user or xs)"
 
-            # Check for required cookies
-            if 'c_user' not in cookies or 'xs' not in cookies:
-                return None, "Missing required cookies (c_user or xs)"
+                # Create cookie string in the correct order
+                essential_cookies = [
+                        'datr', 'sb', 'm_pixel_ratio', 'vpd', 'x-referer',
+                        'ps_l', 'ps_n', 'wd', 'locale', 'c_user', 'fr',
+                        'xs', 'fbl_st', 'wl_cbv'
+                ]
+                
+                cookie_parts = []
+                for cookie_name in essential_cookies:
+                        if cookie_name in cookies:
+                                cookie_parts.append(f"{cookie_name}={cookies[cookie_name]}")
 
-            # Format cookies into string
-            cookie_parts = []
-            for name, value in cookies.items():
-                cookie_parts.append(f"{name}={value}")
-
-            cookie_string = "; ".join(cookie_parts)
-            return cookie_string, "Successfully obtained working cookie"
+                # Join all cookies with semicolon and space
+                cookie_string = "; ".join(cookie_parts)
+                return cookie_string, "Successfully obtained working cookie"
 
         except requests.Timeout:
-            return None, "Connection timed out while getting cookies"
+                return None, "Connection timed out while getting cookies"
         except requests.RequestException as e:
-            return None, f"Network error while getting cookies: {str(e)}"
+                return None, f"Network error while getting cookies: {str(e)}"
         except Exception as e:
-            return None, f"Unexpected error while getting cookies: {str(e)}"
+                return None, f"Unexpected error while getting cookies: {str(e)}"
 
     def _generate_cookie_string(self, login_result: Dict) -> str:
         """Generate cookie string in the required format."""
