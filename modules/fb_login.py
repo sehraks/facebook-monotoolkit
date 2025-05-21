@@ -212,48 +212,48 @@ class FacebookLogin:
             return None, f"Unexpected error while getting cookies: {str(e)}"
 
     def _generate_cookie_string(self, login_result: Dict) -> str:
-    """Generate cookie string in the required format."""
-    try:
-        # Get current timestamp for cookie expiry
-        current_time = int(datetime.now().timestamp())
-        expiry_time = current_time + (30 * 24 * 60 * 60)  # 30 days from now
-        
-        # Generate components in the desired order
-        cookies = [
-            f"datr={self._generate_random_cookie_value(24)}",
-            f"sb={self._generate_random_cookie_value(24)}",
-            "m_pixel_ratio=3",
-            "vpd=v1%3B648x360x3",
-            "x-referer=eyJyIjoiL2hvbWUucGhwIiwiaCI6Ii9ob21lLnBocCIsInMiOiJtIn0%3D",
-            "ps_l=1",
-            "ps_n=1",
-            "wd=360x820"
-        ]
+        """Generate cookie string in the required format."""
+        try:
+                # Get current timestamp for cookie expiry
+                current_time = int(datetime.now().timestamp())
+                expiry_time = current_time + (30 * 24 * 60 * 60)  # 30 days from now
+                
+                # Generate components in the desired order
+                cookies = [
+                        f"datr={self._generate_random_cookie_value(24)}",
+                        f"sb={self._generate_random_cookie_value(24)}",
+                        "m_pixel_ratio=3",
+                        "vpd=v1%3B648x360x3",
+                        "x-referer=eyJyIjoiL2hvbWUucGhwIiwiaCI6Ii9ob21lLnBocCIsInMiOiJtIn0%3D",
+                        "ps_l=1",
+                        "ps_n=1",
+                        "wd=360x820"
+                ]
 
-        # Add user-specific cookies
-        if 'uid' in login_result:
-            cookies.extend([
-                f"c_user={login_result['uid']}",
-                # Generate a more realistic fr cookie
-                f"fr=0HYlmubeLvMQVik5O.AWcca79Qyz8rKR8H0nXLPGcA1rKWmvVQunTghGHLPryQc-EJS_0.BoFGGa..AAA.0.0.BoI1PG.AWf8H659qoDBLQ9OxNb2vFhEXlc"
-            ])
+                # Add user-specific cookies
+                if 'uid' in login_result:
+                        cookies.extend([
+                                f"c_user={login_result['uid']}",
+                                # Generate a more realistic fr cookie
+                                f"fr=0HYlmubeLvMQVik5O.AWcca79Qyz8rKR8H0nXLPGcA1rKWmvVQunTghGHLPryQc-EJS_0.BoFGGa..AAA.0.0.BoI1PG.AWf8H659qoDBLQ9OxNb2vFhEXlc"
+                        ])
 
-        # Add xs cookie if available
-        if 'secret' in login_result:
-            cookies.append(f"xs=8%3AsOmG3Jofr-ndWQ%3A2%3A{expiry_time}%3A-1%3A7867")
+                # Add xs cookie if available
+                if 'secret' in login_result:
+                        cookies.append(f"xs=8%3AsOmG3Jofr-ndWQ%3A2%3A{expiry_time}%3A-1%3A7867")
 
-        # Add remaining cookies
-        cookies.extend([
-            "locale=en_US",
-            f"fbl_st=101632993%3BT%3A{current_time}",
-            f"wl_cbv=v2%3Bclient_version%3A2823%3Btimestamp%3A{current_time}"
-        ])
+                # Add remaining cookies
+                cookies.extend([
+                        "locale=en_US",
+                        f"fbl_st=101632993%3BT%3A{current_time}",
+                        f"wl_cbv=v2%3Bclient_version%3A2823%3Btimestamp%3A{current_time}"
+                ])
 
-        return "; ".join(cookies)
+                return "; ".join(cookies)
 
-    except Exception as e:
-        console.print(f"[bold red]Error generating cookie string: {str(e)}[/]")
-        return login_result.get('cookie_string', '')  # Fallback to basic cookie string
+        except Exception as e:
+                console.print(f"[bold red]Error generating cookie string: {str(e)}[/]")
+                return login_result.get('cookie_string', '')  # Fallback to basic cookie string
 
     def _generate_random_cookie_value(self, length: int) -> str:
         """Generate a random cookie value of specified length."""
