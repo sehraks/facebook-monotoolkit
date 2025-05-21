@@ -109,8 +109,8 @@ class FacebookMonoToolkit:
         if not self.current_account:
             console.print(Panel(
                 "[bold white]❕ Please login first using the Accounts Management option.[/]",
-                style="bold red",
-                border_style="red"
+                style="bold indian_red",
+                border_style="indian_red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return False
@@ -155,9 +155,9 @@ class FacebookMonoToolkit:
                 break
             else:
                 console.print(Panel(
-                    "[bold white]❌ Invalid choice! Please try again.[/]", 
-                    style="bold red",
-                    border_style="red"
+                    "[bold white]❕ Invalid choice! Please try again.[/]", 
+                    style="bold indian_red",
+                    border_style="indian_red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
 
@@ -206,9 +206,9 @@ class FacebookMonoToolkit:
                 elif choice == "3":
                         if not self.cookie_manager.has_cookies():
                                 console.print(Panel(
-                                        "[bold red]❕ Add a cookie or login first.[/]",
-                                        style="bold yellow",
-                                        border_style="yellow"
+                                        "[bold white]❕ Add a cookie or login first.[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
                                 ))
                                 console.input("[bold white]Press Enter to continue...[/]")
                                 continue
@@ -216,9 +216,9 @@ class FacebookMonoToolkit:
                 elif choice == "4":
                         if not self.cookie_manager.has_cookies():
                                 console.print(Panel(
-                                        "[bold red]❕ Add a cookie or login first.[/]",
-                                        style="bold yellow",
-                                        border_style="yellow"
+                                        "[bold white]❕ Add a cookie or login first.[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
                                 ))
                                 console.input("[bold white]Press Enter to continue...[/]")
                                 continue
@@ -227,9 +227,9 @@ class FacebookMonoToolkit:
                         break
                 else:
                         console.print(Panel(
-                                "[bold white]❌ Invalid choice! Please try again.[/]", 
-                                style="bold white",
-                                border_style="red"
+                                "[bold white]❕ Invalid choice! Please try again.[/]", 
+                                style="bold indian_red",
+                                border_style="indian_red"
                         ))
                         console.input("[bold white]Press Enter to continue...[/]")
 
@@ -296,8 +296,8 @@ class FacebookMonoToolkit:
         if not cookie:
             console.print(Panel(
                 "[bold white]❕ Cookie cannot be empty![/]",
-                style="bold red",
-                border_style="red"
+                style="bold indian_red",
+                border_style="indian_red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return
@@ -309,8 +309,8 @@ class FacebookMonoToolkit:
             if not account_name:
                 console.print(Panel(
                     "[bold white]❕ Please enter your Facebook account name[/]",
-                    style="bold red",
-                    border_style="red"
+                    style="bold indian_red",
+                    border_style="indian_red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
                 return
@@ -330,15 +330,15 @@ class FacebookMonoToolkit:
             console.print(Panel(
                 "[bold green]✅ Cookie added successfully![/]\n"
                 f"[bold green]👤 Account: {new_account['name']} / {new_account['user_id']}[/]\n"
-                "[bold green]✓ Account automatically selected[/]",
+                "[bold white]✓ Account automatically selected[/]",
                 style="bold green",
                 border_style="green"
             ))
         else:
             console.print(Panel(
                 f"[bold white]❕ {message}[/]",
-                style="bold red",
-                border_style="red"
+                style="bold indian_red",
+                border_style="indian_red"
             ))
 
         Utils.log_activity("Add Cookie", success, message)
@@ -409,20 +409,20 @@ class FacebookMonoToolkit:
                             else:
                                 console.print(Panel(
                                     "[bold white]❕ Failed to remove account![/]",
-                                    style="bold yellow",
-                                    border_style="yellow"
+                                    style="bold indian_red",
+                                    border_style="indian_red"
                                 ))
                     else:
                         console.print(Panel(
                             "[bold white]❕ Invalid selection![/]",
-                            style="bold red",
-                            border_style="red"
+                            style="bold indian_red",
+                            border_style="indian_red"
                         ))
                 except (ValueError, IndexError):
                     console.print(Panel(
                         "[bold white]❕ Invalid input![/]",
-                        style="bold red",
-                        border_style="red"
+                        style="bold indian_red",
+                        border_style="indian_red"
                     ))
             else:
                 try:
@@ -441,20 +441,20 @@ class FacebookMonoToolkit:
                         else:
                             console.print(Panel(
                                 "[bold white]❕ This account is already selected.[/]",
-                                style="bold yellow",
-                                border_style="yellow"
+                                style="bold indian_red",
+                                border_style="indian_red"
                             ))
                     else:
                         console.print(Panel(
                             "[bold white]❕ Invalid selection![/]",
-                            style="bold red",
-                            border_style="red"
+                            style="bold indian_red",
+                            border_style="indian_red"
                         ))
                 except ValueError:
                     console.print(Panel(
                         "[bold white]❕ Invalid input![/]",
-                        style="bold red",
-                        border_style="red"
+                        style="bold indian_red",
+                        border_style="indian_red"
                     ))
             
             console.input("[bold white]Press Enter to continue...[/]")
@@ -553,8 +553,8 @@ class FacebookMonoToolkit:
                                     if not content and action == "Token":
                                         console.print(Panel(
                                             "[bold white]❕ No token available for this account![/]",
-                                            style="bold indigo red",
-                                            border_style="indigo red"
+                                            style="bold indian_red",
+                                            border_style="indian_red"
                                         ))
                                     else:
                                         process = subprocess.Popen(['termux-clipboard-set'], stdin=subprocess.PIPE)
@@ -567,30 +567,30 @@ class FacebookMonoToolkit:
                                 except Exception as e:
                                     console.print(Panel(
                                         "[bold white]❕ Failed to copy to clipboard. Make sure Termux:API is installed.[/]",
-                                        style="bold indigo red",
-                                        border_style="indigo red"
+                                        style="bold indian_red",
+                                        border_style="indian_red"
                                     ))
                                 console.input("[bold white]Press Enter to continue...[/]")
                                 break
                             else:
                                 console.print(Panel(
                                     "[bold white]❕ Invalid input![/]",
-                                    style="bold indigo red",
-                                    border_style="indigo red"
+                                    style="bold indigo indian_red",
+                                    border_style="indian_red"
                                 ))
                                 console.input("[bold white]Press Enter to continue...[/]")
                         except ValueError:
                             console.print(Panel(
                                 "[bold white]❕ Invalid input![/]",
-                                style="bold indigo red",
-                                border_style="indigo red"
+                                style="bold indian_red",
+                                border_style="indian_red"
                             ))
                             console.input("[bold white]Press Enter to continue...[/]")
                     else:
                         console.print(Panel(
                             "[bold white]❕ Invalid input![/]",
-                            style="bold indigo red",
-                            border_style="indigo red"
+                            style="bold indian_red",
+                            border_style="indian_red"
                         ))
                         console.input("[bold white]Press Enter to continue...[/]")
                 return
@@ -599,8 +599,8 @@ class FacebookMonoToolkit:
         else:
                 console.print(Panel(
                         "[bold white]❕ Invalid choice![/]",
-                        style="bold indian red",
-                        border_style="indian red"
+                        style="bold indian_red",
+                        border_style="indian_red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
                 self.view_cookie_database()
@@ -632,8 +632,8 @@ class FacebookMonoToolkit:
         if not Utils.validate_url(post_url):
             console.print(Panel(
                 "[bold white]❕ Invalid Facebook URL![/]",
-                style="bold red",
-                border_style="red"
+                style="bold indian_red",
+                border_style="indian_red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return
@@ -675,9 +675,9 @@ class FacebookMonoToolkit:
             ))
         else:
             console.print(Panel(
-                f"[bold red]❕ {message}[/]",
-                style="bold yellow",
-                border_style="yellow"
+                f"[bold white]❕ {message}[/]",
+                style="bold indian_red",
+                border_style="indian_red"
             ))
 
         Utils.log_activity("Share Post", success, message)
@@ -689,10 +689,10 @@ def main():
         tool = FacebookMonoToolkit()
         tool.main()
     except KeyboardInterrupt:
-        console.print("\n[bold yellow]❕ Program interrupted by user.[/]")
+        console.print("\n[bold indian_red]❕ Program interrupted by user.[/]")
         sys.exit(0)
     except Exception as e:
-        console.print(f"\n[bold yellow]❕ An unexpected error occurred: {str(e)}[/]")
+        console.print(f"\n[bold indian_red]❕ An unexpected error occurred: {str(e)}[/]")
         Utils.log_activity("System Error", False, str(e))
         sys.exit(1)
 
