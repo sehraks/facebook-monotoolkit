@@ -42,11 +42,13 @@ class CookieManager:
 
         if not os.path.exists(self.cookies_file):
             with open(self.cookies_file, 'w', encoding='utf-8') as f:
+                philippines_time = datetime.now(timezone(timedelta(hours=8)))
                 json.dump({
                     "cookies": [],
                     "metadata": {
-                        "last_update": self.last_update,
-                        "updated_by": self.current_user
+                        "last_update_date": philippines_time.strftime("%B %d, %Y"),
+                        "last_update_time": philippines_time.strftime("%I:%M %p +8 GMT (PH)"),
+                        "updated_by": self.CURRENT_USER
                     }
                 }, f, indent=4)
             console.print(Panel(
@@ -66,7 +68,6 @@ class CookieManager:
                         self.cookies = data if isinstance(data, list) else []
         except Exception as e:
             self.cookies = []
-            return False
 
     def save_cookies(self) -> bool:
                 """Save cookies to storage file."""
