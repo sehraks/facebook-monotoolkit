@@ -17,8 +17,8 @@ class CookieDatabase:
         if not accounts:
             console.print(Panel(
                 "[bold white]❕ No cookies found in the database![/]",
-                style="bold red",
-                border_style="red"
+                style="bold indian_red",
+                border_style="indian_red"
             ))
             console.input("[bold white]Press Enter to continue...[/]")
             return
