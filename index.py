@@ -495,119 +495,7 @@ class FacebookMonoToolkit:
             
             console.input("[bold white]Press Enter to continue...[/]")
 
-    def view_cookie_database(self):
-        """Handle cookie database functionality."""
-        self.clear_screen()
-        self.display_banner()
-        
-        # Display selected account panel first
-        if self.current_account and self.account_data:
-                console.print(Panel(
-                        f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
-                        style="bold cyan",
-                        border_style="cyan"
-                ))
-        
-        # Then display database panel
-        database_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies here[/]\n"
-                "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
-                title="[bold white]𝗖𝗢𝗢𝗞𝗜𝗘 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]",
-                style="bold cyan",
-                border_style="cyan"
-        )
-        console.print(database_panel)
-
-        menu_panel = Panel(
-                "[bold white][1] View All Cookies[/]\n"
-                "[bold white][2] Back to Main Menu[/]",
-                style="bold cyan",
-                border_style="cyan"
-        )
-        console.print(menu_panel)
-
-        choice = console.input("[bold cyan]Enter your choice: [/]")
-        
-        if choice == "1":
-                self.clear_screen()
-                self.display_banner()
-                
-                # Display selected account panel first again
-                if self.current_account and self.account_data:
-                        console.print(Panel(
-                                f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
-                                style="bold cyan",
-                                border_style="cyan"
-                        ))
-                
-                # Then display database panel
-                console.print(database_panel)
-                
-                # Rest of the code remains the same...
-                accounts = self.cookie_manager.get_all_accounts()
-                
-                for idx, account in enumerate(accounts, 1):
-                    cookie_panel = Panel(
-                        f"[bold white]Name: {account.get('name', 'Unknown User')}[/]\n"
-                        f"[bold white]Cookie: {account['cookie']}[/]\n"
-                        f"[bold yellow][C{idx}] Copy this cookie[/]",
-                        title=f"[bold yellow]𝗖𝗢𝗢𝗞𝗜𝗘 {idx}[/]",
-                        style="bold yellow",
-                        border_style="yellow"
-                    )
-                    console.print(cookie_panel)
-                
-                while True:
-                    copy_choice = console.input("[bold yellow]Enter C# to copy a cookie (or press Enter to go back): [/]").strip().upper()
-                    
-                    if not copy_choice:  # If user just presses Enter
-                        break
-                        
-                    if copy_choice.startswith('C'):
-                        try:
-                            idx = int(copy_choice[1:]) - 1
-                            if 0 <= idx < len(accounts):
-                                pyperclip.copy(accounts[idx]['cookie'])
-                                console.print(Panel(
-                                    f"[bold green]✅ Cookie {idx + 1} copied to clipboard![/]",
-                                    style="bold green",
-     def view_cookie_database(self):
-        """Handle cookie database functionality."""
-        self.clear_screen()
-        self.display_banner()
-        
-        # Display selected account panel first
-        if self.current_account and self.account_data:
-                console.print(Panel(
-                        f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
-                        style="bold cyan",
-                        border_style="cyan"
-                ))
-        
-        database_panel = Panel(
-                "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies here[/]\n"
-                "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
-                title="[bold white]𝗖𝗢𝗢𝗞𝗜𝗘 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]",
-                style="bold cyan",
-                border_style="cyan"
-        )
-        console.print(database_panel)
-
-        menu_panel = Panel(
-                "[bold white][1] View All Cookies[/]\n"
-                "[bold white][2] Back to Main Menu[/]",
-                style="bold cyan",
-                border_style="cyan"
-        )
-        console.print(menu_panel)
-
-        choice = console.input("[bold cyan]Enter your choice: [/]")
-        
-        if choice == "1":
-                self.clear_screen()
-                self.display_banner()
-                
-                # Display selected account panel first
+    # Display selected account panel first
                 if self.current_account and self.account_data:
                         console.print(Panel(
                                 f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
@@ -680,7 +568,7 @@ class FacebookMonoToolkit:
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
                 self.view_cookie_database()
-
+            
     def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
         self.clear_screen()
