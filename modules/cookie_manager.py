@@ -16,20 +16,20 @@ from rich.table import Table
 console = Console()
 
 class CookieManager:
-        def __init__(self):
-                """Initialize the CookieManager with necessary file paths and data structures."""
-                self.base_dir = "cookies-storage"
-                self.cookies_file = os.path.join(self.base_dir, "cookies.json")
-                self.cookies: List[Dict] = []
+    def __init__(self):
+        """Initialize the CookieManager with necessary file paths and data structures."""
+        self.base_dir = "cookies-storage"
+        self.cookies_file = os.path.join(self.base_dir, "cookies.json")
+        self.cookies: List[Dict] = []
                 
-                # Updated time format and username
-                philippines_time = datetime.now(timezone(timedelta(hours=8)))
-                self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")  # May 21, 2025
-                self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")   # 2:37 PM
-                self.CURRENT_USER = "sehraks"
+        # Updated time format and username
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")  # May 21, 2025
+        self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")   # 2:37 PM
+        self.CURRENT_USER = "sehraks"
                 
-                self._ensure_storage_exists()
-                self.load_cookies()
+        self._ensure_storage_exists()
+        self.load_cookies()
 
     def _ensure_storage_exists(self) -> None:
         """Ensure the storage directory exists."""
