@@ -77,12 +77,23 @@ class FacebookLogin:
         Returns: (success, message, account_data)
         """
         try:
-                # First validate credentials format
+                import time
+                
+                # Initial login message with 1 second delay
+                console.print(Panel(
+                        "[bold white]🔄 Logging in to Facebook...[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+                time.sleep(1)
+
+                # Validate credentials format with 1.5 second delay
                 console.print(Panel(
                         "[bold white]🔄 Checking account credentials...[/]",
                         style="bold cyan",
                         border_style="cyan"
                 ))
+                time.sleep(1.5)
 
                 valid, message = self.validate_credentials(email, password)
                 if not valid:
@@ -93,19 +104,23 @@ class FacebookLogin:
                         ))
                         return False, message, None
 
+                # Credentials valid message with 1 second delay
                 console.print(Panel(
                         "[bold white]✅ The account you provided are correct[/]",
                         style="bold green",
                         border_style="green"
                 ))
+                time.sleep(1)
 
-                # Login attempt
+                # Login attempt message with 2 second delay
                 console.print(Panel(
                         "[bold white]🔄 Getting account's cookie and token...[/]",
                         style="bold cyan",
                         border_style="cyan"
                 ))
+                time.sleep(2)
 
+                # Actual login request
                 login_url = 'https://b-api.facebook.com/method/auth.login'
                 data = {
                         'adid': self._generate_adid(),
@@ -223,6 +238,8 @@ class FacebookLogin:
                 
                 cookie_string = "; ".join(cookie_parts)
 
+                time.sleep(1.5)  # Add delay before success messages
+
                 # Success messages
                 console.print(Panel(
                         "[bold white]🗃️ Successfully stored the cookie and token credentials from cookie database.[/]",
@@ -230,26 +247,28 @@ class FacebookLogin:
                         border_style="green"
                 ))
 
+                time.sleep(1)  # Add delay between success messages
+
                 console.print(Panel(
                         f"[bold white]✅ You can now use your account from Facebook MonoToolkit!\n"
                         f"👤 Account: {user_info['name']}\n"
-                        f" UID: {user_info['id']}[/]",
+                        f"📩 UID: {user_info['id']}[/]",
                         style="bold green",
                         border_style="green"
                 ))
 
-                # Create account data
-                philippines_time = datetime.now(timezone(timedelta(hours=8)))
+                # Create account data with current UTC time
+                current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
                 account_data = {
                         'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
                         'name': user_info['name'],
                         'user_id': user_info['id'],
                         'cookie': cookie_string,
                         'token': access_token,
-                        'added_date': philippines_time.strftime('%Y-%m-%d %H:%M:%S'),
+                        'added_date': current_time,
                         'last_used': None,
                         'status': 'active',
-                        'added_by': self.CURRENT_USER
+                        'added_by': "sehraks1"
                 }
 
                 return True, f"Successfully logged in as {user_info['name']}", account_data
@@ -275,7 +294,7 @@ class FacebookLogin:
                         border_style="indian_red"
                 ))
                 return False, f"Unexpected error: {str(e)}", None
-
+    
     def _get_working_cookie(self, access_token: str) -> Tuple[Optional[str], str]:
         """Get a working cookie using the access token."""
         try:
