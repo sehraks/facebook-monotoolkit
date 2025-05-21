@@ -530,7 +530,7 @@ class FacebookMonoToolkit:
                     style="bold yellow",
                     border_style="yellow"
                     )
-                    console.print(cookie_panel)
+                console.print(cookie_panel)
                 
                 while True:
                     copy_choice = console.input("[bold yellow]Enter C# to copy cookie or T# to copy token (or press Enter to go back): [/]").strip().upper()
