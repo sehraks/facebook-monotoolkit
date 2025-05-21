@@ -328,9 +328,9 @@ class FacebookMonoToolkit:
             self._load_account_data(new_account)
 
             console.print(Panel(
-                "[bold green]✅ Cookie added successfully![/]\n"
-                f"[bold green]👤 Account: {new_account['name']} / {new_account['user_id']}[/]\n"
-                "[bold white]✓ Account automatically selected[/]",
+                f"✅ Cookie added successfully![/]\n"
+                f"👤 Account: {new_account['name']}[/]\n"
+                f"📩 UID: {new_account['user_id']}[/]\n",
                 style="bold green",
                 border_style="green"
             ))
