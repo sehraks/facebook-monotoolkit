@@ -35,7 +35,7 @@ class FacebookMonoToolkit:
                 first_line = f.readline().strip()
                 self.VERSION = first_line.replace("Version ", "")
         except:
-            self.VERSION = "4.62"  # Fallback version if file read fails
+            self.VERSION = "X.XX"  # Fallback version if file read fails
             
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
@@ -44,7 +44,7 @@ class FacebookMonoToolkit:
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
         self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")
         self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")
-        self.CURRENT_USER = "sehraks1"  # Updated user login
+        self.CURRENT_USER = "sehraks"  # Updated user login
         
         # Initialize components
         self.cookie_manager = CookieManager()
@@ -188,7 +188,7 @@ class FacebookMonoToolkit:
                         "[bold white][1] Enter your cookie[/]\n"
                         "[bold white][2] Login your Facebook account[/]\n"
                         "[bold white][3] Access your Facebook accounts[/]\n"
-                        "[bold white][4] Cookies Database[/]\n"
+                        "[bold white][4] Cookies & Tokens Database[/]\n"
                         "[bold white][5] Back to Main Menu[/]",
                         title="[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]",
                         style="bold yellow",
@@ -371,7 +371,7 @@ class FacebookMonoToolkit:
                     f"[bold {status_color}]Status: {status}[/]\n"
                     + (f"[bold yellow][{idx}] Select[/]\n" if account != self.current_account else "")
                     + f"[bold red][R{idx}] Remove[/]",
-                    title=f"[bold yellow]📨 ACCOUNT {idx}[/]",
+                    title=f"[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {idx}[/]",
                     style="bold yellow",
                     border_style="yellow"
                 )
@@ -475,14 +475,14 @@ class FacebookMonoToolkit:
         database_panel = Panel(
                 "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies and tokens here[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
-                title="[bold white]𝗖𝗢𝗢𝗞𝗜𝗘 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]",
+                title="[bold white]𝗖𝗢𝗢𝗞𝗜𝗘𝗦 & 𝗧𝗢𝗞𝗘𝗡𝗦 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]",
                 style="bold cyan",
                 border_style="cyan"
         )
         console.print(database_panel)
 
         menu_panel = Panel(
-                "[bold white][1] View All Cookies[/]\n"
+                "[bold white][1] View All Cookies & Tokens[/]\n"
                 "[bold white][2] Back to Main Menu[/]",
                 style="bold cyan",
                 border_style="cyan"
@@ -514,29 +514,31 @@ class FacebookMonoToolkit:
                     added_time = philippines_time.strftime("%I:%M %p +8 GMT (PH)")
 
                     # Mask cookie and token
-                    cookie = account.get('cookie')
+                    cookie = account['cookie']
                     token = account.get('token', 'N/A')
-                    masked_cookie, masked_token = self.cookie_manager.format_cookie_display(cookie, token)
+                    masked_cookie = cookie[:20] + "..." + cookie[-10:] if len(cookie) > 30 else cookie
+                    masked_token = token[:20] + "..." + token[-10:] if len(token) > 30 else token
 
-                cookie_panel = Panel(
-                    f"[bold white]Name: {account.get('name', 'Unknown User')}[/]\n"
-                    f"[bold white]Cookie: {masked_cookie}[/]\n"
-                    f"[bold white]Token: {masked_token}[/]\n"
-                    f"[bold white]Added Date: {account.get('added_date', 'Unknown')}[/]\n"
-                    f"[bold white]Added Time: {account.get('added_time', 'Unknown')}[/]\n"
-                    f"[bold white]Added by: {account.get('added_by', 'sehraks1')}[/]\n\n"
-                    f"[bold yellow][C{idx}] Copy cookie[/]\n"
-                    f"[bold yellow][T{idx}] Copy token[/]",
-                    title=f"[bold yellow]𝗖𝗢𝗢𝗞𝗜𝗘 #{idx}[/]",
-                    style="bold yellow",
-                    border_style="yellow"
+                    cookie_panel = Panel(
+                        f"[bold white]Name: {account.get('name', 'Unknown User')}[/]\n"
+                        f"[bold white]Cookie: {masked_cookie}[/]\n"
+                        f"[bold white]Token: {masked_token}[/]\n"
+                        f"[bold white]Added Date: {added_date}[/]\n"
+                        f"[bold white]Added Time: {added_time}[/]\n\n"
+                        f"[bold yellow][C{idx}] Copy cookie[/]\n"
+                        f"[bold yellow][T{idx}] Copy token[/]",
+                        title=f"[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {idx}[/]",
+                        style="bold yellow",
+                        border_style="yellow"
                     )
-                console.print(cookie_panel)
+                    console.print(cookie_panel)
                 
+                console.print("[bold white][0] Back[/]\n")
+
                 while True:
-                    copy_choice = console.input("[bold yellow]Enter C# to copy cookie or T# to copy token (or press Enter to go back): [/]").strip().upper()
+                    copy_choice = console.input("[bold yellow]Select an option: [/]").strip().upper()
                     
-                    if not copy_choice:  # If user just presses Enter
+                    if copy_choice == "0":  # If user enters 0
                         break
                         
                     if copy_choice.startswith(('C', 'T')):
@@ -572,16 +574,25 @@ class FacebookMonoToolkit:
                                 break
                             else:
                                 console.print(Panel(
-                                    "[bold white]❕ Invalid selection number![/]",
-                                    style="bold indian_red",
-                                    border_style="indian_red"
+                                    "[bold white]❕ Invalid input![/]",
+                                    style="bold indigo_red",
+                                    border_style="indigo_red"
                                 ))
+                                console.input("[bold white]Press Enter to continue...[/]")
                         except ValueError:
                             console.print(Panel(
                                 "[bold white]❕ Invalid input![/]",
-                                style="bold indian_red",
-                                border_style="indian_red"
+                                style="bold indigo_red",
+                                border_style="indigo_red"
                             ))
+                            console.input("[bold white]Press Enter to continue...[/]")
+                    else:
+                        console.print(Panel(
+                            "[bold white]❕ Invalid input![/]",
+                            style="bold indigo_red",
+                            border_style="indigo_red"
+                        ))
+                        console.input("[bold white]Press Enter to continue...[/]")
                 return
         elif choice == "2":
                 return
