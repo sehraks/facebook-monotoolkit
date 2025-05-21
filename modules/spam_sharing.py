@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # File: modules/spam_sharing.py
-# Last Modified: 2025-05-19 07:39:02 UTC
-# Author: sehraks1
 
 import aiohttp
 import asyncio
