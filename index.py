@@ -5,6 +5,7 @@
 
 import os
 import sys
+import pyperclip
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Optional
 from rich.console import Console
@@ -499,7 +500,8 @@ class FacebookMonoToolkit:
         """Handle cookie database functionality."""
         self.clear_screen()
         self.display_banner()
-
+        
+        # Display selected account panel first
         if self.current_account and self.account_data:
                 console.print(Panel(
                         f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
@@ -507,6 +509,7 @@ class FacebookMonoToolkit:
                         border_style="cyan"
                 ))
         
+        # Then display database panel
         database_panel = Panel(
                 "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies here[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
@@ -529,8 +532,8 @@ class FacebookMonoToolkit:
         if choice == "1":
                 self.clear_screen()
                 self.display_banner()
-
-                # Display the selected account panel again if there's a current account
+                
+                # Display selected account panel first again
                 if self.current_account and self.account_data:
                         console.print(Panel(
                                 f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
@@ -538,12 +541,54 @@ class FacebookMonoToolkit:
                                 border_style="cyan"
                         ))
                 
-                # Display the database panel again
+                # Then display database panel
                 console.print(database_panel)
                 
-                # Display all cookies
-                self.cookie_database.view_all_cookies()
-                return  # Remove the extra console.input here
+                # Rest of the code remains the same...
+                accounts = self.cookie_manager.get_all_accounts()
+                
+                for idx, account in enumerate(accounts, 1):
+                    cookie_panel = Panel(
+                        f"[bold white]Name: {account.get('name', 'Unknown User')}[/]\n"
+                        f"[bold white]Cookie: {account['cookie']}[/]\n"
+                        f"[bold yellow][C{idx}] Copy this cookie[/]",
+                        title=f"[bold yellow]𝗖𝗢𝗢𝗞𝗜𝗘 {idx}[/]",
+                        style="bold yellow",
+                        border_style="yellow"
+                    )
+                    console.print(cookie_panel)
+                
+                while True:
+                    copy_choice = console.input("[bold yellow]Enter C# to copy a cookie (or press Enter to go back): [/]").strip().upper()
+                    
+                    if not copy_choice:  # If user just presses Enter
+                        break
+                        
+                    if copy_choice.startswith('C'):
+                        try:
+                            idx = int(copy_choice[1:]) - 1
+                            if 0 <= idx < len(accounts):
+                                pyperclip.copy(accounts[idx]['cookie'])
+                                console.print(Panel(
+                                    f"[bold green]✅ Cookie {idx + 1} copied to clipboard![/]",
+                                    style="bold green",
+                                    border_style="green"
+                                ))
+                                console.input("[bold white]Press Enter to continue...[/]")
+                                break
+                            else:
+                                console.print(Panel(
+                                    "[bold white]❕ Invalid cookie number![/]",
+                                    style="bold red",
+                                    border_style="red"
+                                ))
+                        except ValueError:
+                            console.print(Panel(
+                                "[bold white]❕ Invalid input![/]",
+                                style="bold red",
+                                border_style="red"
+                            ))
+                return
         elif choice == "2":
                 return
         else:
