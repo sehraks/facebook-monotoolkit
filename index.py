@@ -506,7 +506,7 @@ class FacebookMonoToolkit:
                         style="bold cyan",
                         border_style="cyan"
                 ))
-      
+        
         database_panel = Panel(
                 "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies here[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
@@ -515,7 +515,7 @@ class FacebookMonoToolkit:
                 border_style="cyan"
         )
         console.print(database_panel)
-        
+
         menu_panel = Panel(
                 "[bold white][1] View All Cookies[/]\n"
                 "[bold white][2] Back to Main Menu[/]",
@@ -529,10 +529,7 @@ class FacebookMonoToolkit:
         if choice == "1":
                 self.clear_screen()
                 self.display_banner()
-                
-                # Display the database panel again
-                console.print(database_panel)
-                
+
                 # Display the selected account panel again if there's a current account
                 if self.current_account and self.account_data:
                         console.print(Panel(
@@ -541,10 +538,12 @@ class FacebookMonoToolkit:
                                 border_style="cyan"
                         ))
                 
+                # Display the database panel again
+                console.print(database_panel)
+                
                 # Display all cookies
                 self.cookie_database.view_all_cookies()
-                console.input("[bold white]Press Enter to continue...[/]")
-                return
+                return  # Remove the extra console.input here
         elif choice == "2":
                 return
         else:
