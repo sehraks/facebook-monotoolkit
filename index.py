@@ -506,7 +506,7 @@ class FacebookMonoToolkit:
                         style="bold cyan",
                         border_style="cyan"
                 ))
-            
+        
         database_panel = Panel(
                 "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies here[/]\n"
                 "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
@@ -515,7 +515,7 @@ class FacebookMonoToolkit:
                 border_style="cyan"
         )
         console.print(database_panel)
-        
+
         menu_panel = Panel(
                 "[bold white][1] View All Cookies[/]\n"
                 "[bold white][2] Back to Main Menu[/]",
@@ -527,7 +527,11 @@ class FacebookMonoToolkit:
         choice = console.input("[bold cyan]Enter your choice: [/]")
         
         if choice == "1":
+                self.clear_screen()
+                self.display_banner()
                 self.cookie_database.view_all_cookies()
+                console.input("[bold white]Press Enter to continue...[/]")
+                return
         elif choice == "2":
                 return
         else:
