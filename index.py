@@ -513,23 +513,22 @@ class FacebookMonoToolkit:
                     added_time = philippines_time.strftime("%I:%M %p +8 GMT (PH)")
 
                     # Mask cookie and token
-                    cookie = account['cookie']
+                    cookie = account.get('cookie')
                     token = account.get('token', 'N/A')
-                    masked_cookie = cookie[:20] + "..." + cookie[-10:] if len(cookie) > 30 else cookie
-                    masked_token = token[:20] + "..." + token[-10:] if len(token) > 30 else token
+                    masked_cookie, masked_token = self.cookie_manager.format_cookie_display(cookie, token)
 
-                    cookie_panel = Panel(
-                        f"[bold white]Name: {account.get('name', 'Unknown User')}[/]\n"
-                        f"[bold white]Cookie: {masked_cookie}[/]\n"
-                        f"[bold white]Token: {masked_token}[/]\n"
-                        f"[bold white]Added Date: {added_date}[/]\n"
-                        f"[bold white]Added Time: {added_time}[/]\n"
-                        f"[bold white]Added by: {account.get('added_by', 'sehraks')}[/]\n\n"
-                        f"[bold yellow][C{idx}] Copy cookie[/]\n"
-                        f"[bold yellow][T{idx}] Copy token[/]",
-                        title=f"[bold yellow]𝗖𝗢𝗢𝗞𝗜𝗘 #{idx}[/]",
-                        style="bold yellow",
-                        border_style="yellow"
+                cookie_panel = Panel(
+                    f"[bold white]Name: {account.get('name', 'Unknown User')}[/]\n"
+                    f"[bold white]Cookie: {masked_cookie}[/]\n"
+                    f"[bold white]Token: {masked_token}[/]\n"
+                    f"[bold white]Added Date: {account.get('added_date', 'Unknown')}[/]\n"
+                    f"[bold white]Added Time: {account.get('added_time', 'Unknown')}[/]\n"
+                    f"[bold white]Added by: {account.get('added_by', 'sehraks1')}[/]\n\n"
+                    f"[bold yellow][C{idx}] Copy cookie[/]\n"
+                    f"[bold yellow][T{idx}] Copy token[/]",
+                    title=f"[bold yellow]𝗖𝗢𝗢𝗞𝗜𝗘 #{idx}[/]",
+                    style="bold yellow",
+                    border_style="yellow"
                     )
                     console.print(cookie_panel)
                 
