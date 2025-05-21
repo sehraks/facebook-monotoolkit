@@ -8,7 +8,7 @@ import os
 import re
 import base64
 from typing import Dict, List, Tuple, Optional
-from datetime import datetime
+from datetime import datetime, timezone, timedelta  # Added timezone and timedelta
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -22,10 +22,10 @@ class CookieManager:
         self.cookies_file = os.path.join(self.base_dir, "cookies.json")
         self.cookies: List[Dict] = []
                 
-        # Updated time format and username
+        # Get current Philippines time (GMT+8)
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
-        self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")  # May 21, 2025
-        self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")   # 2:37 PM
+        self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")
+        self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")
         self.CURRENT_USER = "sehraks"
                 
         self._ensure_storage_exists()
