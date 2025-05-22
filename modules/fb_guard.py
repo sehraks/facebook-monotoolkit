@@ -189,16 +189,19 @@ class FacebookGuard:
             ))
             time.sleep(1)
 
-            # Store initial shield status
-            initial_shield_status, shield_error = self._check_shield_status(token, account['user_id'])
-            if shield_error:
-                # If we can't determine status, proceed anyway
-                initial_shield_status = not enable  # Assume opposite of what we want to do
+            # Get current shield status
+            current_status, shield_error = self._check_shield_status(token, account['user_id'])
             
-            # Only show "already activated/deactivated" if we're certain about the status
-            if not shield_error and enable == initial_shield_status:
-                status_text = "activated" if enable else "not active"
-                return False, f"Your Facebook Profile Shield was already {status_text}"
+            # If we got a clear status and it matches what we want to do, return early
+            if not shield_error:
+                if current_status and enable:
+                    return False, "Your Facebook Profile Shield was already activated"
+                elif not current_status and not enable:
+                    return False, "Your Facebook Profile Shield is not active"
+
+            # Only proceed with toggle if the current status is different from what we want
+            if not shield_error and current_status == enable:
+                return False, f"Your Facebook Profile Shield was already {'activated' if enable else 'deactivated'}"
 
             # Toggle shield
             console.print(Panel(
@@ -236,25 +239,12 @@ class FacebookGuard:
             if response.status_code != 200:
                 return False, f"Request failed: {response.text}"
 
-            # Check for success in response
-            response_text = response.text.lower()
-            
-            # Direct success indicators in the response
-            if enable and ('is_shielded\":true' in response_text or 'shield_enabled\":true' in response_text):
-                return True, "You turned on your Facebook Profile Shield"
-            elif not enable and ('is_shielded\":false' in response_text or 'shield_enabled\":false' in response_text):
-                return True, "You turned off your Facebook Profile Shield"
-            
-            # If no direct indicators, verify the change
+            # Verify the change
             time.sleep(2)
             final_status, _ = self._check_shield_status(token, account['user_id'])
             
+            # Final verification
             if final_status == enable:
-                action = "turned on" if enable else "turned off"
-                return True, f"You {action} your Facebook Profile Shield"
-            
-            # If we got a 200 response, assume success even if verification is unclear
-            if response.status_code == 200:
                 action = "turned on" if enable else "turned off"
                 return True, f"You {action} your Facebook Profile Shield"
             
