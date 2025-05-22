@@ -5,6 +5,7 @@
 
 import json
 import os
+import requests
 import re
 import base64
 from typing import Dict, List, Tuple, Optional
