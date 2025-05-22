@@ -302,6 +302,68 @@ class FacebookMonoToolkit:
             console.input("[bold white]Press Enter to continue...[/]")
             return
 
+        # Get token before asking for name
+        try:
+            console.print(Panel(
+                "[bold white]🔄 Getting account's token...[/]",
+                style="bold cyan",
+                border_style="cyan"
+            ))
+
+            headers = {
+                'Cookie': cookie,
+                'authorization': 'OAuth 350685531728|62f8ce9f74b12f84c123cc23437a4a32',
+                'x-fb-friendly-name': 'Authenticate',
+                'x-fb-connection-type': 'Unknown',
+                'accept-encoding': 'gzip, deflate',
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'accept-language': 'en-US,en;q=0.9',
+                'content-type': 'application/x-www-form-urlencoded',
+                'x-fb-http-engine': 'Liger',
+                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
+            }
+            
+            # Try multiple endpoints
+            endpoints = [
+                'https://business.facebook.com/business_locations',
+                'https://www.facebook.com/adsmanager/manage/campaigns',
+                'https://developers.facebook.com/'
+            ]
+            
+            access_token = None
+            for endpoint in endpoints:
+                try:
+                    response = requests.get(endpoint, headers=headers, timeout=30)
+                    if response.ok:
+                        token = re.search(r'(EAAG\w+|EAAB\w+)', response.text)
+                        if token:
+                            access_token = token.group(0)
+                            break
+                except:
+                    continue
+
+            if access_token:
+                console.print(Panel(
+                    "[bold green]✅ Successfully retrieved token![/]",
+                    style="bold green",
+                    border_style="green"
+                ))
+            else:
+                console.print(Panel(
+                    "[bold white]❕ Could not retrieve token. Continuing anyway...[/]",
+                    style="bold indian_red",
+                    border_style="indian_red"
+                ))
+                access_token = 'N/A'
+
+        except Exception as e:
+            console.print(Panel(
+                "[bold white]❕ Error getting token. Continuing anyway...[/]",
+                style="bold indian_red",
+                border_style="indian_red"
+            ))
+            access_token = 'N/A'
+
         # Ask for account name if not in cookie
         account_name = None
         if "name=" not in cookie:
@@ -315,7 +377,7 @@ class FacebookMonoToolkit:
                 console.input("[bold white]Press Enter to continue...[/]")
                 return
 
-        success, message = self.cookie_manager.add_cookie(cookie, account_name)
+        success, message = self.cookie_manager.add_cookie(cookie, account_name, access_token)
 
         if success:
             # Get the newly added account
@@ -327,7 +389,6 @@ class FacebookMonoToolkit:
             self.cookie_manager.set_current_account(new_account['id'])
             self._load_account_data(new_account)
 
-            # Changed: Fixed markup in success message panel
             console.print(Panel(
                 "[bold green]✅ Cookie added successfully!\n"
                 f"👤 Account: {new_account['name']}\n"
@@ -342,7 +403,10 @@ class FacebookMonoToolkit:
                 border_style="indian_red"
             ))
 
-        Utils.log_activity("Add Cookie", success, message)
+        # Log activity with Philippines time (GMT+8)
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        ph_timestamp = philippines_time.strftime("%B %d, %Y %I:%M %p")
+        Utils.log_activity(f"Add Cookie (PH: {ph_timestamp}) by {self.CURRENT_USER}", success, message)
         console.input("[bold white]Press Enter to continue...[/]")
    
     def cookie_settings_menu(self):
