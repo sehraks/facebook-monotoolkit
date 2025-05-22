@@ -142,43 +142,6 @@ class CookieManager:
                 if user_id == 'unknown':
                         return False, "Could not extract user ID from cookie"
 
-                # Get token from cookie
-                try:
-                        headers = {
-                                'Cookie': cookie,
-                                'authorization': 'OAuth 350685531728|62f8ce9f74b12f84c123cc23437a4a32',
-                                'x-fb-friendly-name': 'Authenticate',
-                                'x-fb-connection-type': 'Unknown',
-                                'accept-encoding': 'gzip, deflate',
-                                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                                'accept-language': 'en-US,en;q=0.9',
-                                'content-type': 'application/x-www-form-urlencoded',
-                                'x-fb-http-engine': 'Liger',
-                                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
-                        }
-                        
-                        # Try multiple endpoints to get token
-                        endpoints = [
-                            'https://business.facebook.com/business_locations',
-                            'https://www.facebook.com/adsmanager/manage/campaigns',
-                            'https://developers.facebook.com/'
-                        ]
-                        
-                        access_token = 'N/A'
-                        for endpoint in endpoints:
-                            try:
-                                response = requests.get(endpoint, headers=headers, timeout=30)
-                                if response.ok:
-                                    # Look for both EAAG and EAAB tokens
-                                    token = re.search(r'(EAAG\w+|EAAB\w+)', response.text)
-                                    if token:
-                                        access_token = token.group(0)
-                                        break
-                            except:
-                                continue
-                except:
-                        access_token = 'N/A'
-
                 # Get current PH time
                 philippines_time = datetime.now(timezone(timedelta(hours=8)))
                 formatted_date = philippines_time.strftime("%B %d, %Y")
@@ -190,7 +153,7 @@ class CookieManager:
                         'name': account_name if account_name else default_name,
                         'user_id': user_id,
                         'cookie': cookie,
-                        'token': access_token,
+                        'token': access_token if access_token else 'N/A',  # Use provided token or N/A
                         'added_date': formatted_date,
                         'added_time': formatted_time,
                         'last_used': None,
@@ -202,7 +165,7 @@ class CookieManager:
                 for idx, existing in enumerate(self.cookies):
                         if existing['user_id'] == user_id:
                                 # Preserve existing token if new one not provided
-                                if access_token == 'N/A' and 'token' in existing:
+                                if not access_token and 'token' in existing:
                                         account_data['token'] = existing['token']
                                 
                                 # Always preserve the existing name unless explicitly provided
@@ -221,7 +184,7 @@ class CookieManager:
 
         except Exception as e:
                 return False, f"Error adding cookie: {str(e)}"
-
+    
     def get_all_accounts(self) -> List[Dict]:
         """Get list of all stored accounts."""
         try:
