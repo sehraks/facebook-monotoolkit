@@ -87,8 +87,8 @@ class FacebookGuard:
         except Exception as e:
             return False, f"Error checking profile lock status: {str(e)}"
 
-    def _check_shield_status(self, token: str, uid: str) -> Tuple[bool, str]:
-        """Check if profile shield is active."""
+    def _check_shield_status(self, token: str, uid: str) -> Tuple[Optional[bool], str]:
+        """Check if profile shield is active. Returns (status, error) where status can be True, False, or None if undetermined."""
         try:
             headers = {
                 'Authorization': f'OAuth {token}',
@@ -109,7 +109,8 @@ class FacebookGuard:
             response = requests.post(
                 'https://graph.facebook.com/graphql',
                 json=data,
-                headers=headers
+                headers=headers,
+                timeout=10
             )
             
             if response.status_code == 200:
@@ -137,7 +138,8 @@ class FacebookGuard:
                 try:
                     alt_response = requests.get(
                         f'https://graph.facebook.com/{uid}/profile_shield_settings',
-                        headers=headers
+                        headers=headers,
+                        timeout=10
                     )
                     if alt_response.status_code == 200:
                         alt_data = alt_response.json()
@@ -146,11 +148,11 @@ class FacebookGuard:
                 except:
                     pass
             
-            # Default to indicating we couldn't determine the status
-            return False, "Could not determine shield status"
+            # Return None to indicate we couldn't determine the status
+            return None, "Could not determine current shield status"
             
         except Exception as e:
-            return False, f"Error checking shield status: {str(e)}"
+            return None, f"Error checking shield status: {str(e)}"
 
     def toggle_profile_shield(self, account: Dict, enable: bool = True) -> Tuple[bool, str]:
         """Toggle Facebook profile shield."""
@@ -192,22 +194,23 @@ class FacebookGuard:
             # Get current shield status
             current_status, shield_error = self._check_shield_status(token, account['user_id'])
             
-            # Check if shield is already in desired state
-            if not shield_error:
+            # Only check for already-active status if we can reliably determine current status
+            if current_status is not None and not shield_error:
                 if current_status and enable:
-                    return False, "Your Facebook Profile Shield was already activated"
+                    return False, "❌ Your Facebook Profile Shield is already activated"
                 elif not current_status and not enable:
-                    return False, "Your Facebook Profile Shield is not active"
+                    return False, "❌ Your Facebook Profile Shield is already deactivated"
 
             # Toggle shield
+            action_text = "Activating" if enable else "Deactivating"
             console.print(Panel(
-                f"[bold white]🔄 {'Activating' if enable else 'Deactivating'} Profile Shield...[/]",
+                f"[bold white]🔄 {action_text} Profile Shield...[/]",
                 style="bold cyan",
                 border_style="cyan"
             ))
             time.sleep(1)
 
-            # Make the request to toggle shield
+            # Make the initial request to toggle shield
             data = {
                 'variables': json.dumps({
                     '0': {
@@ -230,21 +233,53 @@ class FacebookGuard:
             response = requests.post(
                 'https://graph.facebook.com/graphql',
                 json=data,
-                headers=headers
+                headers=headers,
+                timeout=15
             )
 
             if response.status_code != 200:
-                return False, f"Request failed: {response.text}"
+                return False, f"Request failed with status {response.status_code}: {response.text}"
 
-            # Success check based on response content
-            response_text = response.text.lower()
-            success_indicator = 'is_shielded\":true' if enable else 'is_shielded\":false'
+            # Verify the change was successful by checking the new status
+            console.print(Panel(
+                "[bold white]🔄 Verifying shield status change...[/]",
+                style="bold cyan",
+                border_style="cyan"
+            ))
+            time.sleep(2)  # Give some time for the change to propagate
+
+            # Check the new status
+            new_status, verify_error = self._check_shield_status(token, account['user_id'])
             
-            if success_indicator in response_text:
-                action = "turned on" if enable else "turned off"
-                return True, f"You {action} your Facebook Profile Shield"
+            if new_status is not None and not verify_error:
+                if new_status == enable:
+                    # Success - the status matches what we wanted
+                    action = "turned on" if enable else "turned off"
+                    return True, f"✅ You {action} your Facebook Profile Shield."
+                else:
+                    # The status doesn't match what we wanted
+                    action = "activate" if enable else "deactivate"
+                    return False, f"❌ Failed to {action} Profile Shield. Status verification failed."
+            else:
+                # Could not verify status, but check response for success indicators
+                response_text = response.text.lower()
+                success_patterns = [
+                    'success',
+                    'mutation_success',
+                    f'is_shielded":{str(enable).lower()}',
+                    'profile_shield_updated'
+                ]
+                
+                if any(pattern in response_text for pattern in success_patterns):
+                    action = "turned on" if enable else "turned off"
+                    return True, f"✅ You {action} your Facebook Profile Shield."
+                else:
+                    action = "activate" if enable else "deactivate"
+                    return False, f"❌ Failed to {action} Profile Shield. Please try again."
 
-            return False, f"Failed to {('activate' if enable else 'deactivate')} Profile Shield"
-
+        except requests.exceptions.Timeout:
+            return False, "❌ Request timed out. Please check your internet connection and try again."
+        except requests.exceptions.RequestException as e:
+            return False, f"❌ Network error: {str(e)}"
         except Exception as e:
-            return False, f"Error: {str(e)}"
+            return False, f"❌ Unexpected error: {str(e)}"
