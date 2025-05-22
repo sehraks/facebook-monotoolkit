@@ -88,160 +88,178 @@ class FacebookGuard:
             return False, f"Error checking profile lock status: {str(e)}"
 
     def _check_shield_status(self, token: str, uid: str) -> Tuple[Optional[bool], str]:
-        """Check if profile shield is active using multiple Facebook API approaches."""
+        """Check if profile shield is active using direct web scraping approach."""
         try:
+            # Method 1: Direct profile page check (most reliable)
             headers = {
-                'Authorization': f'Bearer {token}',
-                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
-                'Accept': 'application/json'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.5',
+                'Accept-Encoding': 'gzip, deflate',
+                'Connection': 'keep-alive',
+                'Cookie': f'c_user={uid}; xs={token};'
             }
             
-            # Method 1: Check profile visibility settings
+            console.print("[bold yellow]→ Checking profile page directly...[/]")
+            
             try:
-                profile_url = f'https://graph.facebook.com/v18.0/{uid}?fields=id,name,picture,posts.limit(1),albums.limit(1)'
-                response = requests.get(profile_url, headers=headers, timeout=10)
+                # Check the profile page directly
+                profile_url = f'https://www.facebook.com/{uid}'
+                response = requests.get(profile_url, headers=headers, timeout=15)
                 
                 if response.status_code == 200:
-                    data = response.json()
+                    page_content = response.text.lower()
                     
-                    # If we can access posts and albums freely, shield is likely OFF
-                    if 'posts' in data and 'albums' in data:
-                        if data.get('posts', {}).get('data') and data.get('albums', {}).get('data'):
-                            return False, ""
+                    # Look for shield indicators in the HTML
+                    shield_on_patterns = [
+                        'profile picture guard',
+                        'profile picture is protected',
+                        'profile guard is on',
+                        'profile shield',
+                        'picture guard active',
+                        'protected profile picture'
+                    ]
                     
-                    # If posts/albums are restricted or empty, shield might be ON
-                    if ('posts' not in data or not data.get('posts', {}).get('data')) and \
-                       ('albums' not in data or not data.get('albums', {}).get('data')):
+                    shield_off_patterns = [
+                        'add profile picture',
+                        'change profile picture',
+                        'update profile picture',
+                        'profile picture visible'
+                    ]
+                    
+                    shield_on_count = sum(1 for pattern in shield_on_patterns if pattern in page_content)
+                    shield_off_count = sum(1 for pattern in shield_off_patterns if pattern in page_content)
+                    
+                    if shield_on_count > shield_off_count and shield_on_count > 0:
+                        console.print("[green]✓ Shield appears to be ON (found protection indicators)[/]")
                         return True, ""
+                    elif shield_off_count > 0:
+                        console.print("[green]✓ Shield appears to be OFF (found normal profile indicators)[/]")
+                        return False, ""
                         
             except Exception as e:
-                console.print(f"[yellow]Method 1 failed: {str(e)}[/]")
+                console.print(f"[red]✗ Direct profile check failed: {str(e)}[/]")
             
-            # Method 2: Check timeline/feed accessibility
+            # Method 2: Mobile Facebook check
+            console.print("[bold yellow]→ Checking mobile Facebook...[/]")
+            
             try:
-                feed_url = f'https://graph.facebook.com/v18.0/{uid}/feed?limit=1'
-                response = requests.get(feed_url, headers=headers, timeout=10)
+                mobile_headers = {
+                    'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+                    'Cookie': f'c_user={uid}; xs={token};'
+                }
+                
+                mobile_url = f'https://m.facebook.com/{uid}'
+                response = requests.get(mobile_url, headers=mobile_headers, timeout=15)
+                
+                if response.status_code == 200:
+                    content = response.text.lower()
+                    
+                    if 'profile picture guard' in content or 'protected' in content:
+                        console.print("[green]✓ Mobile check: Shield is ON[/]")
+                        return True, ""
+                    elif 'timeline' in content and 'posts' in content:
+                        console.print("[green]✓ Mobile check: Shield is OFF[/]")
+                        return False, ""
+                        
+            except Exception as e:
+                console.print(f"[red]✗ Mobile check failed: {str(e)}[/]")
+            
+            # Method 3: Graph API with session cookies
+            console.print("[bold yellow]→ Checking via Graph API with session...[/]")
+            
+            try:
+                api_headers = {
+                    'Authorization': f'Bearer {token}',
+                    'Cookie': f'c_user={uid}; xs={token};',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }
+                
+                # Check privacy settings
+                privacy_url = f'https://graph.facebook.com/v18.0/me/privacy'
+                response = requests.get(privacy_url, headers=api_headers, timeout=15)
                 
                 if response.status_code == 200:
                     data = response.json()
-                    # If we can access feed, shield is likely OFF
+                    console.print(f"[blue]Privacy data: {str(data)[:200]}...[/]")
+                    
+                    # Look for shield-related settings
+                    privacy_str = str(data).lower()
+                    if 'guard' in privacy_str or 'shield' in privacy_str or 'protected' in privacy_str:
+                        if 'true' in privacy_str:
+                            console.print("[green]✓ Graph API: Shield is ON[/]")
+                            return True, ""
+                        elif 'false' in privacy_str:
+                            console.print("[green]✓ Graph API: Shield is OFF[/]")
+                            return False, ""
+                            
+            except Exception as e:
+                console.print(f"[red]✗ Graph API check failed: {str(e)}[/]")
+            
+            # Method 4: Photo access test
+            console.print("[bold yellow]→ Testing photo access...[/]")
+            
+            try:
+                photo_headers = {
+                    'Authorization': f'Bearer {token}',
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }
+                
+                # Try to access photos
+                photos_url = f'https://graph.facebook.com/v18.0/{uid}/photos?limit=1'
+                response = requests.get(photos_url, headers=photo_headers, timeout=15)
+                
+                if response.status_code == 200:
+                    data = response.json()
                     if data.get('data'):
+                        console.print("[green]✓ Photo access: Shield is OFF (photos accessible)[/]")
                         return False, ""
-                elif response.status_code == 403 or 'permission' in response.text.lower():
-                    # If access is denied, shield is likely ON
+                elif response.status_code == 403:
+                    console.print("[green]✓ Photo access: Shield is ON (photos restricted)[/]")
                     return True, ""
                     
             except Exception as e:
-                console.print(f"[yellow]Method 2 failed: {str(e)}[/]")
+                console.print(f"[red]✗ Photo access test failed: {str(e)}[/]")
             
-            # Method 3: Check privacy settings directly
+            # Method 5: Simple token validation approach
+            console.print("[bold yellow]→ Final validation check...[/]")
+            
             try:
-                privacy_url = f'https://graph.facebook.com/v18.0/{uid}/privacy_settings'
-                response = requests.get(privacy_url, headers=headers, timeout=10)
+                # Check basic profile info access
+                basic_url = f'https://graph.facebook.com/v18.0/me?access_token={token}'
+                response = requests.get(basic_url, timeout=15)
                 
                 if response.status_code == 200:
                     data = response.json()
-                    # Look for shield-related settings
-                    if 'profile_picture_guard' in data:
-                        return data['profile_picture_guard'], ""
-                    if 'timeline_review' in data and data['timeline_review']:
-                        return True, ""
-                        
-            except Exception as e:
-                console.print(f"[yellow]Method 3 failed: {str(e)}[/]")
-            
-            # Method 4: Try to access profile picture with different parameters
-            try:
-                pic_url = f'https://graph.facebook.com/v18.0/{uid}/picture?redirect=false&width=500&height=500'
-                response = requests.get(pic_url, headers=headers, timeout=10)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    # Check if profile picture is protected
-                    if 'url' in data:
-                        pic_response = requests.head(data['url'], timeout=5)
-                        if pic_response.status_code != 200:
-                            return True, ""  # Picture is protected, shield likely ON
-                        else:
-                            # Picture is accessible, but let's check one more thing
-                            pass
-                            
-            except Exception as e:
-                console.print(f"[yellow]Method 4 failed: {str(e)}[/]")
-            
-            # Method 5: Check using me endpoint with specific fields
-            try:
-                me_url = f'https://graph.facebook.com/v18.0/me?fields=id,name,picture,timeline_visibility,profile_pic_guard'
-                response = requests.get(me_url, headers=headers, timeout=10)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    # Check for explicit shield indicators
-                    if 'profile_pic_guard' in data:
-                        return data['profile_pic_guard'], ""
-                    if 'timeline_visibility' in data:
-                        if data['timeline_visibility'] == 'protected':
-                            return True, ""
-                        elif data['timeline_visibility'] == 'public':
-                            return False, ""
-                            
-            except Exception as e:
-                console.print(f"[yellow]Method 5 failed: {str(e)}[/]")
-            
-            # Method 6: Last resort - try the original GraphQL method with better parsing
-            try:
-                graphql_data = {
-                    'query': '''
-                    query ProfileShieldStatus($id: ID!) {
-                        user(id: $id) {
-                            id
-                            profilePictureGuard
-                            timelineVisibility
-                            canViewTimeline
-                        }
-                    }
-                    ''',
-                    'variables': {'id': uid}
-                }
-                
-                response = requests.post(
-                    'https://graph.facebook.com/graphql',
-                    json=graphql_data,
-                    headers=headers,
-                    timeout=10
-                )
-                
-                if response.status_code == 200:
-                    text = response.text.lower()
-                    # More comprehensive text analysis
-                    shield_on_indicators = [
-                        'profilepictureguard":true',
-                        'profile_picture_guard":true',
-                        'shield":true',
-                        'protected":true',
-                        'guarded":true'
-                    ]
+                    user_id = data.get('id')
                     
-                    shield_off_indicators = [
-                        'profilepictureguard":false',
-                        'profile_picture_guard":false',
-                        'shield":false',
-                        'public":true'
-                    ]
-                    
-                    if any(indicator in text for indicator in shield_on_indicators):
-                        return True, ""
-                    elif any(indicator in text for indicator in shield_off_indicators):
-                        return False, ""
+                    if user_id:
+                        # Try to access another user's view of this profile
+                        public_url = f'https://graph.facebook.com/v18.0/{user_id}?fields=name,picture&access_token={token}'
+                        pub_response = requests.get(public_url, timeout=15)
                         
+                        if pub_response.status_code == 200:
+                            pub_data = pub_response.json()
+                            if 'picture' in pub_data and pub_data['picture'].get('data', {}).get('url'):
+                                # Try to access the picture URL
+                                pic_url = pub_data['picture']['data']['url']
+                                pic_response = requests.head(pic_url, timeout=10)
+                                
+                                if pic_response.status_code == 200:
+                                    console.print("[green]✓ Final check: Shield is OFF (picture accessible)[/]")
+                                    return False, ""
+                                else:
+                                    console.print("[green]✓ Final check: Shield is ON (picture protected)[/]")
+                                    return True, ""
+                                    
             except Exception as e:
-                console.print(f"[yellow]Method 6 failed: {str(e)}[/]")
+                console.print(f"[red]✗ Final validation failed: {str(e)}[/]")
             
-            # If all methods fail, return None
-            return None, "Could not determine shield status using any available method"
+            console.print("[red]✗ All methods failed to determine shield status[/]")
+            return None, "Could not determine shield status after trying all available methods"
             
         except Exception as e:
-            return None, f"Error checking shield status: {str(e)}"
+            return None, f"Error during shield status check: {str(e)}"
 
     def toggle_profile_shield(self, account: Dict, enable: bool = True) -> Tuple[bool, str]:
         """Toggle Facebook profile shield."""
@@ -272,13 +290,18 @@ class FacebookGuard:
             elif lock_error:
                 return False, lock_error
 
-            # Check current shield status
+            # Check current shield status with proper delay
             console.print(Panel(
                 "[bold white]🔄 Checking current shield status...[/]",
                 style="bold cyan",
                 border_style="cyan"
             ))
-            time.sleep(1)
+            
+            # Add progress indicator for the delay
+            for i in range(6):
+                console.print(f"[bold cyan]{'.' * (i + 1)}[/]", end="")
+                time.sleep(1)
+            console.print()  # New line after dots
 
             # Get current shield status
             current_status, shield_error = self._check_shield_status(token, account['user_id'])
