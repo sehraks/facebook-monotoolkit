@@ -327,10 +327,11 @@ class FacebookMonoToolkit:
             self.cookie_manager.set_current_account(new_account['id'])
             self._load_account_data(new_account)
 
+            # Changed: Fixed markup in success message panel
             console.print(Panel(
-                f"✅ Cookie added successfully![/]\n"
-                f"👤 Account: {new_account['name']}[/]\n"
-                f"📩 UID: {new_account['user_id']}[/]\n",
+                "[bold green]✅ Cookie added successfully!\n"
+                f"👤 Account: {new_account['name']}\n"
+                f"📩 UID: {new_account['user_id']}[/]",
                 style="bold green",
                 border_style="green"
             ))
