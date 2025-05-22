@@ -259,30 +259,41 @@ class FacebookGuard:
         except Exception as e:
             return None, f"Cookie analysis error: {str(e)}"
 
-    def _check_shield_status(self, token: str, uid: str, cookie: str) -> Tuple[Optional[bool], str]:
-        """Check if profile shield is active using multiple fallback methods."""
+    def _check_shield_status(self, token: str, uid: str) -> Tuple[bool, str]:
+        """Check if profile shield is active using Facebook's GraphQL API."""
         try:
-            # Method 1: Try mbasic (most reliable)
-            status, error = self._check_shield_status_mbasic(cookie, uid)
-            if status is not None:
-                return status, error
-            
-            # Method 2: Try touch interface
-            status, error = self._check_shield_status_touch(cookie, uid)
-            if status is not None:
-                return status, error
-            
-            # Method 3: Direct cookie analysis (last resort)
-            status, error = self._check_shield_status_direct_cookie(cookie, uid)
-            if status is not None:
-                return status, error
-            
-            # If all methods fail, return None
-            console.print("[red]✗ All shield detection methods failed[/]")
-            return None, "Could not determine shield status using any available method"
-            
+            headers = {
+                'Authorization': f'OAuth {token}',
+                'Content-Type': 'application/json'
+            }
+
+            data = {
+                'variables': json.dumps({
+                    'profile_id': uid,
+                    'actor_id': uid
+                }),
+                'doc_id': '5014118178644909'  # This is Facebook's doc_id for profile shield status
+            }
+
+            response = requests.post(
+                'https://graph.facebook.com/graphql',
+                json=data,
+                headers=headers
+            )
+
+            if response.status_code == 200:
+                response_text = response.text.lower()
+
+                # Check for shield status in response
+                if 'profile_picture_shield_enabled\":true' in response_text:
+                    return True, ""
+                elif 'profile_picture_shield_enabled\":false' in response_text:
+                    return False, ""
+
+            return False, "Could not determine shield status"
+
         except Exception as e:
-            return None, f"Error during shield status check: {str(e)}"
+            return False, f"Error checking shield status: {str(e)}"
 
     def _toggle_shield_mbasic(self, cookie: str, uid: str, enable: bool) -> Tuple[bool, str]:
         """Toggle shield using mbasic interface."""
@@ -376,7 +387,7 @@ class FacebookGuard:
             return {}
 
     def toggle_profile_shield(self, account: Dict, enable: bool = True) -> Tuple[bool, str]:
-        """Toggle Facebook profile shield using legacy interfaces."""
+        """Toggle Facebook profile shield."""
         try:
             # Initial status message
             console.print(Panel(
@@ -387,69 +398,66 @@ class FacebookGuard:
             time.sleep(1)
 
             token = account.get('token')
-            cookie = account.get('cookie')
-            
-            if not cookie:
-                return False, "No valid cookie found for this account"
+            if not token:
+                return False, "No valid token found for this account"
 
-            # Check current shield status with proper delay
+            # Check current shield status
             console.print(Panel(
                 "[bold white]🔄 Checking current shield status...[/]",
                 style="bold cyan",
                 border_style="cyan"
             ))
-            
-            # Add progress indicator for the delay
-            for i in range(6):
-                console.print(f"[bold cyan]{'.' * (i + 1)}[/]", end="")
-                time.sleep(1)
-            console.print()  # New line after dots
+            time.sleep(1)
 
-            # Get current shield status
-            current_status, shield_error = self._check_shield_status(token, account['user_id'], cookie)
-            
-            # Check if shield is already in the desired state
-            if current_status is not None and not shield_error:
-                if current_status and enable:
-                    return False, "❕ Your Profile Shield was already turned on from the start, no need to use this feature."
-                elif not current_status and not enable:
-                    return False, "❕ Your Profile Shield was already turned off from the start, no need to use this feature."
-            elif shield_error:
-                # If we can't determine the status, we should still try but warn the user
-                console.print(Panel(
-                    f"[bold yellow]⚠️ Warning: {shield_error}[/]",
-                    style="bold yellow",
-                    border_style="yellow"
-                ))
-                console.print(Panel(
-                    "[bold white]🔄 Proceeding with operation anyway...[/]",
-                    style="bold cyan",
-                    border_style="cyan"
-                ))
-                time.sleep(1)
+            current_status, _ = self._check_shield_status(token, account['user_id'])
+
+            # Check if action is needed
+            if current_status == enable:
+                status_text = "activated" if enable else "not active"
+                return False, f"Your Facebook Profile Shield was already {status_text}"
 
             # Toggle shield
-            action_text = "Activating" if enable else "Deactivating"
             console.print(Panel(
-                f"[bold white]🔄 {action_text} Profile Shield...[/]",
+                f"[bold white]🔄 {'Activating' if enable else 'Deactivating'} Profile Shield...[/]",
                 style="bold cyan",
                 border_style="cyan"
             ))
             time.sleep(1)
 
-            # Try to toggle using mbasic interface
-            success, message = self._toggle_shield_mbasic(cookie, account['user_id'], enable)
-            
-            if success:
-                return True, message
-            else:
-                # If mbasic fails, return a generic error
-                action = "activate" if enable else "deactivate"
-                return False, f"❌ Failed to {action} Profile Shield. Facebook may have changed their interface or your session may have expired."
+            headers = {
+                'Authorization': f'OAuth {token}',
+                'Content-Type': 'application/json'
+            }
 
-        except requests.exceptions.Timeout:
-            return False, "❌ Request timed out. Please check your internet connection and try again."
-        except requests.exceptions.RequestException as e:
-            return False, f"❌ Network error: {str(e)}"
+            data = {
+                'variables': json.dumps({
+                    'input': {
+                        'actor_id': account['user_id'],
+                        'client_mutation_id': str(uuid.uuid4()),
+                        'is_enabled': enable
+                    }
+                }),
+                'doc_id': '5014118178644909'  # Facebook's doc_id for toggling profile shield
+            }
+
+            response = requests.post(
+                'https://graph.facebook.com/graphql',
+                json=data,
+                headers=headers
+            )
+
+            if response.status_code != 200:
+                return False, f"Request failed: {response.text}"
+
+            # Verify the change
+            time.sleep(2)
+            final_status, _ = self._check_shield_status(token, account['user_id'])
+
+            if final_status == enable:
+                action = "turned on" if enable else "turned off"
+                return True, f"You {action} your Facebook Profile Shield"
+
+            return False, "Failed to verify shield status change"
+
         except Exception as e:
-            return False, f"❌ Unexpected error: {str(e)}"
+            return False, f"Error: {str(e)}"
