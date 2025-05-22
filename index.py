@@ -304,6 +304,32 @@ class FacebookMonoToolkit:
             console.input("[bold white]Press Enter to continue...[/]")
             return
 
+        # Initial validation message with 1 second delay
+        console.print(Panel(
+            "[bold white]🔄 Validating cookie format...[/]",
+            style="bold cyan",
+            border_style="cyan"
+        ))
+        time.sleep(1)
+
+        # Validate cookie format
+        if "c_user=" not in cookie or "xs=" not in cookie:
+            console.print(Panel(
+                "[bold white]❕ Invalid cookie format! Cookie must contain c_user and xs values.[/]",
+                style="bold indian_red",
+                border_style="indian_red"
+            ))
+            console.input("[bold white]Press Enter to continue...[/]")
+            return
+
+        # Cookie validation success message with 1 second delay
+        console.print(Panel(
+            "[bold white]✅ Cookie format is valid![/]",
+            style="bold green",
+            border_style="green"
+        ))
+        time.sleep(1)
+
         # Get token before asking for name
         try:
             console.print(Panel(
@@ -311,15 +337,24 @@ class FacebookMonoToolkit:
                 style="bold cyan",
                 border_style="cyan"
             ))
+            time.sleep(1.5)  # Added delay before token extraction
 
             # Create a session to maintain cookies
             session = requests.Session()
             
             # Set the cookies in the session
-            for cookie_item in cookie.split(';'):
-                if '=' in cookie_item:
-                    name, value = cookie_item.strip().split('=', 1)
-                    session.cookies.set(name, value)
+            try:
+                for cookie_item in cookie.split(';'):
+                    if '=' in cookie_item:
+                        name, value = cookie_item.strip().split('=', 1)
+                        session.cookies.set(name, value)
+            except Exception as e:
+                console.print(Panel(
+                    f"[bold white]❕ Error parsing cookie: {str(e)}[/]",
+                    style="bold indian_red",
+                    border_style="indian_red"
+                ))
+                time.sleep(1)
 
             headers = {
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
@@ -332,38 +367,47 @@ class FacebookMonoToolkit:
                 'Upgrade-Insecure-Requests': '1'
             }
 
-            # First, try to get token from Ads Manager
+            # Token extraction with multiple attempts
             access_token = None
-            try:
-                ads_response = session.get('https://adsmanager.facebook.com/adsmanager/', headers=headers)
-                if ads_response.ok:
-                    token_match = re.search(r'accessToken="(EAA[A-Za-z0-9]+)"', ads_response.text)
-                    if token_match:
-                        access_token = token_match.group(1)
-            except:
-                pass
+            extraction_methods = [
+                ('Ads Manager', 'https://adsmanager.facebook.com/adsmanager/', r'accessToken="(EAA[A-Za-z0-9]+)"'),
+                ('Business Manager', 'https://business.facebook.com/content_management', r'"(EAA[A-Za-z0-9]+)"'),
+                ('Feed Composer', 'https://www.facebook.com/composer/ocelot/async_loader/?publisher=feed', r'"accessToken":"(EAA[A-Za-z0-9]+)"')
+            ]
 
-            # If not found, try Business Manager
-            if not access_token:
+            for method_name, url, pattern in extraction_methods:
                 try:
-                    business_response = session.get('https://business.facebook.com/content_management', headers=headers)
-                    if business_response.ok:
-                        token_match = re.search(r'"(EAA[A-Za-z0-9]+)"', business_response.text)
-                        if token_match:
-                            access_token = token_match.group(1)
-                except:
-                    pass
+                    console.print(Panel(
+                        f"[bold white]🔄 Trying {method_name} method...[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                    ))
+                    time.sleep(1)  # Delay between attempts
 
-            # If still not found, try one last method
-            if not access_token:
-                try:
-                    response = session.get('https://www.facebook.com/composer/ocelot/async_loader/?publisher=feed', headers=headers)
+                    response = session.get(url, headers=headers, timeout=30)
                     if response.ok:
-                        token_match = re.search(r'"accessToken":"(EAA[A-Za-z0-9]+)"', response.text)
+                        token_match = re.search(pattern, response.text)
                         if token_match:
                             access_token = token_match.group(1)
-                except:
-                    pass
+                            console.print(Panel(
+                                f"[bold white]✅ Token found using {method_name}![/]",
+                                style="bold green",
+                                border_style="green"
+                            ))
+                            time.sleep(1)
+                            break
+                except requests.Timeout:
+                    console.print(Panel(
+                        f"[bold white]❕ {method_name} request timed out[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                    ))
+                except Exception as e:
+                    console.print(Panel(
+                        f"[bold white]❕ Error with {method_name}: {str(e)}[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                    ))
 
             if access_token:
                 console.print(Panel(
@@ -371,20 +415,23 @@ class FacebookMonoToolkit:
                     style="bold green",
                     border_style="green"
                 ))
+                time.sleep(1)
             else:
                 console.print(Panel(
                     "[bold white]❕ Could not retrieve token. Continuing anyway...[/]",
                     style="bold indian_red",
                     border_style="indian_red"
                 ))
+                time.sleep(1)
                 access_token = 'N/A'
 
         except Exception as e:
             console.print(Panel(
-                f"[bold white]❕ Error getting token: {str(e)}. Continuing anyway...[/]",
+                f"[bold white]❕ Error during token extraction: {str(e)}. Continuing anyway...[/]",
                 style="bold indian_red",
                 border_style="indian_red"
             ))
+            time.sleep(1)
             access_token = 'N/A'
 
         # Ask for account name if not in cookie
@@ -400,6 +447,14 @@ class FacebookMonoToolkit:
                 console.input("[bold white]Press Enter to continue...[/]")
                 return
 
+        # Adding cookie to storage
+        console.print(Panel(
+            "[bold white]🔄 Saving account data...[/]",
+            style="bold cyan",
+            border_style="cyan"
+        ))
+        time.sleep(1)
+
         success, message = self.cookie_manager.add_cookie(cookie, account_name, access_token)
 
         if success:
@@ -412,6 +467,7 @@ class FacebookMonoToolkit:
             self.cookie_manager.set_current_account(new_account['id'])
             self._load_account_data(new_account)
 
+            time.sleep(1)  # Delay before success message
             console.print(Panel(
                 "[bold green]✅ Cookie added successfully!\n"
                 f"👤 Account: {new_account['name']}\n"
@@ -426,9 +482,10 @@ class FacebookMonoToolkit:
                 border_style="indian_red"
             ))
 
-        # Log activity with Philippines time (GMT+8)
+        # Get Philippines time (GMT+8)
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
         ph_timestamp = philippines_time.strftime("%B %d, %Y %I:%M %p")
+        
         Utils.log_activity(f"Add Cookie (PH: {ph_timestamp}) by {self.CURRENT_USER}", success, message)
         console.input("[bold white]Press Enter to continue...[/]")
    
