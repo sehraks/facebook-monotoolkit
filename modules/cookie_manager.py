@@ -146,14 +146,36 @@ class CookieManager:
                 try:
                         headers = {
                                 'Cookie': cookie,
-                                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
+                                'authorization': 'OAuth 350685531728|62f8ce9f74b12f84c123cc23437a4a32',
+                                'x-fb-friendly-name': 'Authenticate',
+                                'x-fb-connection-type': 'Unknown',
+                                'accept-encoding': 'gzip, deflate',
+                                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                                'accept-language': 'en-US,en;q=0.9',
+                                'content-type': 'application/x-www-form-urlencoded',
+                                'x-fb-http-engine': 'Liger',
+                                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
                         }
-                        response = requests.get(
-                                'https://business.facebook.com/business_locations',
-                                headers=headers
-                        )
-                        token = re.search(r'EAAG\w+', response.text)
-                        access_token = token.group(0) if token else 'N/A'
+                        
+                        # Try multiple endpoints to get token
+                        endpoints = [
+                            'https://business.facebook.com/business_locations',
+                            'https://www.facebook.com/adsmanager/manage/campaigns',
+                            'https://developers.facebook.com/'
+                        ]
+                        
+                        access_token = 'N/A'
+                        for endpoint in endpoints:
+                            try:
+                                response = requests.get(endpoint, headers=headers, timeout=30)
+                                if response.ok:
+                                    # Look for both EAAG and EAAB tokens
+                                    token = re.search(r'(EAAG\w+|EAAB\w+)', response.text)
+                                    if token:
+                                        access_token = token.group(0)
+                                        break
+                            except:
+                                continue
                 except:
                         access_token = 'N/A'
 
