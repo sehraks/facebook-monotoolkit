@@ -737,12 +737,13 @@ def main():
         tool = FacebookMonoToolkit()
         tool.main()
     except KeyboardInterrupt:
-        console.print("\n[bold indian_red]❕ Program interrupted by user.[/]")
+        console.print("\n[bold indian_red]❕ Program interrupted by user.[/bold indian_red]")
         sys.exit(0)
     except Exception as e:
-        console.print(f"\n[bold indian_red]❕ An unexpected error occurred: {str(e)}[/]")
+        console.print(Panel(
+            f"[bold white]❕ An unexpected error occurred: {str(e)}[/]",
+            style="bold indian_red",
+            border_style="indian_red"
+        ))
         Utils.log_activity("System Error", False, str(e))
         sys.exit(1)
-
-if __name__ == "__main__":
-    main()
