@@ -192,16 +192,12 @@ class FacebookGuard:
             # Get current shield status
             current_status, shield_error = self._check_shield_status(token, account['user_id'])
             
-            # If we got a clear status and it matches what we want to do, return early
+            # Check if shield is already in desired state
             if not shield_error:
                 if current_status and enable:
                     return False, "Your Facebook Profile Shield was already activated"
                 elif not current_status and not enable:
                     return False, "Your Facebook Profile Shield is not active"
-
-            # Only proceed with toggle if the current status is different from what we want
-            if not shield_error and current_status == enable:
-                return False, f"Your Facebook Profile Shield was already {'activated' if enable else 'deactivated'}"
 
             # Toggle shield
             console.print(Panel(
@@ -211,6 +207,7 @@ class FacebookGuard:
             ))
             time.sleep(1)
 
+            # Make the request to toggle shield
             data = {
                 'variables': json.dumps({
                     '0': {
@@ -239,16 +236,15 @@ class FacebookGuard:
             if response.status_code != 200:
                 return False, f"Request failed: {response.text}"
 
-            # Verify the change
-            time.sleep(2)
-            final_status, _ = self._check_shield_status(token, account['user_id'])
+            # Success check based on response content
+            response_text = response.text.lower()
+            success_indicator = 'is_shielded\":true' if enable else 'is_shielded\":false'
             
-            # Final verification
-            if final_status == enable:
+            if success_indicator in response_text:
                 action = "turned on" if enable else "turned off"
                 return True, f"You {action} your Facebook Profile Shield"
-            
-            return False, "Failed to verify shield status change"
+
+            return False, f"Failed to {('activate' if enable else 'deactivate')} Profile Shield"
 
         except Exception as e:
             return False, f"Error: {str(e)}"
