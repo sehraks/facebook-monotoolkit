@@ -16,8 +16,7 @@ console = Console()
 class FacebookGuard:
         def __init__(self):
                 """Initialize FacebookGuard with necessary configurations."""
-                # Get current UTC time
-                self.last_update = "2025-05-22 13:40:33"
+                self.last_update = "2025-05-22 13:46:07"
                 self.current_user = "sehraks1"
 
         def toggle_profile_shield(self, account: Dict, enable: bool = True) -> Tuple[bool, str]:
@@ -43,20 +42,21 @@ class FacebookGuard:
                         ))
                         time.sleep(1)
 
-                        headers = {
-                                'Authorization': f'OAuth {token}',
-                                'Content-Type': 'application/json'
-                        }
-
                         data = {
                                 'variables': json.dumps({
-                                        'input': {
+                                        '0': {
+                                                'is_shielded': enable,
+                                                'session_id': str(uuid.uuid4()),
                                                 'actor_id': account['user_id'],
-                                                'client_mutation_id': str(uuid.uuid4()),
-                                                'is_enabled': enable
+                                                'client_mutation_id': str(uuid.uuid4())
                                         }
                                 }),
-                                'doc_id': '5014118178644909'
+                                'method': 'post',
+                                'doc_id': '1477043292367183'
+                        }
+
+                        headers = {
+                                'Authorization': f"OAuth {token}"
                         }
 
                         response = requests.post(
@@ -68,8 +68,13 @@ class FacebookGuard:
                         if response.status_code != 200:
                                 return False, f"Request failed: {response.text}"
 
-                        action = "turned on" if enable else "turned off"
-                        return True, f"You {action} your Facebook Profile Shield"
+                        response_text = response.text
+                        if '"is_shielded":true' in response_text:
+                                return True, "✅ Activated Profile Guard"
+                        elif '"is_shielded":false' in response_text:
+                                return True, "❌ Deactivated Profile Guard"
+                        else:
+                                return False, f"⚠ Unexpected response: {response_text}"
 
                 except Exception as e:
                         return False, f"Error: {str(e)}"
