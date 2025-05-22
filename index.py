@@ -5,6 +5,8 @@
 
 import os
 import sys
+import requests
+import re
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Optional
 from rich.console import Console
