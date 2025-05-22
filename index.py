@@ -737,13 +737,25 @@ def main():
         tool = FacebookMonoToolkit()
         tool.main()
     except KeyboardInterrupt:
-        console.print("\n[bold indian_red]❕ Program interrupted by user.[/bold indian_red]")
+        # Changed: Wrapped error message in Panel and fixed markup
+        console.print(Panel(
+            "[bold white]❕ Program interrupted by user.[/]",
+            style="bold indian_red",
+            border_style="indian_red"
+        ))
         sys.exit(0)
     except Exception as e:
+        # Changed: Fixed markup error in exception handling
         console.print(Panel(
             f"[bold white]❕ An unexpected error occurred: {str(e)}[/]",
             style="bold indian_red",
             border_style="indian_red"
         ))
-        Utils.log_activity("System Error", False, str(e))
+        # Current timestamp in UTC format
+        current_utc = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        Utils.log_activity(f"System Error (UTC: {current_utc}) by {sehraks1}", False, str(e))
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
