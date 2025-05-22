@@ -19,7 +19,7 @@ class FacebookGuard:
         # Get current Philippines time (GMT+8)
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
         self.last_update = philippines_time.strftime("%Y-%m-%d %H:%M:%S")
-        self.current_user = "sehraks1"
+        self.current_user = "sehraks"
 
     def _check_profile_lock_status(self, token: str) -> Tuple[bool, str]:
         """Check if the profile is locked."""
