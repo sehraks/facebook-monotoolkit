@@ -90,19 +90,6 @@ class FacebookGuard:
     def _check_shield_status(self, token: str, uid: str) -> Tuple[bool, str]:
         """Check if profile shield is active."""
         try:
-            # Improved data payload for checking shield status
-            data = {
-                'variables': json.dumps({
-                    '0': {
-                        'is_shielded': True,
-                        'actor_id': uid,
-                        'client_mutation_id': str(uuid.uuid4())
-                    }
-                }),
-                'doc_id': '1477043292367183',
-                'method': 'post'
-            }
-            
             headers = {
                 'Authorization': f'OAuth {token}',
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
@@ -110,7 +97,15 @@ class FacebookGuard:
                 'Accept': '*/*'
             }
             
-            # First try: Direct GraphQL query
+            # First try: Check shield status directly
+            data = {
+                'variables': json.dumps({
+                    'profileID': uid,
+                    'scale': 1
+                }),
+                'doc_id': '1477043292367183'
+            }
+            
             response = requests.post(
                 'https://graph.facebook.com/graphql',
                 json=data,
@@ -118,50 +113,41 @@ class FacebookGuard:
             )
             
             if response.status_code == 200:
-                response_text = response.text
+                response_text = response.text.lower()
                 
-                # Multiple checks for shield status
-                shield_indicators = [
+                # Check for explicit false indicators first
+                if any(x in response_text for x in [
+                    'is_shielded\":false',
+                    'shield_enabled\":false',
+                    'profile_picture_shield\":false',
+                    'profile_shield_status\":\"disabled'
+                ]):
+                    return False, ""
+                
+                # Then check for true indicators
+                if any(x in response_text for x in [
                     'is_shielded\":true',
                     'shield_enabled\":true',
                     'profile_picture_shield\":true',
                     'profile_shield_status\":\"enabled'
-                ]
+                ]):
+                    return True, ""
                 
-                for indicator in shield_indicators:
-                    if indicator in response_text.lower():
-                        return True, ""
-                
-                # If response is good but no shield indicators found
-                if 'is_shielded\":false' in response_text:
-                    return False, ""
-                
-                # Try parsing the full response
+                # If no explicit indicators found, try alternate endpoint
                 try:
-                    json_response = response.json()
-                    if isinstance(json_response, dict):
-                        # Check nested data structure
-                        if 'data' in json_response:
-                            data = json_response['data']
-                            if isinstance(data, dict):
-                                for key, value in data.items():
-                                    if isinstance(value, dict) and 'is_shielded' in value:
-                                        return value['is_shielded'], ""
+                    alt_response = requests.get(
+                        f'https://graph.facebook.com/{uid}/profile_shield_settings',
+                        headers=headers
+                    )
+                    if alt_response.status_code == 200:
+                        alt_data = alt_response.json()
+                        if 'enabled' in alt_data:
+                            return alt_data['enabled'], ""
                 except:
                     pass
-                
-                # Fallback: Check profile endpoint
-                profile_response = requests.get(
-                    f'https://graph.facebook.com/{uid}?fields=protection_status&access_token={token}',
-                    headers=headers
-                )
-                
-                if profile_response.status_code == 200:
-                    profile_data = profile_response.json()
-                    if 'protection_status' in profile_data:
-                        return profile_data['protection_status'] in ['enabled', 'active', True], ""
             
-            return False, f"Could not determine shield status"
+            # Default to indicating we couldn't determine the status
+            return False, "Could not determine shield status"
             
         except Exception as e:
             return False, f"Error checking shield status: {str(e)}"
@@ -206,10 +192,11 @@ class FacebookGuard:
             # Store initial shield status
             initial_shield_status, shield_error = self._check_shield_status(token, account['user_id'])
             if shield_error:
-                return False, shield_error
-
-            # Check if action is needed
-            if enable == initial_shield_status:
+                # If we can't determine status, proceed anyway
+                initial_shield_status = not enable  # Assume opposite of what we want to do
+            
+            # Only show "already activated/deactivated" if we're certain about the status
+            if not shield_error and enable == initial_shield_status:
                 status_text = "activated" if enable else "not active"
                 return False, f"Your Facebook Profile Shield was already {status_text}"
 
@@ -239,6 +226,7 @@ class FacebookGuard:
                 'Content-Type': 'application/json',
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
             }
+
             response = requests.post(
                 'https://graph.facebook.com/graphql',
                 json=data,
@@ -248,26 +236,24 @@ class FacebookGuard:
             if response.status_code != 200:
                 return False, f"Request failed: {response.text}"
 
-            # Check response for success indicators
-            success_indicators = [
-                'is_shielded\":true' if enable else 'is_shielded\":false',
-                'shield_enabled\":true' if enable else 'shield_enabled\":false',
-                'profile_picture_shield\":true' if enable else 'profile_picture_shield\":false'
-            ]
-
-            for indicator in success_indicators:
-                if indicator in response.text:
-                    action = "turned on" if enable else "turned off"
-                    return True, f"You {action} your Facebook Profile Shield"
-
-            # If we made it here, check the status one more time
+            # Check for success in response
+            response_text = response.text.lower()
+            
+            # Direct success indicators in the response
+            if enable and ('is_shielded\":true' in response_text or 'shield_enabled\":true' in response_text):
+                return True, "You turned on your Facebook Profile Shield"
+            elif not enable and ('is_shielded\":false' in response_text or 'shield_enabled\":false' in response_text):
+                return True, "You turned off your Facebook Profile Shield"
+            
+            # If no direct indicators, verify the change
             time.sleep(2)
             final_status, _ = self._check_shield_status(token, account['user_id'])
+            
             if final_status == enable:
                 action = "turned on" if enable else "turned off"
                 return True, f"You {action} your Facebook Profile Shield"
-
-            # If all checks fail, the operation was likely successful if we got a 200 status
+            
+            # If we got a 200 response, assume success even if verification is unclear
             if response.status_code == 200:
                 action = "turned on" if enable else "turned off"
                 return True, f"You {action} your Facebook Profile Shield"
