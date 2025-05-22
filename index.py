@@ -21,6 +21,7 @@ from modules.utils import Utils
 from modules.update_settings import UpdateSettings
 from modules.fb_login import FacebookLogin
 from modules.cookie_database import CookieDatabase
+from modules.fb_guard import FacebookGuard
 
 # Initialize rich console
 console = Console()
@@ -55,6 +56,7 @@ class FacebookMonoToolkit:
         self.update_settings = UpdateSettings(self.display_banner)
         self.fb_login = FacebookLogin()
         self.cookie_database = CookieDatabase(self.cookie_manager)
+        self.fb_guard = FacebookGuard()
         
         # Create necessary directories
         self._init_directories()
@@ -135,15 +137,16 @@ class FacebookMonoToolkit:
             menu_panel = Panel(
                 "[bold white][1] Accounts Management[/]\n"
                 "[bold white][2] Spam Sharing Post[/]\n"
-                "[bold white][3] Settings[/]\n"
-                "[bold red][4] Exit[/]",
+                "[bold white][3] Profile Guard[/]\n"
+                "[bold white][4] Settings[/]\n"
+                "[bold red][5] Exit[/]",
                 title="[bold white]𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨[/]",
                 style="bold magenta",
                 border_style="cyan"
             )
             console.print(menu_panel)
 
-            choice = console.input("[bold yellow]Select an option (1-4): [/]")
+            choice = console.input("[bold yellow]Select an option (1-5): [/]")
             choice = choice.strip()
 
             if choice == "1":
@@ -153,8 +156,12 @@ class FacebookMonoToolkit:
                     continue
                 self.spam_sharing_menu()
             elif choice == "3":
-                self.settings_menu()
+                if not self.check_cookie_required():
+                    continue
+                self.handle_profile_guard()
             elif choice == "4":
+                self.settings_menu()
+            elif choice == "5":
                 break
             else:
                 console.print(Panel(
@@ -489,7 +496,73 @@ class FacebookMonoToolkit:
         
         Utils.log_activity(f"Add Cookie (PH: {ph_timestamp}) by {self.CURRENT_USER}", success, message)
         console.input("[bold white]Press Enter to continue...[/]")
-   
+
+    def handle_profile_guard(self):
+        """Handle Profile Guard operations."""
+        if not self.current_account:
+                console.print(Panel(
+                        "[bold white]❕ Please select an account first[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                ))
+                console.input("[bold white]Press Enter to continue...[/]")
+                return
+
+        while True:
+                self.clear_screen()
+                self.display_banner()
+
+                # Show current account
+                console.print(Panel(
+                        f"[bold white]Selected Account: {self.current_account['name']}[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+
+                # Show menu
+                console.print(Panel(
+                        "[bold yellow]Note:[/] [bold white]Make sure you turn off first your Facebook lock profile before proceeding to Facebook Profile Guard.[/]\n\n"
+                        "[1] Activate your Facebook Profile Shield\n"
+                        "[2] Deactivate your Facebook Profile Shield\n"
+                        "[3] Back to Main Menu",
+                        title="[bold white]🛡️ 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗣𝗥𝗢𝗙𝗜𝗟𝗘 𝗚𝗨𝗔𝗥𝗗[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+
+                choice = console.input("[bold yellow]Enter your choice: [/]").strip()
+
+                if choice == "1" or choice == "2":
+                        enable = choice == "1"
+                        success, message = self.fb_guard.toggle_profile_shield(self.current_account, enable)
+                        
+                        if success:
+                                console.print(Panel(
+                                        f"[bold white]✅ {message}\n"
+                                        f"Name: {self.current_account['name']}\n"
+                                        f"UID: {self.current_account['user_id']}[/]",
+                                        style="bold green",
+                                        border_style="green"
+                                ))
+                        else:
+                                console.print(Panel(
+                                        f"[bold white]❕ {message}[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
+                                ))
+                        
+                        console.input("[bold white]Press Enter to continue...[/]")
+                        
+                elif choice == "3":
+                        break
+                else:
+                        console.print(Panel(
+                                "[bold white]❕ Invalid choice![/]",
+                                style="bold indian_red",
+                                border_style="indian_red"
+                        ))
+                        console.input("[bold white]Press Enter to continue...[/]")
+    
     def cookie_settings_menu(self):
         """Handle cookie settings and storage menu."""
         while True:
