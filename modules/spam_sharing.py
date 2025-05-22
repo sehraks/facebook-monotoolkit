@@ -67,8 +67,8 @@ class SpamSharing:
                 f.write(f"[{timestamp}] User: {user_id} | Success: {success} | Message: {message}\n")
         except Exception as e:
             console.print(Panel(
-                f"[bold red]❌ Failed to log activity: {str(e)}[/]",
-                style="bold red"
+                f"[bold indian_red]❕ Failed to log activity: {str(e)}[/]",
+                style="bold indian_red"
             ))
 
     async def _get_access_token(self, session: aiohttp.ClientSession, cookie: str) -> Tuple[Optional[str], str]:
@@ -199,9 +199,9 @@ class SpamSharing:
                         data = await response.json()
                     except Exception as json_error:
                         console.print(Panel(
-                            f"[bold red]❌ Invalid response: {str(json_error)}[/]",
-                            style="bold red",
-                            border_style="red"
+                            f"[bold white]❕ Invalid response: {str(json_error)}[/]",
+                            style="bold indian_red",
+                            border_style="indian_red"
                         ))
                         data = {"error": {"message": "Invalid JSON response"}}
 
