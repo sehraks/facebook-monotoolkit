@@ -194,12 +194,25 @@ class FacebookGuard:
             # Get current shield status
             current_status, shield_error = self._check_shield_status(token, account['user_id'])
             
-            # Only check for already-active status if we can reliably determine current status
+            # Check if shield is already in the desired state
             if current_status is not None and not shield_error:
                 if current_status and enable:
-                    return False, "❌ Your Facebook Profile Shield is already activated"
+                    return False, "❕ Your Profile Shield was already turned on from the start, no need to use this feature."
                 elif not current_status and not enable:
-                    return False, "❌ Your Facebook Profile Shield is already deactivated"
+                    return False, "❕ Your Profile Shield was already turned off from the start, no need to use this feature."
+            elif shield_error:
+                # If we can't determine the status, we should still try but warn the user
+                console.print(Panel(
+                    f"[bold yellow]⚠️ Warning: {shield_error}[/]",
+                    style="bold yellow",
+                    border_style="yellow"
+                ))
+                console.print(Panel(
+                    "[bold white]🔄 Proceeding with operation anyway...[/]",
+                    style="bold cyan",
+                    border_style="cyan"
+                ))
+                time.sleep(1)
 
             # Toggle shield
             action_text = "Activating" if enable else "Deactivating"
