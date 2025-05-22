@@ -6,7 +6,7 @@ import aiohttp
 import asyncio
 import re
 import os
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from typing import Dict, Tuple, Optional
 from rich.console import Console
 from rich.panel import Panel
@@ -16,10 +16,22 @@ console = Console()
 class SpamSharing:
     def __init__(self):
         """Initialize SpamSharing with necessary configurations."""
-        self.last_update = "2025-05-19 07:39:02"  # Current UTC time
-        self.current_user = "sehraks1"  # Current user's login
+        # Current Philippines time (GMT+8)
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        
+        self.last_update = philippines_time.strftime("%Y-%m-%d %H:%M:%S")  # Philippines time
+        self.current_user = "sehraks"  # Your username
+        
+        # Add progress tracking
+        self.current_progress = 0
+        self.total_shares = 0
+        self.start_time = None
+        
+        # API configuration
         self.share_api_url = "https://b-graph.facebook.com/me/feed"
         self.max_shares_per_day = 200000
+        
+        # Default headers
         self.default_headers = {
             "user-agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36",
             "sec-ch-ua": '"Chromium";v="124", "Not-A.Brand";v="99"',
@@ -35,6 +47,8 @@ class SpamSharing:
             "accept-language": "en-US,en;q=0.9",
             "cache-control": "max-age=0"
         }
+        
+        # Initialize logging
         self._init_logging()
 
     def _init_logging(self) -> None:
@@ -143,39 +157,96 @@ class SpamSharing:
         c_user_match = re.search(r'c_user=(\d+)', cookie)
         user_id = c_user_match.group(1) if c_user_match else "unknown"
 
+        # Initialize progress
+        self.current_progress = 0
+        self.total_shares = share_count
+        self.start_time = datetime.now()
+
         console.print(Panel(
-            "[bold cyan]🚀 Starting share operation...[/]",
-            style="bold cyan"
+            "[bold cyan]🚀 Initializing share operation...[/]",
+            style="bold cyan",
+            border_style="cyan"
         ))
-        
+        await asyncio.sleep(1)  # Initial delay for visual feedback
+
+        console.print(Panel(
+            f"[bold white]📊 Total shares to perform: {share_count}\n"
+            f"⏱️ Delay between shares: {delay} seconds[/]",
+            style="bold cyan",
+            border_style="cyan"
+        ))
+        await asyncio.sleep(1)  # Show configuration delay
+
         for i in range(share_count):
             try:
+                # Update progress
+                self.current_progress = i + 1
+                progress_percent = (self.current_progress / self.total_shares) * 100
+                
+                # Calculate estimated time remaining
+                elapsed_time = (datetime.now() - self.start_time).total_seconds()
+                shares_per_second = self.current_progress / elapsed_time if elapsed_time > 0 else 0
+                estimated_total_time = self.total_shares / shares_per_second if shares_per_second > 0 else 0
+                time_remaining = max(0, estimated_total_time - elapsed_time)
+
                 share_url = f"{self.share_api_url}?link=https://mbasic.facebook.com/{post_path}&published=0&access_token={token}"
+                
+                # Show pre-share status
+                console.print(f"[bold yellow]🔄 Attempting share {self.current_progress}/{share_count}...[/]")
                 
                 async with session.post(share_url, headers=headers) as response:
                     try:
                         data = await response.json()
-                    except Exception:
+                    except Exception as json_error:
+                        console.print(Panel(
+                            f"[bold red]❌ Invalid response: {str(json_error)}[/]",
+                            style="bold red",
+                            border_style="red"
+                        ))
                         data = {"error": {"message": "Invalid JSON response"}}
 
                     if "id" in data:
                         successful_shares += 1
-                        console.print(
-                            f"[bold green]✅ [{successful_shares}/{share_count}] Share successful[/]"
-                        )
+                        console.print(Panel(
+                            f"[bold green]✅ Share {self.current_progress}/{share_count} successful\n"
+                            f"📊 Progress: {progress_percent:.1f}%\n"
+                            f"⏱️ Estimated time remaining: {time_remaining:.1f} seconds[/]",
+                            style="bold green",
+                            border_style="green"
+                        ))
                         self._log_share_activity(user_id, True, f"Share {successful_shares}/{share_count}")
                     else:
                         error_msg = data.get("error", {}).get("message", "Unknown error")
+                        console.print(Panel(
+                            f"[bold white]❕ Share failed: {error_msg}[/]",
+                            style="bold indian_red",
+                            border_style="indian_red"
+                        ))
                         self._log_share_activity(user_id, False, f"Share failed: {error_msg}")
                         return successful_shares, f"Share operation blocked: {error_msg}"
 
             except Exception as e:
                 error_msg = str(e)
+                console.print(Panel(
+                    f"[bold white]❕ Error: {error_msg}[/]",
+                    style="bold indian_red",
+                    border_style="indian_red"
+                ))
                 self._log_share_activity(user_id, False, f"Share failed: {error_msg}")
                 return successful_shares, f"Share operation failed: {error_msg}"
 
             if i < share_count - 1:  # Don't delay after the last share
+                console.print(f"[bold cyan]⏳ Waiting {delay} seconds before next share...[/]")
                 await asyncio.sleep(delay)
+
+        # Final success message
+        console.print(Panel(
+            f"[bold green]🏁 Share operation completed!\n"
+            f"✅ Successfully shared: {successful_shares}/{share_count}\n"
+            f"⏱️ Total time: {(datetime.now() - self.start_time).total_seconds():.1f} seconds[/]",
+            style="bold green",
+            border_style="green"
+        ))
 
         return successful_shares, "Share operation completed successfully"
 
