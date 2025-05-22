@@ -70,9 +70,9 @@ class FacebookGuard:
 
                         response_text = response.text
                         if '"is_shielded":true' in response_text:
-                                return True, "✅ Activated Profile Shield"
+                                return True, "Activated Profile Shield"
                         elif '"is_shielded":false' in response_text:
-                                return True, "✅ Deactivated Profile Shield"
+                                return True, "Deactivated Profile Shield"
                         else:
                                 return False, f"❕ Unexpected response: {response_text}"
 
