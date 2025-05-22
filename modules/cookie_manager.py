@@ -127,59 +127,62 @@ class CookieManager:
             return False
 
     def add_cookie(self, cookie: str, account_name: str = None, access_token: str = None) -> Tuple[bool, str]:
-                """Add a new cookie to storage."""
-                try:
-                        cookie = cookie.strip()
-                        valid, message = self._validate_cookie(cookie)
-                        if not valid:
-                                return False, message
+        """Add a new cookie to storage."""
+        try:
+                if cookie is None:
+                        return False, "Cookie cannot be None"
+                
+                cookie = cookie.strip()
+                valid, message = self._validate_cookie(cookie)
+                if not valid:
+                        return False, message
 
-                        user_id, default_name = self._extract_user_info(cookie)
-                        if user_id == 'unknown':
-                                return False, "Could not extract user ID from cookie"
+                user_id, default_name = self._extract_user_info(cookie)
+                if user_id == 'unknown':
+                        return False, "Could not extract user ID from cookie"
 
-                        # Get current PH time
-                        philippines_time = datetime.now(timezone(timedelta(hours=8)))
-                        formatted_date = philippines_time.strftime("%B %d, %Y")
-                        formatted_time = philippines_time.strftime("%I:%M %p +8 GMT (PH)")
+                # Get current PH time
+                philippines_time = datetime.now(timezone(timedelta(hours=8)))
+                formatted_date = philippines_time.strftime("%B %d, %Y")
+                formatted_time = philippines_time.strftime("%I:%M %p +8 GMT (PH)")
 
-                        # Create or update account data
-                        account_data = {
-                                'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
-                                'name': account_name if account_name else default_name,
-                                'user_id': user_id,
-                                'cookie': cookie,
-                                'token': access_token,
-                                'added_date': formatted_date,
-                                'added_time': formatted_time,
-                                'last_used': None,
-                                'status': 'active',
-                                'added_by': self.CURRENT_USER
-                        }
+                # Create or update account data
+                account_data = {
+                        'id': base64.b64encode(os.urandom(8)).decode('utf-8')[:8],
+                        'name': account_name if account_name else default_name,
+                        'user_id': user_id,
+                        'cookie': cookie,
+                        'token': access_token if access_token else 'N/A',  # Set default value if None
+                        'added_date': formatted_date,
+                        'added_time': formatted_time,
+                        'last_used': None,
+                        'status': 'active',
+                        'added_by': self.CURRENT_USER
+                }
 
-                        # Update existing or add new
-                        for idx, existing in enumerate(self.cookies):
-                                if existing['user_id'] == user_id:
-                                        # Preserve existing token if new one not provided
-                                        if not access_token and 'token' in existing:
-                                                account_data['token'] = existing['token']
-                                        
-                                        # Always preserve the existing name unless explicitly provided
-                                        if not account_name and 'name' in existing:
-                                                account_data['name'] = existing['name']
-                                        
-                                        self.cookies[idx] = account_data
-                                        if self.save_cookies():
-                                                return True, f"Updated existing account: {account_data['name']}"
-                                        return False, "Failed to save cookie data"
+                # Update existing or add new
+                for idx, existing in enumerate(self.cookies):
+                        if existing['user_id'] == user_id:
+                                # Preserve existing token if new one not provided
+                                if not access_token and 'token' in existing:
+                                        account_data['token'] = existing['token']
+                                
+                                # Always preserve the existing name unless explicitly provided
+                                if not account_name and 'name' in existing:
+                                        account_data['name'] = existing['name']
+                                
+                                self.cookies[idx] = account_data
+                                if self.save_cookies():
+                                        return True, f"Updated existing account: {account_data['name']}"
+                                return False, "Failed to save cookie data"
 
-                        self.cookies.append(account_data)
-                        if self.save_cookies():
-                                return True, f"Added new account: {account_data['name']}"
-                        return False, "Failed to save cookie data"
+                self.cookies.append(account_data)
+                if self.save_cookies():
+                        return True, f"Added new account: {account_data['name']}"
+                return False, "Failed to save cookie data"
 
-                except Exception as e:
-                        return False, f"Error adding cookie: {str(e)}"
+        except Exception as e:
+                return False, f"Error adding cookie: {str(e)}"
 
     def get_all_accounts(self) -> List[Dict]:
         """Get list of all stored accounts."""
