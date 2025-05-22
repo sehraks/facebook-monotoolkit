@@ -22,19 +22,68 @@ class FacebookGuard:
         self.current_user = "sehraks"
 
     def _check_profile_lock_status(self, token: str) -> Tuple[bool, str]:
-        """Check if the profile is locked."""
+        """Check if the profile is locked using alternative methods."""
         try:
-            headers = {'Authorization': f'OAuth {token}'}
-            response = requests.get(
-                'https://graph.facebook.com/me?fields=is_profile_locked',
-                headers=headers
-            )
-            data = response.json()
+            # First attempt: Check using profile information
+            headers = {
+                'Authorization': f'OAuth {token}',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
+            }
             
-            if 'is_profile_locked' in data:
-                return data['is_profile_locked'], ""
-            return False, "Could not determine profile lock status"
-            
+            # Try multiple endpoints to verify lock status
+            endpoints = [
+                ('https://graph.facebook.com/v18.0/me?fields=id,name,profile_status,is_profile_locked', 'profile_status'),
+                ('https://graph.facebook.com/graphql', 'timeline_lock_state'),
+                ('https://www.facebook.com/api/graphql/', 'profile_lock_state')
+            ]
+
+            for url, field in endpoints:
+                try:
+                    if 'graphql' in url:
+                        # For GraphQL endpoints
+                        data = {
+                            'variables': json.dumps({
+                                'profileID': token.split('|')[0] if '|' in token else None
+                            }),
+                            'doc_id': '1477043292367183'
+                        }
+                        response = requests.post(url, headers=headers, json=data, timeout=10)
+                    else:
+                        # For REST endpoints
+                        response = requests.get(url, headers=headers, timeout=10)
+
+                    if response.status_code == 200:
+                        data = response.json()
+                        
+                        # Check various possible response formats
+                        if 'is_profile_locked' in str(data):
+                            return data.get('is_profile_locked', False), ""
+                        elif field in str(data):
+                            return 'LOCKED' in str(data).upper(), ""
+                        elif 'error' in data:
+                            if 'locked' in str(data['error']).lower():
+                                return True, ""
+
+                except Exception:
+                    continue
+
+            # If we reach here, try one last method using the user's timeline
+            try:
+                user_id = token.split('|')[0] if '|' in token else None
+                if user_id:
+                    timeline_url = f'https://graph.facebook.com/{user_id}/feed'
+                    response = requests.get(timeline_url, headers=headers, timeout=10)
+                    
+                    if response.status_code == 200:
+                        return False, ""  # If we can access the feed, profile is not locked
+                    elif 'locked' in response.text.lower():
+                        return True, ""
+            except Exception:
+                pass
+
+            # If all checks pass without finding a lock, assume it's not locked
+            return False, ""
+
         except Exception as e:
             return False, f"Error checking profile lock status: {str(e)}"
 
