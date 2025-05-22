@@ -130,7 +130,7 @@ class CookieManager:
         """Add a new cookie to storage."""
         try:
                 if cookie is None:
-                        return False, "Cookie cannot be None"
+                        return False, "Cookie cannot be empty"
                 
                 cookie = cookie.strip()
                 valid, message = self._validate_cookie(cookie)
@@ -140,6 +140,21 @@ class CookieManager:
                 user_id, default_name = self._extract_user_info(cookie)
                 if user_id == 'unknown':
                         return False, "Could not extract user ID from cookie"
+
+                # Get token from cookie
+                try:
+                        headers = {
+                                'Cookie': cookie,
+                                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
+                        }
+                        response = requests.get(
+                                'https://business.facebook.com/business_locations',
+                                headers=headers
+                        )
+                        token = re.search(r'EAAG\w+', response.text)
+                        access_token = token.group(0) if token else 'N/A'
+                except:
+                        access_token = 'N/A'
 
                 # Get current PH time
                 philippines_time = datetime.now(timezone(timedelta(hours=8)))
@@ -152,7 +167,7 @@ class CookieManager:
                         'name': account_name if account_name else default_name,
                         'user_id': user_id,
                         'cookie': cookie,
-                        'token': access_token if access_token else 'N/A',  # Set default value if None
+                        'token': access_token,
                         'added_date': formatted_date,
                         'added_time': formatted_time,
                         'last_used': None,
@@ -164,7 +179,7 @@ class CookieManager:
                 for idx, existing in enumerate(self.cookies):
                         if existing['user_id'] == user_id:
                                 # Preserve existing token if new one not provided
-                                if not access_token and 'token' in existing:
+                                if access_token == 'N/A' and 'token' in existing:
                                         account_data['token'] = existing['token']
                                 
                                 # Always preserve the existing name unless explicitly provided
