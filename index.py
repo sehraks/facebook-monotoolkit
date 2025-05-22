@@ -310,37 +310,58 @@ class FacebookMonoToolkit:
                 border_style="cyan"
             ))
 
+            # Create a session to maintain cookies
+            session = requests.Session()
+            
+            # Set the cookies in the session
+            for cookie_item in cookie.split(';'):
+                if '=' in cookie_item:
+                    name, value = cookie_item.strip().split('=', 1)
+                    session.cookies.set(name, value)
+
             headers = {
-                'Cookie': cookie,
-                'authorization': 'OAuth 350685531728|62f8ce9f74b12f84c123cc23437a4a32',
-                'x-fb-friendly-name': 'Authenticate',
-                'x-fb-connection-type': 'Unknown',
-                'accept-encoding': 'gzip, deflate',
-                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-                'accept-language': 'en-US,en;q=0.9',
-                'content-type': 'application/x-www-form-urlencoded',
-                'x-fb-http-engine': 'Liger',
-                'user-agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Sec-Fetch-Site': 'none',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-User': '?1',
+                'Sec-Fetch-Dest': 'document',
+                'Upgrade-Insecure-Requests': '1'
             }
-            
-            # Try multiple endpoints
-            endpoints = [
-                'https://business.facebook.com/business_locations',
-                'https://www.facebook.com/adsmanager/manage/campaigns',
-                'https://developers.facebook.com/'
-            ]
-            
+
+            # First, try to get token from Ads Manager
             access_token = None
-            for endpoint in endpoints:
+            try:
+                ads_response = session.get('https://adsmanager.facebook.com/adsmanager/', headers=headers)
+                if ads_response.ok:
+                    token_match = re.search(r'accessToken="(EAA[A-Za-z0-9]+)"', ads_response.text)
+                    if token_match:
+                        access_token = token_match.group(1)
+            except:
+                pass
+
+            # If not found, try Business Manager
+            if not access_token:
                 try:
-                    response = requests.get(endpoint, headers=headers, timeout=30)
-                    if response.ok:
-                        token = re.search(r'(EAAG\w+|EAAB\w+)', response.text)
-                        if token:
-                            access_token = token.group(0)
-                            break
+                    business_response = session.get('https://business.facebook.com/content_management', headers=headers)
+                    if business_response.ok:
+                        token_match = re.search(r'"(EAA[A-Za-z0-9]+)"', business_response.text)
+                        if token_match:
+                            access_token = token_match.group(1)
                 except:
-                    continue
+                    pass
+
+            # If still not found, try one last method
+            if not access_token:
+                try:
+                    response = session.get('https://www.facebook.com/composer/ocelot/async_loader/?publisher=feed', headers=headers)
+                    if response.ok:
+                        token_match = re.search(r'"accessToken":"(EAA[A-Za-z0-9]+)"', response.text)
+                        if token_match:
+                            access_token = token_match.group(1)
+                except:
+                    pass
 
             if access_token:
                 console.print(Panel(
@@ -358,7 +379,7 @@ class FacebookMonoToolkit:
 
         except Exception as e:
             console.print(Panel(
-                "[bold white]❕ Error getting token. Continuing anyway...[/]",
+                f"[bold white]❕ Error getting token: {str(e)}. Continuing anyway...[/]",
                 style="bold indian_red",
                 border_style="indian_red"
             ))
