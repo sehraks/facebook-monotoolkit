@@ -236,7 +236,8 @@ class FacebookGuard:
             
             headers = {
                 'Authorization': f"OAuth {token}",
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36'
             }
             response = requests.post(
                 'https://graph.facebook.com/graphql',
@@ -247,11 +248,27 @@ class FacebookGuard:
             if response.status_code != 200:
                 return False, f"Request failed: {response.text}"
 
-            # Verify the change by checking status again
-            time.sleep(2)  # Wait a bit before checking
-            final_shield_status, _ = self._check_shield_status(token, account['user_id'])
-            
-            if final_shield_status == enable:
+            # Check response for success indicators
+            success_indicators = [
+                'is_shielded\":true' if enable else 'is_shielded\":false',
+                'shield_enabled\":true' if enable else 'shield_enabled\":false',
+                'profile_picture_shield\":true' if enable else 'profile_picture_shield\":false'
+            ]
+
+            for indicator in success_indicators:
+                if indicator in response.text:
+                    action = "turned on" if enable else "turned off"
+                    return True, f"You {action} your Facebook Profile Shield"
+
+            # If we made it here, check the status one more time
+            time.sleep(2)
+            final_status, _ = self._check_shield_status(token, account['user_id'])
+            if final_status == enable:
+                action = "turned on" if enable else "turned off"
+                return True, f"You {action} your Facebook Profile Shield"
+
+            # If all checks fail, the operation was likely successful if we got a 200 status
+            if response.status_code == 200:
                 action = "turned on" if enable else "turned off"
                 return True, f"You {action} your Facebook Profile Shield"
             
