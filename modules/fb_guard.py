@@ -16,8 +16,8 @@ console = Console()
 class FacebookGuard:
         def __init__(self):
                 """Initialize FacebookGuard with necessary configurations."""
-                self.last_update = "2025-05-22 13:46:07"
-                self.current_user = "sehraks1"
+                self.last_update = datetime.now(timezone(timedelta(hours=8))).strftime("%B %d, %Y.")
+                self.current_user = "sehraks"
 
         def toggle_profile_shield(self, account: Dict, enable: bool = True) -> Tuple[bool, str]:
                 """Toggle Facebook profile shield."""
@@ -70,11 +70,11 @@ class FacebookGuard:
 
                         response_text = response.text
                         if '"is_shielded":true' in response_text:
-                                return True, "✅ Activated Profile Guard"
+                                return True, "✅ Activated Profile Shield"
                         elif '"is_shielded":false' in response_text:
-                                return True, "❌ Deactivated Profile Guard"
+                                return True, "✅ Deactivated Profile Shield"
                         else:
-                                return False, f"⚠ Unexpected response: {response_text}"
+                                return False, f"❕ Unexpected response: {response_text}"
 
                 except Exception as e:
                         return False, f"Error: {str(e)}"
