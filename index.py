@@ -514,7 +514,7 @@ class FacebookMonoToolkit:
 
                 # Show current account
                 console.print(Panel(
-                        f"[bold white]Selected Account: {self.current_account['name']}[/]",
+                        f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.current_account['name']}[/]",
                         style="bold cyan",
                         border_style="cyan"
                 ))
