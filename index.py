@@ -1,495 +1,975 @@
-lllllllllllllll, llllllllllllllI, lllllllllllllIl, lllllllllllllII, llllllllllllIll, llllllllllllIlI, llllllllllllIIl, llllllllllllIII, lllllllllllIlll, lllllllllllIllI, lllllllllllIlIl = bool, enumerate, Exception, str, IndexError, open, __name__, KeyboardInterrupt, len, ValueError, int
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# File: index.py
+# Author: sehraks
 
-from os import makedirs as llIlIIIIIIlIIl, system as lllIlIIIIIlIIl, name as IIlllIIlIIllll, chmod as llllIlllllIIll
-from time import sleep as IlIlIIllIlIIII
-from requests import Timeout as IlllllIllllIIl, Session as lIIIIIlIIlIIIl
-from re import search as llIIllIIllIIlI
-from subprocess import Popen as lIIIlllIlIIIII, PIPE as lllIllIllIlllI
-from sys import exit as IlllIlIlIlIIII
-from datetime import datetime as llllIlIlIIIlII, timezone as IIIllIlIlllIll, timedelta as IIIllIIIlllIlI
-from typing import Dict as IIIlIlIIIlIlIl, Optional as lIllIIIIIllIIl
-from rich.console import Console as llllllIlIIIllI
-from rich.panel import Panel as IllIllllIIlIIl
-from rich.table import Table as lllIIIlIllIIIl
-from modules.cookie_manager import CookieManager as lIIlIlllllIIll
-from modules.spam_sharing import SpamSharing as IlIIIIIlllllII
-from modules.utils import Utils as lIllIIIIlIIllI
-from modules.update_settings import UpdateSettings as lIIIlIllIIIlIl
-from modules.fb_login import FacebookLogin as IIIllIlllIlllI
-from modules.cookie_database import CookieDatabase as IIllIIlIIlIIIl
-from modules.fb_guard import FacebookGuard as IlllIIIIIllllI
-lIIIlIlllllllllIIl = llllllIlIIIllI()
+import os
+import sys
+import requests
+import re
+import time
+from datetime import datetime, timezone, timedelta
+from typing import Dict, Optional
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
 
-class lIIlIIllllllllIlll:
+# Import local modules
+from modules.cookie_manager import CookieManager
+from modules.spam_sharing import SpamSharing
+from modules.utils import Utils
+from modules.update_settings import UpdateSettings
+from modules.fb_login import FacebookLogin
+from modules.cookie_database import CookieDatabase
+from modules.fb_guard import FacebookGuard
 
-    def __init__(IIIIIIIIlIllIlllll):
+# Initialize rich console
+console = Console()
+
+class FacebookMonoToolkit:
+    def __init__(self):
         """Initialize the Facebook MonoToolkit."""
-        IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = None
-        IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = None
+        # Initialize account_data
+        self.account_data = None
+        self.current_account = None
+        
+        # Read version from changelogs.txt
         try:
-            with llllllllllllIlI('changelogs.txt', 'r') as lIllllIIlIIlIIlIlI:
-                llIIlIIllIIIlllIII = lIllllIIlIIlIIlIlI.readline().strip()
-                IIIIIIIIlIllIlllll.lIllIIIIlIlllIIlII = llIIlIIllIIIlllIII.replace('Version ', '')
+            with open("changelogs.txt", "r") as f:
+                first_line = f.readline().strip()
+                self.VERSION = first_line.replace("Version ", "")
         except:
-            IIIIIIIIlIllIlllll.lIllIIIIlIlllIIlII = 'X.XX'
-        IIIIIIIIlIllIlllll.lIllIlIIllIllllIlI = 'Greegmon'
-        IIIIIIIIlIllIlllll.IIIIIIIIIlIlllIIll = 'Cerax'
-        lIllIIIllIlIlllIll = llllIlIlIIIlII.now(IIIllIlIlllIll(IIIllIIIlllIlI(hours=8)))
-        IIIIIIIIlIllIlllll.IIlllIIlIlIlIlIIll = lIllIIIllIlIlllIll.strftime('%B %d, %Y')
-        IIIIIIIIlIllIlllll.IllIllIIIIIIlIlIll = lIllIIIllIlIlllIll.strftime('%I:%M %p')
-        IIIIIIIIlIllIlllll.lIIIIlIIIIIllllIIl = 'sehraks'
-        IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI = lIIlIlllllIIll()
-        IIIIIIIIlIllIlllll.lIIIlIllIlIIIIIIll = IlIIIIIlllllII()
-        IIIIIIIIlIllIlllll.lIIllIIIIIlIIllIII = lIIIlIllIIIlIl(IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI)
-        IIIIIIIIlIllIlllll.llIIIllIlllIllIIll = IIIllIlllIlllI()
-        IIIIIIIIlIllIlllll.IIIIIIllIIlllIllll = IIllIIlIIlIIIl(IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI)
-        IIIIIIIIlIllIlllll.llIlIIlIlllIlllllI = IlllIIIIIllllI()
-        IIIIIIIIlIllIlllll.IlIIIIIllIIIlllIII()
-        IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_current_account()
-        if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
-            IIIIIIIIlIllIlllll.lIllIIIIlIIIIlllll(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll)
+            self.VERSION = "X.XX"  # Fallback version if file read fails
+            
+        self.ORIGINAL_AUTHOR = "Greegmon"
+        self.MODIFIED_BY = "Cerax"
+        
+        # Get current Philippines time (GMT+8)
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")
+        self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")
+        self.CURRENT_USER = "sehraks"  # Updated user login
+        
+        # Initialize components
+        self.cookie_manager = CookieManager()
+        self.spam_sharing = SpamSharing()
+        self.update_settings = UpdateSettings(self.display_banner)
+        self.fb_login = FacebookLogin()
+        self.cookie_database = CookieDatabase(self.cookie_manager)
+        self.fb_guard = FacebookGuard()
+        
+        # Create necessary directories
+        self._init_directories()
 
-    def lIllIIIIlIIIIlllll(IIIIIIIIlIllIlllll, IllllllIlllIIllIlI: IIIlIlIIIlIlIl) -> None:
+        # Load the last active account
+        self.current_account = self.cookie_manager.get_current_account()
+        if self.current_account:
+            self._load_account_data(self.current_account)
+
+    
+    def _load_account_data(self, account: Dict) -> None:
         """Load account data for the current account."""
-        if IllllllIlllIIllIlI:
-            IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = {'name': IllllllIlllIIllIlI.get('name', 'Unknown User'), 'user_id': IllllllIlllIIllIlI.get('user_id')}
+        if account:
+            self.account_data = {
+                'name': account.get('name', 'Unknown User'),
+                'user_id': account.get('user_id')
+            }
         else:
-            IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = None
-
-    def IlIIIIIllIIIlllIII(IIIIIIIIlIllIlllll):
+            self.account_data = None
+            
+    def _init_directories(self):
         """Initialize necessary directories."""
-        IIllIlIIllIlIIlllI = ['cookies-storage', 'logs']
-        for lllllIIIllIlllIlll in IIllIlIIllIlIIlllI:
+        directories = ['cookies-storage', 'logs']
+        for directory in directories:
             try:
-                llIlIIIIIIlIIl(lllllIIIllIlllIlll, exist_ok=lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1))
-                llllIlllllIIll(lllllIIIllIlllIlll, 448)
-            except lllllllllllllIl as IIllIlllIIIIIIllll:
-                lIIIlIlllllllllIIl.print(f'[bold red]Error creating directory {lllllIIIllIlllIlll}: {lllllllllllllII(IIllIlllIIIIIIllll)}[/]')
+                os.makedirs(directory, exist_ok=True)
+                os.chmod(directory, 0o700)  # Secure permissions
+            except Exception as e:
+                console.print(f"[bold red]Error creating directory {directory}: {str(e)}[/]")
 
-    def lllIllllllIlIlllIl(IIIIIIIIlIllIlllll):
+    def clear_screen(self):
         """Clear the terminal screen."""
-        lllIlIIIIIlIIl('cls' if lIllIlIIlIIIIIIlIl == 'nt' else 'clear')
+        os.system('cls' if os.name == 'nt' else 'clear')
 
-    def IllIIIlIIlIIIlIIlI(IIIIIIIIlIllIlllll):
+    def display_banner(self):
         """Display the tool banner."""
-        lIllIIIllIlIlllIll = llllIlIlIIIlII.now(IIIllIlIlllIll(IIIllIIIlllIlI(hours=8)))
-        IlIlIlllllIlIIIIII = lIllIIIllIlIlllIll.strftime('%I:%M %p')
-        lIllIlIIllIIIlllll = lIllIIIllIlIlllIll.strftime('%B %d, %Y')
-        llllllIllIIIIlllIl = IllIllllIIlIIl(f'[white]Original: {IIIIIIIIlIllIlllll.lIllIlIIllIllllIlI}[/]\n[white]Modified by: {IIIIIIIIlIllIlllll.IIIIIIIIIlIlllIIll}[/]\n[white]Version: {IIIIIIIIlIllIlllll.lIllIIIIlIlllIIlII}[/]\n[white]Date: {lIllIlIIllIIIlllll}[/]\n[white]Time: {IlIlIlllllIlIIIIII} GMT+8[/]', style='bold magenta', title='[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]', border_style='cyan')
-        lIIIlIlllllllllIIl.print(llllllIllIIIIlllIl)
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        current_time = philippines_time.strftime("%I:%M %p")
+        current_date = philippines_time.strftime("%B %d, %Y")
+        
+        banner = Panel(
+            f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
+            f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
+            f"[white]Version: {self.VERSION}[/]\n"
+            f"[white]Date: {current_date}[/]\n"
+            f"[white]Time: {current_time} GMT+8[/]",
+            style="bold magenta",
+            title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
+            border_style="cyan"
+        )
+        console.print(banner)
 
-    def IllllIlIIIIIIlIlII(IIIIIIIIlIllIlllll):
+    def check_cookie_required(self):
         """Check if cookie is available."""
-        if not IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Please login first using the Accounts Management option.[/]', style='bold indian_red', border_style='indian_red'))
-            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-            return lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0)
-        return lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1)
+        if not self.current_account:
+            console.print(Panel(
+                "[bold white]❕ Please login first using the Accounts Management option.[/]",
+                style="bold indian_red",
+                border_style="indian_red"
+            ))
+            console.input("[bold white]Press Enter to continue...[/]")
+            return False
+        return True
 
-    def llIlIlIlIllIIllIlI(IIIIIIIIlIllIlllll):
+    def main(self):
         """Display and handle the main menu."""
-        while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-            lIIlllIlIlllIllIIl = IllIllllIIlIIl('[bold white][1] Accounts Management[/]\n[bold white][2] Spam Sharing Post[/]\n[bold white][3] Profile Guard[/]\n[bold white][4] Settings[/]\n[bold red][5] Exit[/]', title='[bold white]𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨[/]', style='bold magenta', border_style='cyan')
-            lIIIlIlllllllllIIl.print(lIIlllIlIlllIllIIl)
-            lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold yellow]Select an option (1-5): [/]')
-            lllIIIIllIIlIIlllI = lllIIIIllIIlIIlllI.strip()
-            if lllIIIIllIIlIIlllI == '1':
-                IIIIIIIIlIllIlllll.IIlllIllIlIIlllIlI()
-            elif lllIIIIllIIlIIlllI == '2':
-                if not IIIIIIIIlIllIlllll.IllllIlIIIIIIlIlII():
+        while True:
+            self.clear_screen()
+            self.display_banner()
+            
+            if self.current_account and self.account_data:
+                console.print(Panel(
+                    f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                    style="bold cyan",
+                    border_style="cyan"
+                ))
+
+            menu_panel = Panel(
+                "[bold white][1] Accounts Management[/]\n"
+                "[bold white][2] Spam Sharing Post[/]\n"
+                "[bold white][3] Profile Guard[/]\n"
+                "[bold white][4] Settings[/]\n"
+                "[bold red][5] Exit[/]",
+                title="[bold white]𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨[/]",
+                style="bold magenta",
+                border_style="cyan"
+            )
+            console.print(menu_panel)
+
+            choice = console.input("[bold yellow]Select an option (1-5): [/]")
+            choice = choice.strip()
+
+            if choice == "1":
+                self.cookie_management_menu()
+            elif choice == "2":
+                if not self.check_cookie_required():
                     continue
-                IIIIIIIIlIllIlllll.llllIlIIlIIllllllI()
-            elif lllIIIIllIIlIIlllI == '3':
-                if not IIIIIIIIlIllIlllll.IllllIlIIIIIIlIlII():
+                self.spam_sharing_menu()
+            elif choice == "3":
+                if not self.check_cookie_required():
                     continue
-                IIIIIIIIlIllIlllll.IlIIIIIllllllllIIl()
-            elif lllIIIIllIIlIIlllI == '4':
-                IIIIIIIIlIllIlllll.lIlllIllIIIllIIIll()
-            elif lllIIIIllIIlIIlllI == '5':
+                self.handle_profile_guard()
+            elif choice == "4":
+                self.settings_menu()
+            elif choice == "5":
                 break
             else:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+                console.print(Panel(
+                    "[bold white]❕ Invalid choice! Please try again.[/]", 
+                    style="bold indian_red",
+                    border_style="indian_red"
+                ))
+                console.input("[bold white]Press Enter to continue...[/]")
 
-    def lIlllIllIIIllIIIll(IIIIIIIIlIllIlllll):
+    def settings_menu(self):
         """Handle settings menu."""
-        IIIIIIIIlIllIlllll.lIIllIIIIIlIIllIII.display_settings_menu()
+        self.update_settings.display_settings_menu()
 
-    def IIlllIllIlIIlllIlI(IIIIIIIIlIllIlllll):
+    def cookie_management_menu(self):
         """Handle cookie management menu."""
-        while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold yellow]🔑 𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]', style='bold yellow', border_style='yellow'))
-            lIIlllIlIlllIllIIl = IllIllllIIlIIl('[bold white][1] Enter your cookie[/]\n[bold white][2] Login your Facebook account[/]\n[bold white][3] Access your Facebook accounts[/]\n[bold white][4] Cookies & Tokens Database[/]\n[bold white][5] Back to Main Menu[/]', title='[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]', style='bold yellow', border_style='yellow')
-            lIIIlIlllllllllIIl.print(lIIlllIlIlllIllIIl)
-            lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold yellow]Select an option: [/]')
-            lllIIIIllIIlIIlllI = lllIIIIllIIlIIlllI.strip()
-            if lllIIIIllIIlIIlllI == '1':
-                IIIIIIIIlIllIlllll.lllIllIllIlIlIIIlI()
-            elif lllIIIIllIIlIIlllI == '2':
-                IIIIIIIIlIllIlllll.IlIlIIlllIIlIIllll()
-            elif lllIIIIllIIlIIlllI == '3':
-                if not IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.has_cookies():
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Add a cookie or login first.[/]', style='bold indian_red', border_style='indian_red'))
-                    lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-                    continue
-                IIIIIIIIlIllIlllll.IlIlllIlIlllIlIIII()
-            elif lllIIIIllIIlIIlllI == '4':
-                if not IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.has_cookies():
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Add a cookie or login first.[/]', style='bold indian_red', border_style='indian_red'))
-                    lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-                    continue
-                IIIIIIIIlIllIlllll.IIIIIIIIlllllllIll()
-            elif lllIIIIllIIlIIlllI == '5':
-                break
-            else:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+        while True:
+                self.clear_screen()
+                self.display_banner()
 
-    def IlIlIIlllIIlIIllll(IIIIIIIIlIllIlllll):
-        """Handle Facebook login functionality."""
-        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-        IIIlIIIlIlIIllIlII = IllIllllIIlIIl('[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobile numbers and usernames are currently not supported yet.[/]\n[bold indian_red]Caution:[/] [bold white]Refrain from using your main account, as doing so may cause lockout or suspension.[/]', title='[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]', style='bold yellow', border_style='yellow')
-        lIIIlIlllllllllIIl.print(IIIlIIIlIlIIllIlII)
-        llIlIIlIIllIIllIII = lIIIlIlllllllllIIl.input('[bold yellow]\U0001faaa Enter your credential: [/]')
-        IlllIIlIIlIlIIIlIl = lIIIlIlllllllllIIl.input('[bold yellow]🔑 Enter your password: [/]')
-        (lllIlllIIIlIllIIIl, lIllIIllIllIllIlll, IlIlllIIIlllIIIlll) = IIIIIIIIlIllIlllll.llIIIllIlllIllIIll.login(llIlIIlIIllIIllIII.strip(), IlllIIlIIlIlIIIlIl.strip())
-        if lllIlllIIIlIllIIIl and IlIlllIIIlllIIIlll:
-            IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = IlIlllIIIlllIIIlll
-            lllIlllIIIlIllIIIl = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.add_cookie(IlIlllIIIlllIIIlll['cookie'], IlIlllIIIlllIIIlll['name'], IlIlllIIIlllIIIlll['token'])[0]
-            if lllIlllIIIlIllIIIl:
-                IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = None
-                IIllIIllIlIllIlIlI = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_all_accounts()
-                for IllllllIlllIIllIlI in IIllIIllIlIllIlIlI:
-                    if IllllllIlllIIllIlI['user_id'] == IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['user_id']:
-                        IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.set_current_account(IllllllIlllIIllIlI['id'])
-                        IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = IllllllIlllIIllIlI
+                if self.current_account and self.account_data:
+                        console.print(Panel(
+                                f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                style="bold cyan",
+                                border_style="cyan"
+                        ))
+
+                console.print(Panel(
+                        "[bold yellow]🔑 𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]",
+                        style="bold yellow",
+                        border_style="yellow"
+                ))
+
+                menu_panel = Panel(
+                        "[bold white][1] Enter your cookie[/]\n"
+                        "[bold white][2] Login your Facebook account[/]\n"
+                        "[bold white][3] Access your Facebook accounts[/]\n"
+                        "[bold white][4] Cookies & Tokens Database[/]\n"
+                        "[bold white][5] Back to Main Menu[/]",
+                        title="[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]",
+                        style="bold yellow",
+                        border_style="yellow"
+                )
+                console.print(menu_panel)
+
+                choice = console.input("[bold yellow]Select an option: [/]")
+                choice = choice.strip()
+
+                if choice == "1":
+                        self.add_new_cookie()
+                elif choice == "2":
+                        self.facebook_login()
+                elif choice == "3":
+                        if not self.cookie_manager.has_cookies():
+                                console.print(Panel(
+                                        "[bold white]❕ Add a cookie or login first.[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
+                                ))
+                                console.input("[bold white]Press Enter to continue...[/]")
+                                continue
+                        self.cookie_settings_menu()
+                elif choice == "4":
+                        if not self.cookie_manager.has_cookies():
+                                console.print(Panel(
+                                        "[bold white]❕ Add a cookie or login first.[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
+                                ))
+                                console.input("[bold white]Press Enter to continue...[/]")
+                                continue
+                        self.view_cookie_database()
+                elif choice == "5":
                         break
-        IIIIIIIIlIllIlllll.llIIIllIlllIllIIll.log_login_attempt(llIlIIlIIllIIllIII, lllIlllIIIlIllIIIl, lIllIIllIllIllIlll)
-        lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+                else:
+                        console.print(Panel(
+                                "[bold white]❕ Invalid choice! Please try again.[/]", 
+                                style="bold indian_red",
+                                border_style="indian_red"
+                        ))
+                        console.input("[bold white]Press Enter to continue...[/]")
 
-    def lllIllIllIlIlIIIlI(IIIIIIIIlIllIlllll):
+    def facebook_login(self):
+        """Handle Facebook login functionality."""
+        self.clear_screen()
+        self.display_banner()
+        login_panel = Panel(
+                "[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobile numbers and usernames are currently not supported yet.[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]Refrain from using your main account, as doing so may cause lockout or suspension.[/]",
+                title="[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]",
+                style="bold yellow",
+                border_style="yellow"
+        )
+        console.print(login_panel)
+
+        email = console.input("[bold yellow]🪪 Enter your credential: [/]")
+        password = console.input("[bold yellow]🔑 Enter your password: [/]")
+
+        # Attempt login with delay handling being managed by fb_login.py
+        success, message, account_data = self.fb_login.login(email.strip(), password.strip())
+            
+        if success and account_data:
+            # Store the account data before adding the cookie
+            self.account_data = account_data
+            
+            # Pass both cookie and name to add_cookie
+            success = self.cookie_manager.add_cookie(
+                account_data['cookie'],
+                account_data['name'],
+                account_data['token']
+            )[0]
+            
+            if success:
+                self.current_account = None
+                accounts = self.cookie_manager.get_all_accounts()
+                for account in accounts:
+                    if account['user_id'] == self.account_data['user_id']:
+                        self.cookie_manager.set_current_account(account['id'])
+                        self.current_account = account
+                        break
+        
+        # Log the login attempt
+        self.fb_login.log_login_attempt(email, success, message)
+        console.input("[bold white]Press Enter to continue...[/]")
+
+    def add_new_cookie(self):
         """Handle adding a new cookie."""
-        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-        IIIIIIlIIlIIIlllll = IllIllllIIlIIl('[bold yellow]Note:[/] [bold white]Use semi-colon separated format, cookie must contain c_user and xs values.[/]\n[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason.[/]', title='[bold white]𝗔𝗗𝗗 𝗬𝗢𝗨𝗥 𝗖𝗢𝗢𝗞𝗜𝗘[/]', style='bold yellow', border_style='yellow')
-        lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
-        lIIIIIIIIIIIIlIlIl = lIIIlIlllllllllIIl.input('[bold yellow]🍪 Enter your cookie: [/]')
-        lIIIIIIIIIIIIlIlIl = lIIIIIIIIIIIIlIlIl.strip()
-        if not lIIIIIIIIIIIIlIlIl:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Cookie cannot be empty![/]', style='bold indian_red', border_style='indian_red'))
-            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+        self.clear_screen()
+        self.display_banner()
+
+        cookie_panel = Panel(
+                "[bold yellow]Note:[/] [bold white]Use semi-colon separated format, cookie must contain c_user and xs values.[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason.[/]",
+                title="[bold white]𝗔𝗗𝗗 𝗬𝗢𝗨𝗥 𝗖𝗢𝗢𝗞𝗜𝗘[/]",
+                style="bold yellow",
+                border_style="yellow"
+        )
+        console.print(cookie_panel)
+
+        cookie = console.input("[bold yellow]🍪 Enter your cookie: [/]")
+        cookie = cookie.strip()
+
+        if not cookie:
+            console.print(Panel(
+                "[bold white]❕ Cookie cannot be empty![/]",
+                style="bold indian_red",
+                border_style="indian_red"
+            ))
+            console.input("[bold white]Press Enter to continue...[/]")
             return
-        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]🔄 Validating cookie format...[/]', style='bold cyan', border_style='cyan'))
-        IlIlIIllIlIIII(1)
-        if 'c_user=' not in lIIIIIIIIIIIIlIlIl or 'xs=' not in lIIIIIIIIIIIIlIlIl:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid cookie format! Cookie must contain c_user and xs values.[/]', style='bold indian_red', border_style='indian_red'))
-            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+
+        # Initial validation message with 1 second delay
+        console.print(Panel(
+            "[bold white]🔄 Validating cookie format...[/]",
+            style="bold cyan",
+            border_style="cyan"
+        ))
+        time.sleep(1)
+
+        # Validate cookie format
+        if "c_user=" not in cookie or "xs=" not in cookie:
+            console.print(Panel(
+                "[bold white]❕ Invalid cookie format! Cookie must contain c_user and xs values.[/]",
+                style="bold indian_red",
+                border_style="indian_red"
+            ))
+            console.input("[bold white]Press Enter to continue...[/]")
             return
-        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]✅ Cookie format is valid![/]', style='bold green', border_style='green'))
-        IlIlIIllIlIIII(1)
+
+        # Cookie validation success message with 1 second delay
+        console.print(Panel(
+            "[bold white]✅ Cookie format is valid![/]",
+            style="bold green",
+            border_style="green"
+        ))
+        time.sleep(1)
+
+        # Get token before asking for name
         try:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl("[bold white]🔄 Getting account's token...[/]", style='bold cyan', border_style='cyan'))
-            IlIlIIllIlIIII(1.5)
-            lIIIllllIIlIlllIll = lIIIIIlIIlIIIl()
+            console.print(Panel(
+                "[bold white]🔄 Getting account's token...[/]",
+                style="bold cyan",
+                border_style="cyan"
+            ))
+            time.sleep(1.5)  # Added delay before token extraction
+
+            # Create a session to maintain cookies
+            session = requests.Session()
+            
+            # Set the cookies in the session
             try:
-                for IlIlIIlllllllIIIII in lIIIIIIIIIIIIlIlIl.split(';'):
-                    if '=' in IlIlIIlllllllIIIII:
-                        (lIllIlIIlIIIIIIlIl, IllIllllllIlIIIIll) = IlIlIIlllllllIIIII.strip().split('=', 1)
-                        lIIIllllIIlIlllIll.cookies.set(lIllIlIIlIIIIIIlIl, IllIllllllIlIIIIll)
-            except lllllllllllllIl as IIllIlllIIIIIIllll:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ Error parsing cookie: {lllllllllllllII(IIllIlllIIIIIIllll)}[/]', style='bold indian_red', border_style='indian_red'))
-                IlIlIIllIlIIII(1)
-            IIlIlIlIIIIllIlIII = {'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.9', 'Sec-Fetch-Site': 'none', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-User': '?1', 'Sec-Fetch-Dest': 'document', 'Upgrade-Insecure-Requests': '1'}
-            IlIIlIllIllIIIIIll = None
-            lllIIlIIIlllIIIllI = [('Ads Manager', 'https://adsmanager.facebook.com/adsmanager/', 'accessToken="(EAA[A-Za-z0-9]+)"'), ('Business Manager', 'https://business.facebook.com/content_management', '"(EAA[A-Za-z0-9]+)"'), ('Feed Composer', 'https://www.facebook.com/composer/ocelot/async_loader/?publisher=feed', '"accessToken":"(EAA[A-Za-z0-9]+)"')]
-            for (lIlIllIlIIIIIlIIII, IlIlIIIlIIIIIlIIll, llIIllIlIllllIIIII) in lllIIlIIIlllIIIllI:
+                for cookie_item in cookie.split(';'):
+                    if '=' in cookie_item:
+                        name, value = cookie_item.strip().split('=', 1)
+                        session.cookies.set(name, value)
+            except Exception as e:
+                console.print(Panel(
+                    f"[bold white]❕ Error parsing cookie: {str(e)}[/]",
+                    style="bold indian_red",
+                    border_style="indian_red"
+                ))
+                time.sleep(1)
+
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Sec-Fetch-Site': 'none',
+                'Sec-Fetch-Mode': 'navigate',
+                'Sec-Fetch-User': '?1',
+                'Sec-Fetch-Dest': 'document',
+                'Upgrade-Insecure-Requests': '1'
+            }
+
+            # Token extraction with multiple attempts
+            access_token = None
+            extraction_methods = [
+                ('Ads Manager', 'https://adsmanager.facebook.com/adsmanager/', r'accessToken="(EAA[A-Za-z0-9]+)"'),
+                ('Business Manager', 'https://business.facebook.com/content_management', r'"(EAA[A-Za-z0-9]+)"'),
+                ('Feed Composer', 'https://www.facebook.com/composer/ocelot/async_loader/?publisher=feed', r'"accessToken":"(EAA[A-Za-z0-9]+)"')
+            ]
+
+            for method_name, url, pattern in extraction_methods:
                 try:
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]🔄 Trying {lIlIllIlIIIIIlIIII} method...[/]', style='bold cyan', border_style='cyan'))
-                    IlIlIIllIlIIII(1)
-                    IIIlIllIIIlIlIIIIl = lIIIllllIIlIlllIll.get(IlIlIIIlIIIIIlIIll, headers=IIlIlIlIIIIllIlIII, timeout=30)
-                    if IIIlIllIIIlIlIIIIl.ok:
-                        lIlIIlllllllIlIlIl = llIIllIIllIIlI(llIIllIlIllllIIIII, IIIlIllIIIlIlIIIIl.text)
-                        if lIlIIlllllllIlIlIl:
-                            IlIIlIllIllIIIIIll = lIlIIlllllllIlIlIl.group(1)
-                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]✅ Token found using {lIlIllIlIIIIIlIIII}![/]', style='bold green', border_style='green'))
-                            IlIlIIllIlIIII(1)
+                    console.print(Panel(
+                        f"[bold white]🔄 Trying {method_name} method...[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                    ))
+                    time.sleep(1)  # Delay between attempts
+
+                    response = session.get(url, headers=headers, timeout=30)
+                    if response.ok:
+                        token_match = re.search(pattern, response.text)
+                        if token_match:
+                            access_token = token_match.group(1)
+                            console.print(Panel(
+                                f"[bold white]✅ Token found using {method_name}![/]",
+                                style="bold green",
+                                border_style="green"
+                            ))
+                            time.sleep(1)
                             break
-                except IlllllIllllIIl:
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ {lIlIllIlIIIIIlIIII} request timed out[/]', style='bold indian_red', border_style='indian_red'))
-                except lllllllllllllIl as IIllIlllIIIIIIllll:
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ Error with {lIlIllIlIIIIIlIIII}: {lllllllllllllII(IIllIlllIIIIIIllll)}[/]', style='bold indian_red', border_style='indian_red'))
-            if IlIIlIllIllIIIIIll:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold green]✅ Successfully retrieved token![/]', style='bold green', border_style='green'))
-                IlIlIIllIlIIII(1)
+                except requests.Timeout:
+                    console.print(Panel(
+                        f"[bold white]❕ {method_name} request timed out[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                    ))
+                except Exception as e:
+                    console.print(Panel(
+                        f"[bold white]❕ Error with {method_name}: {str(e)}[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                    ))
+
+            if access_token:
+                console.print(Panel(
+                    "[bold green]✅ Successfully retrieved token![/]",
+                    style="bold green",
+                    border_style="green"
+                ))
+                time.sleep(1)
             else:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Could not retrieve token. Continuing anyway...[/]', style='bold indian_red', border_style='indian_red'))
-                IlIlIIllIlIIII(1)
-                IlIIlIllIllIIIIIll = 'N/A'
-        except lllllllllllllIl as IIllIlllIIIIIIllll:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ Error during token extraction: {lllllllllllllII(IIllIlllIIIIIIllll)}. Continuing anyway...[/]', style='bold indian_red', border_style='indian_red'))
-            IlIlIIllIlIIII(1)
-            IlIIlIllIllIIIIIll = 'N/A'
-        lIIllllIIlIIIllIlI = None
-        if 'name=' not in lIIIIIIIIIIIIlIlIl:
-            lIIllllIIlIIIllIlI = lIIIlIlllllllllIIl.input('[bold yellow]💳 Enter your name: [/]').strip()
-            if not lIIllllIIlIIIllIlI:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Please enter your Facebook account name[/]', style='bold indian_red', border_style='indian_red'))
-                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+                console.print(Panel(
+                    "[bold white]❕ Could not retrieve token. Continuing anyway...[/]",
+                    style="bold indian_red",
+                    border_style="indian_red"
+                ))
+                time.sleep(1)
+                access_token = 'N/A'
+
+        except Exception as e:
+            console.print(Panel(
+                f"[bold white]❕ Error during token extraction: {str(e)}. Continuing anyway...[/]",
+                style="bold indian_red",
+                border_style="indian_red"
+            ))
+            time.sleep(1)
+            access_token = 'N/A'
+
+        # Ask for account name if not in cookie
+        account_name = None
+        if "name=" not in cookie:
+            account_name = console.input("[bold yellow]💳 Enter your name: [/]").strip()
+            if not account_name:
+                console.print(Panel(
+                    "[bold white]❕ Please enter your Facebook account name[/]",
+                    style="bold indian_red",
+                    border_style="indian_red"
+                ))
+                console.input("[bold white]Press Enter to continue...[/]")
                 return
-        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]🔄 Saving account data...[/]', style='bold cyan', border_style='cyan'))
-        IlIlIIllIlIIII(1)
-        (lllIlllIIIlIllIIIl, lIllIIllIllIllIlll) = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.add_cookie(lIIIIIIIIIIIIlIlIl, lIIllllIIlIIIllIlI, IlIIlIllIllIIIIIll)
-        if lllIlllIIIlIllIIIl:
-            IIllIIllIlIllIlIlI = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_all_accounts()
-            IIIllllIIIIllIlIII = IIllIIllIlIllIlIlI[-1]
-            IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = IIIllllIIIIllIlIII
-            IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.set_current_account(IIIllllIIIIllIlIII['id'])
-            IIIIIIIIlIllIlllll.lIllIIIIlIIIIlllll(IIIllllIIIIllIlIII)
-            IlIlIIllIlIIII(1)
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold green]✅ Cookie added successfully!\n👤 Account: {IIIllllIIIIllIlIII['name']}\n📩 UID: {IIIllllIIIIllIlIII['user_id']}[/]", style='bold green', border_style='green'))
-        else:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ {lIllIIllIllIllIlll}[/]', style='bold indian_red', border_style='indian_red'))
-        lIllIIIllIlIlllIll = llllIlIlIIIlII.now(IIIllIlIlllIll(IIIllIIIlllIlI(hours=8)))
-        lIllIlIIIlIllIIIIl = lIllIIIllIlIlllIll.strftime('%B %d, %Y %I:%M %p')
-        lIllIIIIlIIllI.log_activity(f'Add Cookie (PH: {lIllIlIIIlIllIIIIl}) by {IIIIIIIIlIllIlllll.lIIIIlIIIIIllllIIl}', lllIlllIIIlIllIIIl, lIllIIllIllIllIlll)
-        lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
 
-    def IlIIIIIllllllllIIl(IIIIIIIIlIllIlllll):
+        # Adding cookie to storage
+        console.print(Panel(
+            "[bold white]🔄 Saving account data...[/]",
+            style="bold cyan",
+            border_style="cyan"
+        ))
+        time.sleep(1)
+
+        success, message = self.cookie_manager.add_cookie(cookie, account_name, access_token)
+
+        if success:
+            # Get the newly added account
+            accounts = self.cookie_manager.get_all_accounts()
+            new_account = accounts[-1]  # The newest account is the last one added
+
+            # Set it as the current account
+            self.current_account = new_account
+            self.cookie_manager.set_current_account(new_account['id'])
+            self._load_account_data(new_account)
+
+            time.sleep(1)  # Delay before success message
+            console.print(Panel(
+                "[bold green]✅ Cookie added successfully!\n"
+                f"👤 Account: {new_account['name']}\n"
+                f"📩 UID: {new_account['user_id']}[/]",
+                style="bold green",
+                border_style="green"
+            ))
+        else:
+            console.print(Panel(
+                f"[bold white]❕ {message}[/]",
+                style="bold indian_red",
+                border_style="indian_red"
+            ))
+
+        # Get Philippines time (GMT+8)
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        ph_timestamp = philippines_time.strftime("%B %d, %Y %I:%M %p")
+        
+        Utils.log_activity(f"Add Cookie (PH: {ph_timestamp}) by {self.CURRENT_USER}", success, message)
+        console.input("[bold white]Press Enter to continue...[/]")
+
+    def handle_profile_guard(self):
         """Handle Profile Guard operations."""
-        if not IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Please select an account first[/]', style='bold indian_red', border_style='indian_red'))
-            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-            return
-        while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['name']}[/]", style='bold cyan', border_style='cyan'))
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold yellow]Note:[/] [bold white]Make sure you turn off first your Facebook lock profile before proceeding to Facebook Profile Guard.[/]\n\n[1] Activate your Facebook Profile Shield\n[2] Deactivate your Facebook Profile Shield\n[3] Back to Main Menu', title='[bold white]🛡️ 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗣𝗥𝗢𝗙𝗜𝗟𝗘 𝗚𝗨𝗔𝗥𝗗[/]', style='bold cyan', border_style='cyan'))
-            lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold yellow]Enter your choice: [/]').strip()
-            if lllIIIIllIIlIIlllI == '1' or lllIIIIllIIlIIlllI == '2':
-                llIllllIIIIllIIlll = lllIIIIllIIlIIlllI == '1'
-                (lllIlllIIIlIllIIIl, lIllIIllIllIllIlll) = IIIIIIIIlIllIlllll.llIlIIlIlllIlllllI.toggle_profile_shield(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll, llIllllIIIIllIIlll)
-                if lllIlllIIIlIllIIIl:
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]✅ {lIllIIllIllIllIlll}\nName: {IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['name']}\nUID: {IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['user_id']}[/]", style='bold green', border_style='green'))
-                else:
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ {lIllIIllIllIllIlll}[/]', style='bold indian_red', border_style='indian_red'))
-                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-            elif lllIIIIllIIlIIlllI == '3':
-                break
-            else:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice![/]', style='bold indian_red', border_style='indian_red'))
-                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+        if not self.current_account:
+                console.print(Panel(
+                        "[bold white]❕ Please select an account first[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                ))
+                console.input("[bold white]Press Enter to continue...[/]")
+                return
 
-    def IlIlllIlIlllIlIIII(IIIIIIIIlIllIlllll):
+        while True:
+                self.clear_screen()
+                self.display_banner()
+
+                # Show current account
+                console.print(Panel(
+                        f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.current_account['name']}[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+
+                # Show menu
+                console.print(Panel(
+                        "[bold yellow]Note:[/] [bold white]Make sure you turn off first your Facebook lock profile before proceeding to Facebook Profile Guard.[/]\n\n"
+                        "[1] Activate your Facebook Profile Shield\n"
+                        "[2] Deactivate your Facebook Profile Shield\n"
+                        "[3] Back to Main Menu",
+                        title="[bold white]🛡️ 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗣𝗥𝗢𝗙𝗜𝗟𝗘 𝗚𝗨𝗔𝗥𝗗[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+
+                choice = console.input("[bold yellow]Enter your choice: [/]").strip()
+
+                if choice == "1" or choice == "2":
+                        enable = choice == "1"
+                        success, message = self.fb_guard.toggle_profile_shield(self.current_account, enable)
+                        
+                        if success:
+                                console.print(Panel(
+                                        f"[bold white]✅ {message}\n"
+                                        f"Name: {self.current_account['name']}\n"
+                                        f"UID: {self.current_account['user_id']}[/]",
+                                        style="bold green",
+                                        border_style="green"
+                                ))
+                        else:
+                                console.print(Panel(
+                                        f"[bold white]❕ {message}[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
+                                ))
+                        
+                        console.input("[bold white]Press Enter to continue...[/]")
+                        
+                elif choice == "3":
+                        break
+                else:
+                        console.print(Panel(
+                                "[bold white]❕ Invalid choice![/]",
+                                style="bold indian_red",
+                                border_style="indian_red"
+                        ))
+                        console.input("[bold white]Press Enter to continue...[/]")
+    
+    def cookie_settings_menu(self):
         """Handle cookie settings and storage menu."""
-        while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-            IIllIIllIlIllIlIlI = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_all_accounts()
-            for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
-                IIIIIlIIlIlIIlllIl = 'Logged in' if IllllllIlllIIllIlI == IIIIIIIIlIllIlllll.lllllIIIIlllIIllll else 'Logged out'
-                IIIllIlllIIIIIlIIl = 'green' if IIIIIlIIlIlIIlllIl == 'Logged in' else 'red'
-                llIIlllIllIIIlllll = IllllllIlllIIllIlI.get('name', 'Unknown User')
-                IlIllIlIlIlllIlIII = IllIllllIIlIIl(f"[bold white]Name: {llIIlllIllIIIlllll}[/]\n[bold white]UID: {IllllllIlllIIllIlI['user_id']}[/]\n[bold {IIIllIlllIIIIIlIIl}]Status: {IIIIIlIIlIlIIlllIl}[/]\n" + (f'[bold yellow][{llIIIIIllIlllllllI}] Select[/]\n' if IllllllIlllIIllIlI != IIIIIIIIlIllIlllll.lllllIIIIlllIIllll else '') + f'[bold red][R{llIIIIIllIlllllllI}] Remove[/]', title=f'[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {llIIIIIllIlllllllI}[/]', style='bold yellow', border_style='yellow')
-                lIIIlIlllllllllIIl.print(IlIllIlIlIlllIlIII)
-            lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
-            lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold yellow]Select an option: [/]')
-            lllIIIIllIIlIIlllI = lllIIIIllIIlIIlllI.strip().upper()
-            if lllIIIIllIIlIIlllI == '0':
+        while True:
+            self.clear_screen()
+            self.display_banner()
+            
+            if self.current_account and self.account_data:
+                console.print(Panel(
+                    f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                    style="bold cyan",
+                    border_style="cyan"
+                ))
+            
+            accounts = self.cookie_manager.get_all_accounts()
+            for idx, account in enumerate(accounts, 1):
+                status = "Logged in" if account == self.current_account else "Logged out"
+                status_color = "green" if status == "Logged in" else "red"
+                
+                # Use the account's stored name directly
+                display_name = account.get('name', 'Unknown User')
+                
+                account_panel = Panel(
+                    f"[bold white]Name: {display_name}[/]\n"
+                    f"[bold white]UID: {account['user_id']}[/]\n"
+                    f"[bold {status_color}]Status: {status}[/]\n"
+                    + (f"[bold yellow][{idx}] Select[/]\n" if account != self.current_account else "")
+                    + f"[bold red][R{idx}] Remove[/]",
+                    title=f"[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {idx}[/]",
+                    style="bold yellow",
+                    border_style="yellow"
+                )
+                console.print(account_panel)
+
+            console.print("[bold white][0] Back[/]\n")
+
+            choice = console.input("[bold yellow]Select an option: [/]")
+            choice = choice.strip().upper()
+            
+            if choice == "0":
                 break
-            if lllIIIIllIIlIIlllI.startswith('R'):
+                
+            if choice.startswith('R'):
                 try:
-                    llIIIIIllIlllllllI = lllllllllllIlIl(lllIIIIllIIlIIlllI[1:]) - 1
-                    if 0 <= llIIIIIllIlllllllI < lllllllllllIlll(IIllIIllIlIllIlIlI):
-                        lIllllIIIIIIIIllII = IIllIIllIlIllIlIlI[llIIIIIllIlllllllI]
-                        if IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll and lIllllIIIIIIIIllII['user_id'] == IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['user_id']:
-                            llIIlllIllIIIlllll = IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']
+                    idx = int(choice[1:]) - 1
+                    if 0 <= idx < len(accounts):
+                        account_to_remove = accounts[idx]
+                        if self.account_data and account_to_remove['user_id'] == self.account_data['user_id']:
+                            display_name = self.account_data['name']
                         else:
-                            llIIlllIllIIIlllll = 'Unknown User'
-                        llIllIlIIIIllIIIIl = lIIIlIlllllllllIIl.input(f'[bold red]Are you sure you want to remove {llIIlllIllIIIlllll}? (y/N): [/]').strip().lower()
-                        if llIllIlIIIIllIIIIl == 'y':
-                            if lIllllIIIIIIIIllII == IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
-                                IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = None
-                                IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = None
-                            lllIlllIIIlIllIIIl = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.remove_cookie(lIllllIIIIIIIIllII)
-                            if lllIlllIIIlIllIIIl:
-                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold green]✅ Successfully removed account: {llIIlllIllIIIlllll}[/]', style='bold green', border_style='green'))
+                            display_name = "Unknown User"
+                        confirm = console.input(f"[bold red]Are you sure you want to remove {display_name}? (y/N): [/]").strip().lower()
+                        if confirm == 'y':
+                            if account_to_remove == self.current_account:
+                                self.current_account = None
+                                self.account_data = None
+                            success = self.cookie_manager.remove_cookie(account_to_remove)
+                            if success:
+                                console.print(Panel(
+                                    f"[bold green]✅ Successfully removed account: {display_name}[/]",
+                                    style="bold green",
+                                    border_style="green"
+                                ))
                             else:
-                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Failed to remove account![/]', style='bold indian_red', border_style='indian_red'))
+                                console.print(Panel(
+                                    "[bold white]❕ Failed to remove account![/]",
+                                    style="bold indian_red",
+                                    border_style="indian_red"
+                                ))
                     else:
-                        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid selection![/]', style='bold indian_red', border_style='indian_red'))
-                except (lllllllllllIllI, llllllllllllIll):
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid input![/]', style='bold indian_red', border_style='indian_red'))
+                        console.print(Panel(
+                            "[bold white]❕ Invalid selection![/]",
+                            style="bold indian_red",
+                            border_style="indian_red"
+                        ))
+                except (ValueError, IndexError):
+                    console.print(Panel(
+                        "[bold white]❕ Invalid input![/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                    ))
             else:
                 try:
-                    IIllIlIIlIlllIllll = lllllllllllIlIl(lllIIIIllIIlIIlllI) - 1
-                    if 0 <= IIllIlIIlIlllIllll < lllllllllllIlll(IIllIIllIlIllIlIlI):
-                        if IIllIIllIlIllIlIlI[IIllIlIIlIlllIllll] != IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
-                            IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = IIllIIllIlIllIlIlI[IIllIlIIlIlllIllll]
-                            IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.set_current_account(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['id'])
-                            IIIIIIIIlIllIlllll.lIllIIIIlIIIIlllll(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll)
-                            llIIlllIllIIIlllll = IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['name']
-                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold green]✅ Successfully switched to account: {llIIlllIllIIIlllll}[/]', style='bold green', border_style='green'))
+                    choice_idx = int(choice) - 1
+                    if 0 <= choice_idx < len(accounts):
+                        if accounts[choice_idx] != self.current_account:
+                            self.current_account = accounts[choice_idx]
+                            self.cookie_manager.set_current_account(self.current_account['id'])
+                            self._load_account_data(self.current_account)
+                            display_name = self.current_account['name']
+                            console.print(Panel(
+                                f"[bold green]✅ Successfully switched to account: {display_name}[/]",
+                                style="bold green",
+                                border_style="green"
+                            ))
                         else:
-                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ This account is already selected.[/]', style='bold indian_red', border_style='indian_red'))
+                            console.print(Panel(
+                                "[bold white]❕ This account is already selected.[/]",
+                                style="bold indian_red",
+                                border_style="indian_red"
+                            ))
                     else:
-                        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid selection![/]', style='bold indian_red', border_style='indian_red'))
-                except lllllllllllIllI:
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid input![/]', style='bold indian_red', border_style='indian_red'))
-            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+                        console.print(Panel(
+                            "[bold white]❕ Invalid selection![/]",
+                            style="bold indian_red",
+                            border_style="indian_red"
+                        ))
+                except ValueError:
+                    console.print(Panel(
+                        "[bold white]❕ Invalid input![/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                    ))
+            
+            console.input("[bold white]Press Enter to continue...[/]")
 
-    def IIIIIIIIlllllllIll(IIIIIIIIlIllIlllll):
+    def view_cookie_database(self):
         """Handle cookie database functionality."""
-        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-        if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-        lllIIlIllllIIIIIII = IllIllllIIlIIl('[bold yellow]Note:[/] [bold white]You can manage all your stored cookies and tokens here[/]\n[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]', title='[bold white]𝗖𝗢𝗢𝗞𝗜𝗘𝗦 & 𝗧𝗢𝗞𝗘𝗡𝗦 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]', style='bold cyan', border_style='cyan')
-        lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
-        lIIlllIlIlllIllIIl = IllIllllIIlIIl('[bold white][1] View All Cookies & Tokens[/]\n[bold white][2] Back to Main Menu[/]', style='bold cyan', border_style='cyan')
-        lIIIlIlllllllllIIl.print(lIIlllIlIlllIllIIl)
-        lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold cyan]Enter your choice: [/]')
-        if lllIIIIllIIlIIlllI == '1':
-            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-            lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
-            IIllIIllIlIllIlIlI = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_all_accounts()
-            for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
-                lIllIIIllIlIlllIll = llllIlIlIIIlII.now(IIIllIlIlllIll(IIIllIIIlllIlI(hours=8)))
-                IIIllIlIlIlIIlIIlI = lIllIIIllIlIlllIll.strftime('%B %d, %Y')
-                llllIIlIIIIIlIlIlI = lIllIIIllIlIlllIll.strftime('%I:%M %p +8 GMT (PH)')
-                lIIIIIIIIIIIIlIlIl = IllllllIlllIIllIlI['cookie']
-                lIIIIIIIIIIlIIIIll = IllllllIlllIIllIlI.get('token', 'N/A')
-                llllIllIIIIIIlIIIl = lIIIIIIIIIIIIlIlIl[:20] + '...' + lIIIIIIIIIIIIlIlIl[-10:] if lllllllllllIlll(lIIIIIIIIIIIIlIlIl) > 30 else lIIIIIIIIIIIIlIlIl
-                IlIlIIllIIlIlIllIl = lIIIIIIIIIIlIIIIll[:20] + '...' + lIIIIIIIIIIlIIIIll[-10:] if lllllllllllIlll(lIIIIIIIIIIlIIIIll) > 30 else lIIIIIIIIIIlIIIIll
-                IIIIIIlIIlIIIlllll = IllIllllIIlIIl(f"[bold white]Name: {IllllllIlllIIllIlI.get('name', 'Unknown User')}[/]\n[bold white]Cookie: {llllIllIIIIIIlIIIl}[/]\n[bold white]Token: {IlIlIIllIIlIlIllIl}[/]\n[bold white]Added Date: {IIIllIlIlIlIIlIIlI}[/]\n[bold white]Added Time: {llllIIlIIIIIlIlIlI}[/]\n\n[bold yellow][C{llIIIIIllIlllllllI}] Copy cookie[/]\n[bold yellow][T{llIIIIIllIlllllllI}] Copy token[/]", title=f'[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {llIIIIIllIlllllllI}[/]', style='bold yellow', border_style='yellow')
-                lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
-            lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
-            while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-                IIlllIIIlIIllIIllI = lIIIlIlllllllllIIl.input('[bold yellow]Select an option: [/]').strip().upper()
-                if IIlllIIIlIIllIIllI == '0':
-                    break
-                if IIlllIIIlIIllIIllI.startswith(('C', 'T')):
-                    try:
-                        llIIIIIllIlllllllI = lllllllllllIlIl(IIlllIIIlIIllIIllI[1:]) - 1
-                        if 0 <= llIIIIIllIlllllllI < lllllllllllIlll(IIllIIllIlIllIlIlI):
-                            try:
-                                IIIIIIlIIlIlIIIllI = IIllIIllIlIllIlIlI[llIIIIIllIlllllllI]['cookie'] if IIlllIIIlIIllIIllI.startswith('C') else IIllIIllIlIllIlIlI[llIIIIIllIlllllllI].get('token', '')
-                                lIIIlIIlllIIllIIll = 'Cookie' if IIlllIIIlIIllIIllI.startswith('C') else 'Token'
-                                if not IIIIIIlIIlIlIIIllI and lIIIlIIlllIIllIIll == 'Token':
-                                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ No token available for this account![/]', style='bold indian_red', border_style='indian_red'))
-                                else:
-                                    IlIIlIlIIIIIIIlIIl = lIIIlllIlIIIII(['termux-clipboard-set'], stdin=lllIllIllIlllI)
-                                    IlIIlIlIIIIIIIlIIl.communicate(input=IIIIIIlIIlIlIIIllI.encode())
-                                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]✅ {lIIIlIIlllIIllIIll} {llIIIIIllIlllllllI + 1} copied to clipboard![/]', style='bold green', border_style='green'))
-                            except lllllllllllllIl as IIllIlllIIIIIIllll:
-                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Failed to copy to clipboard. Make sure Termux:API is installed.[/]', style='bold indian_red', border_style='indian_red'))
-                            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-                            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-                            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-                            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-                            lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
-                            for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
-                                lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
-                            lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
-                            break
-                        else:
-                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-                            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-                            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-                            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-                            lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
-                            for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
-                                lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
-                            lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
-                    except lllllllllllIllI:
-                        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                        lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-                        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-                        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-                        if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-                        lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
-                        for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
-                            lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
-                        lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
-                else:
-                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                    lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-                    IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-                    IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-                    if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-                        lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-                    lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
-                    for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
-                        lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
-                    lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
-            return
-        elif lllIIIIllIIlIIlllI == '2':
-            return
-        else:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-            IIIIIIIIlIllIlllll.IIIIIIIIlllllllIll()
+        self.clear_screen()
+        self.display_banner()
+        
+        # Display selected account panel first
+        if self.current_account and self.account_data:
+                console.print(Panel(
+                        f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+        
+        database_panel = Panel(
+                "[bold yellow]Note:[/] [bold white]You can manage all your stored cookies and tokens here[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]",
+                title="[bold white]𝗖𝗢𝗢𝗞𝗜𝗘𝗦 & 𝗧𝗢𝗞𝗘𝗡𝗦 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]",
+                style="bold cyan",
+                border_style="cyan"
+        )
+        console.print(database_panel)
 
-    def llllIlIIlIIllllllI(IIIIIIIIlIllIlllll):
+        menu_panel = Panel(
+                "[bold white][1] View All Cookies & Tokens[/]\n"
+                "[bold white][2] Back to Main Menu[/]",
+                style="bold cyan",
+                border_style="cyan"
+        )
+        console.print(menu_panel)
+
+        choice = console.input("[bold cyan]Enter your choice: [/]")
+        
+        if choice == "1":
+                self.clear_screen()
+                self.display_banner()
+                
+                # Display selected account panel first
+                if self.current_account and self.account_data:
+                        console.print(Panel(
+                                f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                style="bold cyan",
+                                border_style="cyan"
+                        ))
+                
+                console.print(database_panel)
+                
+                accounts = self.cookie_manager.get_all_accounts()
+                
+                for idx, account in enumerate(accounts, 1):
+                    # Format date and time
+                    philippines_time = datetime.now(timezone(timedelta(hours=8)))
+                    added_date = philippines_time.strftime("%B %d, %Y")
+                    added_time = philippines_time.strftime("%I:%M %p +8 GMT (PH)")
+
+                    # Mask cookie and token
+                    cookie = account['cookie']
+                    token = account.get('token', 'N/A')
+                    masked_cookie = cookie[:20] + "..." + cookie[-10:] if len(cookie) > 30 else cookie
+                    masked_token = token[:20] + "..." + token[-10:] if len(token) > 30 else token
+
+                    cookie_panel = Panel(
+                        f"[bold white]Name: {account.get('name', 'Unknown User')}[/]\n"
+                        f"[bold white]Cookie: {masked_cookie}[/]\n"
+                        f"[bold white]Token: {masked_token}[/]\n"
+                        f"[bold white]Added Date: {added_date}[/]\n"
+                        f"[bold white]Added Time: {added_time}[/]\n\n"
+                        f"[bold yellow][C{idx}] Copy cookie[/]\n"
+                        f"[bold yellow][T{idx}] Copy token[/]",
+                        title=f"[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {idx}[/]",
+                        style="bold yellow",
+                        border_style="yellow"
+                    )
+                    console.print(cookie_panel)
+                
+                console.print("[bold white][0] Back[/]\n")
+
+                while True:
+                    copy_choice = console.input("[bold yellow]Select an option: [/]").strip().upper()
+                    
+                    if copy_choice == "0":  # If user enters 0
+                        break
+                        
+                    if copy_choice.startswith(('C', 'T')):
+                        try:
+                            idx = int(copy_choice[1:]) - 1
+                            if 0 <= idx < len(accounts):
+                                try:
+                                    import subprocess
+                                    content = accounts[idx]['cookie'] if copy_choice.startswith('C') else accounts[idx].get('token', '')
+                                    action = "Cookie" if copy_choice.startswith('C') else "Token"
+                                    
+                                    if not content and action == "Token":
+                                        console.print(Panel(
+                                            "[bold white]❕ No token available for this account![/]",
+                                            style="bold indian_red",
+                                            border_style="indian_red"
+                                        ))
+                                    else:
+                                        process = subprocess.Popen(['termux-clipboard-set'], stdin=subprocess.PIPE)
+                                        process.communicate(input=content.encode())
+                                        console.print(Panel(
+                                            f"[bold white]✅ {action} {idx + 1} copied to clipboard![/]",
+                                            style="bold green",
+                                            border_style="green"
+                                        ))
+                                except Exception as e:
+                                    console.print(Panel(
+                                        "[bold white]❕ Failed to copy to clipboard. Make sure Termux:API is installed.[/]",
+                                        style="bold indian_red",
+                                        border_style="indian_red"
+                                    ))
+                                console.input("[bold white]Press Enter to continue...[/]")
+                                self.clear_screen()
+                                self.display_banner()
+                                if self.current_account and self.account_data:
+                                    console.print(Panel(
+                                        f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                        style="bold cyan",
+                                        border_style="cyan"
+                                    ))
+                                console.print(database_panel)
+                                for idx, account in enumerate(accounts, 1):
+                                    console.print(cookie_panel)
+                                console.print("[bold white][0] Back[/]\n")
+                                break
+                            else:
+                                console.print(Panel(
+                                    "[bold white]❕ Invalid choice! Please try again.[/]",
+                                    style="bold indian_red",
+                                    border_style="indian_red"
+                                ))
+                                console.input("[bold white]Press Enter to continue...[/]")
+                                self.clear_screen()
+                                self.display_banner()
+                                if self.current_account and self.account_data:
+                                    console.print(Panel(
+                                        f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                        style="bold cyan",
+                                        border_style="cyan"
+                                    ))
+                                console.print(database_panel)
+                                for idx, account in enumerate(accounts, 1):
+                                    console.print(cookie_panel)
+                                console.print("[bold white][0] Back[/]\n")
+                        except ValueError:
+                            console.print(Panel(
+                                "[bold white]❕ Invalid choice! Please try again.[/]",
+                                style="bold indian_red",
+                                border_style="indian_red"
+                            ))
+                            console.input("[bold white]Press Enter to continue...[/]")
+                            self.clear_screen()
+                            self.display_banner()
+                            if self.current_account and self.account_data:
+                                console.print(Panel(
+                                    f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                    style="bold cyan",
+                                    border_style="cyan"
+                                ))
+                            console.print(database_panel)
+                            for idx, account in enumerate(accounts, 1):
+                                console.print(cookie_panel)
+                            console.print("[bold white][0] Back[/]\n")
+                    else:
+                        console.print(Panel(
+                            "[bold white]❕ Invalid choice! Please try again.[/]",
+                            style="bold indian_red",
+                            border_style="indian_red"
+                        ))
+                        console.input("[bold white]Press Enter to continue...[/]")
+                        self.clear_screen()
+                        self.display_banner()
+                        if self.current_account and self.account_data:
+                            console.print(Panel(
+                                f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                                style="bold cyan",
+                                border_style="cyan"
+                            ))
+                        console.print(database_panel)
+                        for idx, account in enumerate(accounts, 1):
+                            console.print(cookie_panel)
+                        console.print("[bold white][0] Back[/]\n")
+                return
+        elif choice == "2":
+                return
+        else:
+                console.print(Panel(
+                        "[bold white]❕ Invalid choice! Please try again.[/]",
+                        style="bold indian_red",
+                        border_style="indian_red"
+                ))
+                console.input("[bold white]Press Enter to continue...[/]")
+                self.view_cookie_database()
+            
+    def spam_sharing_menu(self):
         """Handle spam sharing functionality."""
-        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
-        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
-        if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
-        IlllIlIlllIIIlllIl = IllIllllIIlIIl("[bold yellow]Note:[/] [bold white]This code does not use Facebook's API for fewer restrictions.[/]\n[bold indian_red]Caution:[/] [bold white]Do not turn off your internet while the process is ongoing.[/]", title='[bold white]𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]', style='bold cyan', border_style='cyan')
-        lIIIlIlllllllllIIl.print(IlllIlIlllIIIlllIl)
-        lIllIlIIlIIIIlllIl = lIIIlIlllllllllIIl.input('[bold green]🔗 Enter the Facebook post URL: [/]')
-        lIllIlIIlIIIIlllIl = lIllIlIIlIIIIlllIl.strip()
-        if not lIllIIIIlIIllI.validate_url(lIllIlIIlIIIIlllIl):
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid Facebook URL![/]', style='bold indian_red', border_style='indian_red'))
-            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-            return
-        (lllIlllIIIlIllIIIl, IIlIIlllllIIlIlIll) = lIllIIIIlIIllI.validate_input('[bold green]Number of shares: [/]', lllllllllllIlIl, min_val=1, max_val=100000)
-        if not lllIlllIIIlIllIIIl:
-            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-            return
-        (lllIlllIIIlIllIIIl, llIIlIIllllIlIIIII) = lIllIIIIlIIllI.validate_input('[bold green]Delay between shares (seconds): [/]', lllllllllllIlIl, min_val=1, max_val=60)
-        if not lllIlllIIIlIllIIIl:
-            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
-            return
-        (lllIlllIIIlIllIIIl, lIllIIllIllIllIlll) = IIIIIIIIlIllIlllll.lIIIlIllIlIIIIIIll.share_post(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['cookie'], lIllIlIIlIIIIlllIl, IIlIIlllllIIlIlIll, llIIlIIllllIlIIIII)
-        if lllIlllIIIlIllIIIl:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold green]✅ {lIllIIllIllIllIlll}[/]', style='bold green', border_style='green'))
-        else:
-            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ {lIllIIllIllIllIlll}[/]', style='bold indian_red', border_style='indian_red'))
-        lIllIIIIlIIllI.log_activity('Share Post', lllIlllIIIlIllIIIl, lIllIIllIllIllIlll)
-        lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+        self.clear_screen()
+        self.display_banner()
 
-def llIlIlIlIllIIllIlI():
+        if self.current_account and self.account_data:
+                console.print(Panel(
+                        f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                        style="bold cyan",
+                        border_style="cyan"
+                ))
+
+        share_panel = Panel(
+                "[bold yellow]Note:[/] [bold white]This code does not use Facebook's API for fewer restrictions.[/]\n"
+                "[bold indian_red]Caution:[/] [bold white]Do not turn off your internet while the process is ongoing.[/]",
+                title="[bold white]𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]",
+                style="bold cyan",
+                border_style="cyan"
+        )
+        console.print(share_panel)
+
+        post_url = console.input("[bold green]🔗 Enter the Facebook post URL: [/]")
+        post_url = post_url.strip()
+
+        if not Utils.validate_url(post_url):
+            console.print(Panel(
+                "[bold white]❕ Invalid Facebook URL![/]",
+                style="bold indian_red",
+                border_style="indian_red"
+            ))
+            console.input("[bold white]Press Enter to continue...[/]")
+            return
+
+        success, share_count = Utils.validate_input(
+            "[bold green]Number of shares: [/]",
+            int,
+            min_val=1,
+            max_val=100000
+        )
+
+        if not success:
+            console.input("[bold white]Press Enter to continue...[/]")
+            return
+
+        success, delay = Utils.validate_input(
+            "[bold green]Delay between shares (seconds): [/]",
+            int,
+            min_val=1,
+            max_val=60
+        )
+
+        if not success:
+            console.input("[bold white]Press Enter to continue...[/]")
+            return
+
+        success, message = self.spam_sharing.share_post(
+            self.current_account['cookie'],
+            post_url,
+            share_count,
+            delay
+        )
+
+        if success:
+            console.print(Panel(
+                f"[bold green]✅ {message}[/]",
+                style="bold green",
+                border_style="green"
+            ))
+        else:
+            console.print(Panel(
+                f"[bold white]❕ {message}[/]",
+                style="bold indian_red",
+                border_style="indian_red"
+            ))
+
+        Utils.log_activity("Share Post", success, message)
+        console.input("[bold white]Press Enter to continue...[/]")
+
+def main():
     """Main entry point of the application."""
     try:
-        IIIlllllllIIIllIII = lIIlIIllllllllIlll()
-        IIIlllllllIIIllIII.llIlIlIlIllIIllIlI()
-    except llllllllllllIII:
-        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Program interrupted by user.[/]', style='bold indian_red', border_style='indian_red'))
-        IlllIlIlIlIIII(0)
-    except lllllllllllllIl as IIllIlllIIIIIIllll:
-        lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ An unexpected error occurred: {lllllllllllllII(IIllIlllIIIIIIllll)}[/]', style='bold indian_red', border_style='indian_red'))
-        IIIIlIlIlIlIIlIIII = llllIlIlIIIlII.now(IIIllIlIlllIll.utc).strftime('%Y-%m-%d %H:%M:%S')
-        lIllIIIIlIIllI.log_activity(f'System Error (UTC: {IIIIlIlIlIlIIlIIII}) by {sehraks}', lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0), lllllllllllllII(IIllIlllIIIIIIllll))
-        IlllIlIlIlIIII(1)
-if llllllllllllIIl == '__main__':
-    llIlIlIlIllIIllIlI()
+        tool = FacebookMonoToolkit()
+        tool.main()
+    except KeyboardInterrupt:
+        # Changed: Wrapped error message in Panel and fixed markup
+        console.print(Panel(
+            "[bold white]❕ Program interrupted by user.[/]",
+            style="bold indian_red",
+            border_style="indian_red"
+        ))
+        sys.exit(0)
+    except Exception as e:
+        # Changed: Fixed markup error in exception handling
+        console.print(Panel(
+            f"[bold white]❕ An unexpected error occurred: {str(e)}[/]",
+            style="bold indian_red",
+            border_style="indian_red"
+        ))
+
+if __name__ == "__main__":
+    main()
