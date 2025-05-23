@@ -1,4 +1,495 @@
+lllllllllllllll, llllllllllllllI, lllllllllllllIl, lllllllllllllII, llllllllllllIll, llllllllllllIlI, llllllllllllIIl, llllllllllllIII, lllllllllllIlll, lllllllllllIllI, lllllllllllIlIl = bool, enumerate, Exception, str, IndexError, open, __name__, KeyboardInterrupt, len, ValueError, int
 
-# Python obfuscation by freecodingtools.org
-                    
-_ = lambda __ : __import__('zlib').decompress(__import__('base64').b64decode(__[::-1]));exec((_)(b'==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'))
+from os import makedirs as IIIlIIIlIllIlI, system as IlIlllIllIIIll, name as IllIllIllIllII, chmod as IlIIIIllIlIlll
+from time import sleep as IlIIIIllllllII
+from requests import Timeout as IlIIIlIlIllllI, Session as IIIlllllIlllll
+from re import search as IlllIIIllIIIIl
+from subprocess import Popen as IIllIIIIIIlllI, PIPE as lllIIIIIlIIlII
+from sys import exit as IllIIIIlllllIl
+from datetime import datetime as lIllIIlIllIIII, timezone as llllllllIlllII, timedelta as llIIIlIIIIIlII
+from typing import Dict as IIlIlIIIIlIIll, Optional as IllllIllIlIllI
+from rich.console import Console as IllIlIIlllIIlI
+from rich.panel import Panel as IllllIlIlIlIll
+from rich.table import Table as IlIllIllIllIlI
+from modules.cookie_manager import CookieManager as llIIIlIlIIIlIl
+from modules.spam_sharing import SpamSharing as lIlllllIlIIllI
+from modules.utils import Utils as IIIIIllllIIlII
+from modules.update_settings import UpdateSettings as IlIllIlIIIIlII
+from modules.fb_login import FacebookLogin as IIllllIIIIlIII
+from modules.cookie_database import CookieDatabase as lIlIIlIIIIlIII
+from modules.fb_guard import FacebookGuard as IlIIIIIlIlIlll
+llIIIIlIlllIllIlIl = IllIlIIlllIIlI()
+
+class lllIlIlllIIlIlllll:
+
+    def __init__(IIlIIllIlIlIIlllIl):
+        """Initialize the Facebook MonoToolkit."""
+        IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII = None
+        IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl = None
+        try:
+            with llllllllllllIlI('changelogs.txt', 'r') as llIIlllIIlIIlIIIlI:
+                lIllIllllIlIIIlIlI = llIIlllIIlIIlIIIlI.readline().strip()
+                IIlIIllIlIlIIlllIl.IIlIIllIlllIIlIIII = lIllIllllIlIIIlIlI.replace('Version ', '')
+        except:
+            IIlIIllIlIlIIlllIl.IIlIIllIlllIIlIIII = 'X.XX'
+        IIlIIllIlIlIIlllIl.IIllIlIIIIIlllllll = 'Greegmon'
+        IIlIIllIlIlIIlllIl.lIlIlIllIIIIIlIIll = 'Cerax'
+        IllIIIllIllllIlllI = lIllIIlIllIIII.now(llllllllIlllII(llIIIlIIIIIlII(hours=8)))
+        IIlIIllIlIlIIlllIl.IllIIIlIlIIIIIIlIl = IllIIIllIllllIlllI.strftime('%B %d, %Y')
+        IIlIIllIlIlIIlllIl.IlIIllllIIIllllIll = IllIIIllIllllIlllI.strftime('%I:%M %p')
+        IIlIIllIlIlIIlllIl.llllIlllIlllIIIIII = 'sehraks'
+        IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll = llIIIlIlIIIlIl()
+        IIlIIllIlIlIIlllIl.IIIIllllIIIlIIIIll = lIlllllIlIIllI()
+        IIlIIllIlIlIIlllIl.IllIllIIllIllIIIII = IlIllIlIIIIlII(IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI)
+        IIlIIllIlIlIIlllIl.lIllIlllIIIIIIIlll = IIllllIIIIlIII()
+        IIlIIllIlIlIIlllIl.IIllIllllIlIllIIll = lIlIIlIIIIlIII(IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll)
+        IIlIIllIlIlIIlllIl.llIlIIllIIllIllIlI = IlIIIIIlIlIlll()
+        IIlIIllIlIlIIlllIl.IlIIIllIIllIlIlllI()
+        IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl = IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.get_current_account()
+        if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl:
+            IIlIIllIlIlIIlllIl.IIlIIllIIlIIIlIIll(IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl)
+
+    def IIlIIllIIlIIIlIIll(IIlIIllIlIlIIlllIl, llllIlllIlIIllIIIl: IIlIlIIIIlIIll) -> None:
+        """Load account data for the current account."""
+        if llllIlllIlIIllIIIl:
+            IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII = {'name': llllIlllIlIIllIIIl.get('name', 'Unknown User'), 'user_id': llllIlllIlIIllIIIl.get('user_id')}
+        else:
+            IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII = None
+
+    def IlIIIllIIllIlIlllI(IIlIIllIlIlIIlllIl):
+        """Initialize necessary directories."""
+        lIlllIIIIlIIlllIIl = ['cookies-storage', 'logs']
+        for llIllIIIIIIllllIIl in lIlllIIIIlIIlllIIl:
+            try:
+                IIIlIIIlIllIlI(llIllIIIIIIllllIIl, exist_ok=lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1))
+                IlIIIIllIlIlll(llIllIIIIIIllllIIl, 448)
+            except lllllllllllllIl as llIIlIIlIIlIIlIIII:
+                llIIIIlIlllIllIlIl.print(f'[bold red]Error creating directory {llIllIIIIIIllllIIl}: {lllllllllllllII(llIIlIIlIIlIIlIIII)}[/]')
+
+    def IlIIllIIlIIIllIlll(IIlIIllIlIlIIlllIl):
+        """Clear the terminal screen."""
+        IlIlllIllIIIll('cls' if lllllIIllIlIIIIIll == 'nt' else 'clear')
+
+    def IlIIllIlIIIlIlIllI(IIlIIllIlIlIIlllIl):
+        """Display the tool banner."""
+        IllIIIllIllllIlllI = lIllIIlIllIIII.now(llllllllIlllII(llIIIlIIIIIlII(hours=8)))
+        llllllIlIIlIllIlII = IllIIIllIllllIlllI.strftime('%I:%M %p')
+        lllIlIIlIIlIIIIIII = IllIIIllIllllIlllI.strftime('%B %d, %Y')
+        lIllIIllIllllIIllI = IllllIlIlIlIll(f'[white]Original: {IIlIIllIlIlIIlllIl.IIllIlIIIIIlllllll}[/]\n[white]Modified by: {IIlIIllIlIlIIlllIl.lIlIlIllIIIIIlIIll}[/]\n[white]Version: {IIlIIllIlIlIIlllIl.IIlIIllIlllIIlIIII}[/]\n[white]Date: {lllIlIIlIIlIIIIIII}[/]\n[white]Time: {llllllIlIIlIllIlII} GMT+8[/]', style='bold magenta', title='[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]', border_style='cyan')
+        llIIIIlIlllIllIlIl.print(lIllIIllIllllIIllI)
+
+    def IIIIIlllllIIIIIIlI(IIlIIllIlIlIIlllIl):
+        """Check if cookie is available."""
+        if not IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Please login first using the Accounts Management option.[/]', style='bold indian_red', border_style='indian_red'))
+            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            return lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0)
+        return lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1)
+
+    def lIllIllIIllllIlIll(IIlIIllIlIlIIlllIl):
+        """Display and handle the main menu."""
+        while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
+            IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+            IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+            if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+            IIIIIIIIIllIIlIIll = IllllIlIlIlIll('[bold white][1] Accounts Management[/]\n[bold white][2] Spam Sharing Post[/]\n[bold white][3] Profile Guard[/]\n[bold white][4] Settings[/]\n[bold red][5] Exit[/]', title='[bold white]𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨[/]', style='bold magenta', border_style='cyan')
+            llIIIIlIlllIllIlIl.print(IIIIIIIIIllIIlIIll)
+            lIlIlIlIlIllIlIIll = llIIIIlIlllIllIlIl.input('[bold yellow]Select an option (1-5): [/]')
+            lIlIlIlIlIllIlIIll = lIlIlIlIlIllIlIIll.strip()
+            if lIlIlIlIlIllIlIIll == '1':
+                IIlIIllIlIlIIlllIl.IIlllllllllIIIllII()
+            elif lIlIlIlIlIllIlIIll == '2':
+                if not IIlIIllIlIlIIlllIl.IIIIIlllllIIIIIIlI():
+                    continue
+                IIlIIllIlIlIIlllIl.IIlllIIIIIIIlIlllI()
+            elif lIlIlIlIlIllIlIIll == '3':
+                if not IIlIIllIlIlIIlllIl.IIIIIlllllIIIIIIlI():
+                    continue
+                IIlIIllIlIlIIlllIl.IIIIlIIIIlIlIllIll()
+            elif lIlIlIlIlIllIlIIll == '4':
+                IIlIIllIlIlIIlllIl.llllIllllIllllIIlI()
+            elif lIlIlIlIlIllIlIIll == '5':
+                break
+            else:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+
+    def llllIllllIllllIIlI(IIlIIllIlIlIIlllIl):
+        """Handle settings menu."""
+        IIlIIllIlIlIIlllIl.IllIllIIllIllIIIII.display_settings_menu()
+
+    def IIlllllllllIIIllII(IIlIIllIlIlIIlllIl):
+        """Handle cookie management menu."""
+        while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
+            IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+            IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+            if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold yellow]🔑 𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]', style='bold yellow', border_style='yellow'))
+            IIIIIIIIIllIIlIIll = IllllIlIlIlIll('[bold white][1] Enter your cookie[/]\n[bold white][2] Login your Facebook account[/]\n[bold white][3] Access your Facebook accounts[/]\n[bold white][4] Cookies & Tokens Database[/]\n[bold white][5] Back to Main Menu[/]', title='[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]', style='bold yellow', border_style='yellow')
+            llIIIIlIlllIllIlIl.print(IIIIIIIIIllIIlIIll)
+            lIlIlIlIlIllIlIIll = llIIIIlIlllIllIlIl.input('[bold yellow]Select an option: [/]')
+            lIlIlIlIlIllIlIIll = lIlIlIlIlIllIlIIll.strip()
+            if lIlIlIlIlIllIlIIll == '1':
+                IIlIIllIlIlIIlllIl.IIIIIIIllIlIllIllI()
+            elif lIlIlIlIlIllIlIIll == '2':
+                IIlIIllIlIlIIlllIl.IIIIlIllllIIlIlIII()
+            elif lIlIlIlIlIllIlIIll == '3':
+                if not IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.has_cookies():
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Add a cookie or login first.[/]', style='bold indian_red', border_style='indian_red'))
+                    llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                    continue
+                IIlIIllIlIlIIlllIl.lIlIIIIllIIIlIllII()
+            elif lIlIlIlIlIllIlIIll == '4':
+                if not IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.has_cookies():
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Add a cookie or login first.[/]', style='bold indian_red', border_style='indian_red'))
+                    llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                    continue
+                IIlIIllIlIlIIlllIl.IllIIIllllIIlIllII()
+            elif lIlIlIlIlIllIlIIll == '5':
+                break
+            else:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+
+    def IIIIlIllllIIlIlIII(IIlIIllIlIlIIlllIl):
+        """Handle Facebook login functionality."""
+        IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+        IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+        llIIllIIIIIlIIIIIl = IllllIlIlIlIll('[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobile numbers and usernames are currently not supported yet.[/]\n[bold indian_red]Caution:[/] [bold white]Refrain from using your main account, as doing so may cause lockout or suspension.[/]', title='[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]', style='bold yellow', border_style='yellow')
+        llIIIIlIlllIllIlIl.print(llIIllIIIIIlIIIIIl)
+        lIlIlllIlllIIlIlll = llIIIIlIlllIllIlIl.input('[bold yellow]\U0001faaa Enter your credential: [/]')
+        IlIIIIIllIIIIIlIII = llIIIIlIlllIllIlIl.input('[bold yellow]🔑 Enter your password: [/]')
+        (IlIIlIIIIlIIIlIlll, IlIIIIIlIlllIIIIlI, lllIlIlllllIIlIIII) = IIlIIllIlIlIIlllIl.lIllIlllIIIIIIIlll.login(lIlIlllIlllIIlIlll.strip(), IlIIIIIllIIIIIlIII.strip())
+        if IlIIlIIIIlIIIlIlll and lllIlIlllllIIlIIII:
+            IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII = lllIlIlllllIIlIIII
+            IlIIlIIIIlIIIlIlll = IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.add_cookie(lllIlIlllllIIlIIII['cookie'], lllIlIlllllIIlIIII['name'], lllIlIlllllIIlIIII['token'])[0]
+            if IlIIlIIIIlIIIlIlll:
+                IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl = None
+                IlIIIllIlllIIlIIll = IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.get_all_accounts()
+                for llllIlllIlIIllIIIl in IlIIIllIlllIIlIIll:
+                    if llllIlllIlIIllIIIl['user_id'] == IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['user_id']:
+                        IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.set_current_account(llllIlllIlIIllIIIl['id'])
+                        IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl = llllIlllIlIIllIIIl
+                        break
+        IIlIIllIlIlIIlllIl.lIllIlllIIIIIIIlll.log_login_attempt(lIlIlllIlllIIlIlll, IlIIlIIIIlIIIlIlll, IlIIIIIlIlllIIIIlI)
+        llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+
+    def IIIIIIIllIlIllIllI(IIlIIllIlIlIIlllIl):
+        """Handle adding a new cookie."""
+        IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+        IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+        lIllIIlIIllIIllIlI = IllllIlIlIlIll('[bold yellow]Note:[/] [bold white]Use semi-colon separated format, cookie must contain c_user and xs values.[/]\n[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason.[/]', title='[bold white]𝗔𝗗𝗗 𝗬𝗢𝗨𝗥 𝗖𝗢𝗢𝗞𝗜𝗘[/]', style='bold yellow', border_style='yellow')
+        llIIIIlIlllIllIlIl.print(lIllIIlIIllIIllIlI)
+        IlIIllIlIIIIllllII = llIIIIlIlllIllIlIl.input('[bold yellow]🍪 Enter your cookie: [/]')
+        IlIIllIlIIIIllllII = IlIIllIlIIIIllllII.strip()
+        if not IlIIllIlIIIIllllII:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Cookie cannot be empty![/]', style='bold indian_red', border_style='indian_red'))
+            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            return
+        llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]🔄 Validating cookie format...[/]', style='bold cyan', border_style='cyan'))
+        IlIIIIllllllII(1)
+        if 'c_user=' not in IlIIllIlIIIIllllII or 'xs=' not in IlIIllIlIIIIllllII:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid cookie format! Cookie must contain c_user and xs values.[/]', style='bold indian_red', border_style='indian_red'))
+            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            return
+        llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]✅ Cookie format is valid![/]', style='bold green', border_style='green'))
+        IlIIIIllllllII(1)
+        try:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll("[bold white]🔄 Getting account's token...[/]", style='bold cyan', border_style='cyan'))
+            IlIIIIllllllII(1.5)
+            IlIIlIIIIIlllIIIII = IIIlllllIlllll()
+            try:
+                for IlllllIIIIIllIlIlI in IlIIllIlIIIIllllII.split(';'):
+                    if '=' in IlllllIIIIIllIlIlI:
+                        (lllllIIllIlIIIIIll, lIllIIlIIllIIIIllI) = IlllllIIIIIllIlIlI.strip().split('=', 1)
+                        IlIIlIIIIIlllIIIII.cookies.set(lllllIIllIlIIIIIll, lIllIIlIIllIIIIllI)
+            except lllllllllllllIl as llIIlIIlIIlIIlIIII:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]❕ Error parsing cookie: {lllllllllllllII(llIIlIIlIIlIIlIIII)}[/]', style='bold indian_red', border_style='indian_red'))
+                IlIIIIllllllII(1)
+            IllIIllIIlllIllIII = {'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.9', 'Sec-Fetch-Site': 'none', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-User': '?1', 'Sec-Fetch-Dest': 'document', 'Upgrade-Insecure-Requests': '1'}
+            lIlIIIIlIlIIIIIlll = None
+            IIllllllIlIlllIIll = [('Ads Manager', 'https://adsmanager.facebook.com/adsmanager/', 'accessToken="(EAA[A-Za-z0-9]+)"'), ('Business Manager', 'https://business.facebook.com/content_management', '"(EAA[A-Za-z0-9]+)"'), ('Feed Composer', 'https://www.facebook.com/composer/ocelot/async_loader/?publisher=feed', '"accessToken":"(EAA[A-Za-z0-9]+)"')]
+            for (llIIlllIIllIllllII, llIlIIIIIlIllllIIl, llllllIlIllllllllI) in IIllllllIlIlllIIll:
+                try:
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]🔄 Trying {llIIlllIIllIllllII} method...[/]', style='bold cyan', border_style='cyan'))
+                    IlIIIIllllllII(1)
+                    lllIlIllIlllIIIIIl = IlIIlIIIIIlllIIIII.get(llIlIIIIIlIllllIIl, headers=IllIIllIIlllIllIII, timeout=30)
+                    if lllIlIllIlllIIIIIl.ok:
+                        lIllIIIIlIIIIIlIII = IlllIIIllIIIIl(llllllIlIllllllllI, lllIlIllIlllIIIIIl.text)
+                        if lIllIIIIlIIIIIlIII:
+                            lIlIIIIlIlIIIIIlll = lIllIIIIlIIIIIlIII.group(1)
+                            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]✅ Token found using {llIIlllIIllIllllII}![/]', style='bold green', border_style='green'))
+                            IlIIIIllllllII(1)
+                            break
+                except IlIIIlIlIllllI:
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]❕ {llIIlllIIllIllllII} request timed out[/]', style='bold indian_red', border_style='indian_red'))
+                except lllllllllllllIl as llIIlIIlIIlIIlIIII:
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]❕ Error with {llIIlllIIllIllllII}: {lllllllllllllII(llIIlIIlIIlIIlIIII)}[/]', style='bold indian_red', border_style='indian_red'))
+            if lIlIIIIlIlIIIIIlll:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold green]✅ Successfully retrieved token![/]', style='bold green', border_style='green'))
+                IlIIIIllllllII(1)
+            else:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Could not retrieve token. Continuing anyway...[/]', style='bold indian_red', border_style='indian_red'))
+                IlIIIIllllllII(1)
+                lIlIIIIlIlIIIIIlll = 'N/A'
+        except lllllllllllllIl as llIIlIIlIIlIIlIIII:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]❕ Error during token extraction: {lllllllllllllII(llIIlIIlIIlIIlIIII)}. Continuing anyway...[/]', style='bold indian_red', border_style='indian_red'))
+            IlIIIIllllllII(1)
+            lIlIIIIlIlIIIIIlll = 'N/A'
+        IIIIlIlIIIIlIIllII = None
+        if 'name=' not in IlIIllIlIIIIllllII:
+            IIIIlIlIIIIlIIllII = llIIIIlIlllIllIlIl.input('[bold yellow]💳 Enter your name: [/]').strip()
+            if not IIIIlIlIIIIlIIllII:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Please enter your Facebook account name[/]', style='bold indian_red', border_style='indian_red'))
+                llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                return
+        llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]🔄 Saving account data...[/]', style='bold cyan', border_style='cyan'))
+        IlIIIIllllllII(1)
+        (IlIIlIIIIlIIIlIlll, IlIIIIIlIlllIIIIlI) = IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.add_cookie(IlIIllIlIIIIllllII, IIIIlIlIIIIlIIllII, lIlIIIIlIlIIIIIlll)
+        if IlIIlIIIIlIIIlIlll:
+            IlIIIllIlllIIlIIll = IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.get_all_accounts()
+            IIllIlllIIIlIIIlII = IlIIIllIlllIIlIIll[-1]
+            IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl = IIllIlllIIIlIIIlII
+            IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.set_current_account(IIllIlllIIIlIIIlII['id'])
+            IIlIIllIlIlIIlllIl.IIlIIllIIlIIIlIIll(IIllIlllIIIlIIIlII)
+            IlIIIIllllllII(1)
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold green]✅ Cookie added successfully!\n👤 Account: {IIllIlllIIIlIIIlII['name']}\n📩 UID: {IIllIlllIIIlIIIlII['user_id']}[/]", style='bold green', border_style='green'))
+        else:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]❕ {IlIIIIIlIlllIIIIlI}[/]', style='bold indian_red', border_style='indian_red'))
+        IllIIIllIllllIlllI = lIllIIlIllIIII.now(llllllllIlllII(llIIIlIIIIIlII(hours=8)))
+        llIIlllIIlIlIlIlII = IllIIIllIllllIlllI.strftime('%B %d, %Y %I:%M %p')
+        IIIIIllllIIlII.log_activity(f'Add Cookie (PH: {llIIlllIIlIlIlIlII}) by {IIlIIllIlIlIIlllIl.llllIlllIlllIIIIII}', IlIIlIIIIlIIIlIlll, IlIIIIIlIlllIIIIlI)
+        llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+
+    def IIIIlIIIIlIlIllIll(IIlIIllIlIlIIlllIl):
+        """Handle Profile Guard operations."""
+        if not IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Please select an account first[/]', style='bold indian_red', border_style='indian_red'))
+            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            return
+        while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
+            IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+            IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl['name']}[/]", style='bold cyan', border_style='cyan'))
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold yellow]Note:[/] [bold white]Make sure you turn off first your Facebook lock profile before proceeding to Facebook Profile Guard.[/]\n\n[1] Activate your Facebook Profile Shield\n[2] Deactivate your Facebook Profile Shield\n[3] Back to Main Menu', title='[bold white]🛡️ 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗣𝗥𝗢𝗙𝗜𝗟𝗘 𝗚𝗨𝗔𝗥𝗗[/]', style='bold cyan', border_style='cyan'))
+            lIlIlIlIlIllIlIIll = llIIIIlIlllIllIlIl.input('[bold yellow]Enter your choice: [/]').strip()
+            if lIlIlIlIlIllIlIIll == '1' or lIlIlIlIlIllIlIIll == '2':
+                lllIllIIlIIIllIlIl = lIlIlIlIlIllIlIIll == '1'
+                (IlIIlIIIIlIIIlIlll, IlIIIIIlIlllIIIIlI) = IIlIIllIlIlIIlllIl.llIlIIllIIllIllIlI.toggle_profile_shield(IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl, lllIllIIlIIIllIlIl)
+                if IlIIlIIIIlIIIlIlll:
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold white]✅ {IlIIIIIlIlllIIIIlI}\nName: {IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl['name']}\nUID: {IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl['user_id']}[/]", style='bold green', border_style='green'))
+                else:
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]❕ {IlIIIIIlIlllIIIIlI}[/]', style='bold indian_red', border_style='indian_red'))
+                llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            elif lIlIlIlIlIllIlIIll == '3':
+                break
+            else:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid choice![/]', style='bold indian_red', border_style='indian_red'))
+                llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+
+    def lIlIIIIllIIIlIllII(IIlIIllIlIlIIlllIl):
+        """Handle cookie settings and storage menu."""
+        while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
+            IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+            IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+            if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+            IlIIIllIlllIIlIIll = IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.get_all_accounts()
+            for (IlIIIIlllIIlIIIIII, llllIlllIlIIllIIIl) in llllllllllllllI(IlIIIllIlllIIlIIll, 1):
+                lIlIllIllIIllIIIIl = 'Logged in' if llllIlllIlIIllIIIl == IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl else 'Logged out'
+                lIIIIllIlIIlIlIIII = 'green' if lIlIllIllIIllIIIIl == 'Logged in' else 'red'
+                lIlIlIIIIIIIIIllIl = llllIlllIlIIllIIIl.get('name', 'Unknown User')
+                IllIIIllIIIlllIIII = IllllIlIlIlIll(f"[bold white]Name: {lIlIlIIIIIIIIIllIl}[/]\n[bold white]UID: {llllIlllIlIIllIIIl['user_id']}[/]\n[bold {lIIIIllIlIIlIlIIII}]Status: {lIlIllIllIIllIIIIl}[/]\n" + (f'[bold yellow][{IlIIIIlllIIlIIIIII}] Select[/]\n' if llllIlllIlIIllIIIl != IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl else '') + f'[bold red][R{IlIIIIlllIIlIIIIII}] Remove[/]', title=f'[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {IlIIIIlllIIlIIIIII}[/]', style='bold yellow', border_style='yellow')
+                llIIIIlIlllIllIlIl.print(IllIIIllIIIlllIIII)
+            llIIIIlIlllIllIlIl.print('[bold white][0] Back[/]\n')
+            lIlIlIlIlIllIlIIll = llIIIIlIlllIllIlIl.input('[bold yellow]Select an option: [/]')
+            lIlIlIlIlIllIlIIll = lIlIlIlIlIllIlIIll.strip().upper()
+            if lIlIlIlIlIllIlIIll == '0':
+                break
+            if lIlIlIlIlIllIlIIll.startswith('R'):
+                try:
+                    IlIIIIlllIIlIIIIII = lllllllllllIlIl(lIlIlIlIlIllIlIIll[1:]) - 1
+                    if 0 <= IlIIIIlllIIlIIIIII < lllllllllllIlll(IlIIIllIlllIIlIIll):
+                        IlllIIIlIlIIlIllII = IlIIIllIlllIIlIIll[IlIIIIlllIIlIIIIII]
+                        if IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII and IlllIIIlIlIIlIllII['user_id'] == IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['user_id']:
+                            lIlIlIIIIIIIIIllIl = IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']
+                        else:
+                            lIlIlIIIIIIIIIllIl = 'Unknown User'
+                        llIIIIIlIIllIlIlll = llIIIIlIlllIllIlIl.input(f'[bold red]Are you sure you want to remove {lIlIlIIIIIIIIIllIl}? (y/N): [/]').strip().lower()
+                        if llIIIIIlIIllIlIlll == 'y':
+                            if IlllIIIlIlIIlIllII == IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl:
+                                IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl = None
+                                IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII = None
+                            IlIIlIIIIlIIIlIlll = IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.remove_cookie(IlllIIIlIlIIlIllII)
+                            if IlIIlIIIIlIIIlIlll:
+                                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold green]✅ Successfully removed account: {lIlIlIIIIIIIIIllIl}[/]', style='bold green', border_style='green'))
+                            else:
+                                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Failed to remove account![/]', style='bold indian_red', border_style='indian_red'))
+                    else:
+                        llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid selection![/]', style='bold indian_red', border_style='indian_red'))
+                except (lllllllllllIllI, llllllllllllIll):
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid input![/]', style='bold indian_red', border_style='indian_red'))
+            else:
+                try:
+                    lllIllllIIllIllIlI = lllllllllllIlIl(lIlIlIlIlIllIlIIll) - 1
+                    if 0 <= lllIllllIIllIllIlI < lllllllllllIlll(IlIIIllIlllIIlIIll):
+                        if IlIIIllIlllIIlIIll[lllIllllIIllIllIlI] != IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl:
+                            IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl = IlIIIllIlllIIlIIll[lllIllllIIllIllIlI]
+                            IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.set_current_account(IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl['id'])
+                            IIlIIllIlIlIIlllIl.IIlIIllIIlIIIlIIll(IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl)
+                            lIlIlIIIIIIIIIllIl = IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl['name']
+                            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold green]✅ Successfully switched to account: {lIlIlIIIIIIIIIllIl}[/]', style='bold green', border_style='green'))
+                        else:
+                            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ This account is already selected.[/]', style='bold indian_red', border_style='indian_red'))
+                    else:
+                        llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid selection![/]', style='bold indian_red', border_style='indian_red'))
+                except lllllllllllIllI:
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid input![/]', style='bold indian_red', border_style='indian_red'))
+            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+
+    def IllIIIllllIIlIllII(IIlIIllIlIlIIlllIl):
+        """Handle cookie database functionality."""
+        IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+        IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+        if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+        IlllIIIIlIIIIIIIlI = IllllIlIlIlIll('[bold yellow]Note:[/] [bold white]You can manage all your stored cookies and tokens here[/]\n[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]', title='[bold white]𝗖𝗢𝗢𝗞𝗜𝗘𝗦 & 𝗧𝗢𝗞𝗘𝗡𝗦 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]', style='bold cyan', border_style='cyan')
+        llIIIIlIlllIllIlIl.print(IlllIIIIlIIIIIIIlI)
+        IIIIIIIIIllIIlIIll = IllllIlIlIlIll('[bold white][1] View All Cookies & Tokens[/]\n[bold white][2] Back to Main Menu[/]', style='bold cyan', border_style='cyan')
+        llIIIIlIlllIllIlIl.print(IIIIIIIIIllIIlIIll)
+        lIlIlIlIlIllIlIIll = llIIIIlIlllIllIlIl.input('[bold cyan]Enter your choice: [/]')
+        if lIlIlIlIlIllIlIIll == '1':
+            IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+            IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+            if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+            llIIIIlIlllIllIlIl.print(IlllIIIIlIIIIIIIlI)
+            IlIIIllIlllIIlIIll = IIlIIllIlIlIIlllIl.IllIlIllIIIllIIIll.get_all_accounts()
+            for (IlIIIIlllIIlIIIIII, llllIlllIlIIllIIIl) in llllllllllllllI(IlIIIllIlllIIlIIll, 1):
+                IllIIIllIllllIlllI = lIllIIlIllIIII.now(llllllllIlllII(llIIIlIIIIIlII(hours=8)))
+                llIllIIlIllIIlllll = IllIIIllIllllIlllI.strftime('%B %d, %Y')
+                IIlIlllIIIlllIIlIl = IllIIIllIllllIlllI.strftime('%I:%M %p +8 GMT (PH)')
+                IlIIllIlIIIIllllII = llllIlllIlIIllIIIl['cookie']
+                lIIIIlIlIllIlIllII = llllIlllIlIIllIIIl.get('token', 'N/A')
+                IIIIIlIIlIlllIIllI = IlIIllIlIIIIllllII[:20] + '...' + IlIIllIlIIIIllllII[-10:] if lllllllllllIlll(IlIIllIlIIIIllllII) > 30 else IlIIllIlIIIIllllII
+                IllllIIIIIIlIIlIlI = lIIIIlIlIllIlIllII[:20] + '...' + lIIIIlIlIllIlIllII[-10:] if lllllllllllIlll(lIIIIlIlIllIlIllII) > 30 else lIIIIlIlIllIlIllII
+                lIllIIlIIllIIllIlI = IllllIlIlIlIll(f"[bold white]Name: {llllIlllIlIIllIIIl.get('name', 'Unknown User')}[/]\n[bold white]Cookie: {IIIIIlIIlIlllIIllI}[/]\n[bold white]Token: {IllllIIIIIIlIIlIlI}[/]\n[bold white]Added Date: {llIllIIlIllIIlllll}[/]\n[bold white]Added Time: {IIlIlllIIIlllIIlIl}[/]\n\n[bold yellow][C{IlIIIIlllIIlIIIIII}] Copy cookie[/]\n[bold yellow][T{IlIIIIlllIIlIIIIII}] Copy token[/]", title=f'[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {IlIIIIlllIIlIIIIII}[/]', style='bold yellow', border_style='yellow')
+                llIIIIlIlllIllIlIl.print(lIllIIlIIllIIllIlI)
+            llIIIIlIlllIllIlIl.print('[bold white][0] Back[/]\n')
+            while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
+                IIlllllIIllIllIllI = llIIIIlIlllIllIlIl.input('[bold yellow]Select an option: [/]').strip().upper()
+                if IIlllllIIllIllIllI == '0':
+                    break
+                if IIlllllIIllIllIllI.startswith(('C', 'T')):
+                    try:
+                        IlIIIIlllIIlIIIIII = lllllllllllIlIl(IIlllllIIllIllIllI[1:]) - 1
+                        if 0 <= IlIIIIlllIIlIIIIII < lllllllllllIlll(IlIIIllIlllIIlIIll):
+                            try:
+                                IIIIlllIIIlIllllII = IlIIIllIlllIIlIIll[IlIIIIlllIIlIIIIII]['cookie'] if IIlllllIIllIllIllI.startswith('C') else IlIIIllIlllIIlIIll[IlIIIIlllIIlIIIIII].get('token', '')
+                                lIIIlIllIllllIIlll = 'Cookie' if IIlllllIIllIllIllI.startswith('C') else 'Token'
+                                if not IIIIlllIIIlIllllII and lIIIlIllIllllIIlll == 'Token':
+                                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ No token available for this account![/]', style='bold indian_red', border_style='indian_red'))
+                                else:
+                                    IIlIlllIIIIlIllIlI = IIllIIIIIIlllI(['termux-clipboard-set'], stdin=lllIIIIIlIIlII)
+                                    IIlIlllIIIIlIllIlI.communicate(input=IIIIlllIIIlIllllII.encode())
+                                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]✅ {lIIIlIllIllllIIlll} {IlIIIIlllIIlIIIIII + 1} copied to clipboard![/]', style='bold green', border_style='green'))
+                            except lllllllllllllIl as llIIlIIlIIlIIlIIII:
+                                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Failed to copy to clipboard. Make sure Termux:API is installed.[/]', style='bold indian_red', border_style='indian_red'))
+                            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                            IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+                            IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+                            if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+                                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+                            llIIIIlIlllIllIlIl.print(IlllIIIIlIIIIIIIlI)
+                            for (IlIIIIlllIIlIIIIII, llllIlllIlIIllIIIl) in llllllllllllllI(IlIIIllIlllIIlIIll, 1):
+                                llIIIIlIlllIllIlIl.print(lIllIIlIIllIIllIlI)
+                            llIIIIlIlllIllIlIl.print('[bold white][0] Back[/]\n')
+                            break
+                        else:
+                            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                            IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+                            IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+                            if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+                                llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+                            llIIIIlIlllIllIlIl.print(IlllIIIIlIIIIIIIlI)
+                            for (IlIIIIlllIIlIIIIII, llllIlllIlIIllIIIl) in llllllllllllllI(IlIIIllIlllIIlIIll, 1):
+                                llIIIIlIlllIllIlIl.print(lIllIIlIIllIIllIlI)
+                            llIIIIlIlllIllIlIl.print('[bold white][0] Back[/]\n')
+                    except lllllllllllIllI:
+                        llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                        llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                        IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+                        IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+                        if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+                            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+                        llIIIIlIlllIllIlIl.print(IlllIIIIlIIIIIIIlI)
+                        for (IlIIIIlllIIlIIIIII, llllIlllIlIIllIIIl) in llllllllllllllI(IlIIIllIlllIIlIIll, 1):
+                            llIIIIlIlllIllIlIl.print(lIllIIlIIllIIllIlI)
+                        llIIIIlIlllIllIlIl.print('[bold white][0] Back[/]\n')
+                else:
+                    llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                    llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                    IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+                    IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+                    if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+                        llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+                    llIIIIlIlllIllIlIl.print(IlllIIIIlIIIIIIIlI)
+                    for (IlIIIIlllIIlIIIIII, llllIlllIlIIllIIIl) in llllllllllllllI(IlIIIllIlllIIlIIll, 1):
+                        llIIIIlIlllIllIlIl.print(lIllIIlIIllIIllIlI)
+                    llIIIIlIlllIllIlIl.print('[bold white][0] Back[/]\n')
+            return
+        elif lIlIlIlIlIllIlIIll == '2':
+            return
+        else:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            IIlIIllIlIlIIlllIl.IllIIIllllIIlIllII()
+
+    def IIlllIIIIIIIlIlllI(IIlIIllIlIlIIlllIl):
+        """Handle spam sharing functionality."""
+        IIlIIllIlIlIIlllIl.IlIIllIIlIIIllIlll()
+        IIlIIllIlIlIIlllIl.IlIIllIlIIIlIlIllI()
+        if IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl and IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIlIIllIlIlIIlllIl.lllIlIlllllIIlIIII['name']}[/]", style='bold cyan', border_style='cyan'))
+        lllIlIlIllIllllllI = IllllIlIlIlIll("[bold yellow]Note:[/] [bold white]This code does not use Facebook's API for fewer restrictions.[/]\n[bold indian_red]Caution:[/] [bold white]Do not turn off your internet while the process is ongoing.[/]", title='[bold white]𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]', style='bold cyan', border_style='cyan')
+        llIIIIlIlllIllIlIl.print(lllIlIlIllIllllllI)
+        IlIlIIllIIIlIlIIll = llIIIIlIlllIllIlIl.input('[bold green]🔗 Enter the Facebook post URL: [/]')
+        IlIlIIllIIIlIlIIll = IlIlIIllIIIlIlIIll.strip()
+        if not IIIIIllllIIlII.validate_url(IlIlIIllIIIlIlIIll):
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Invalid Facebook URL![/]', style='bold indian_red', border_style='indian_red'))
+            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            return
+        (IlIIlIIIIlIIIlIlll, IlIIlllIIlllIIIIIl) = IIIIIllllIIlII.validate_input('[bold green]Number of shares: [/]', lllllllllllIlIl, min_val=1, max_val=100000)
+        if not IlIIlIIIIlIIIlIlll:
+            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            return
+        (IlIIlIIIIlIIIlIlll, llIIIIllllIlIlllll) = IIIIIllllIIlII.validate_input('[bold green]Delay between shares (seconds): [/]', lllllllllllIlIl, min_val=1, max_val=60)
+        if not IlIIlIIIIlIIIlIlll:
+            llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            return
+        (IlIIlIIIIlIIIlIlll, IlIIIIIlIlllIIIIlI) = IIlIIllIlIlIIlllIl.IIIIllllIIIlIIIIll.share_post(IIlIIllIlIlIIlllIl.IIllllIlllIIlIIIIl['cookie'], IlIlIIllIIIlIlIIll, IlIIlllIIlllIIIIIl, llIIIIllllIlIlllll)
+        if IlIIlIIIIlIIIlIlll:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold green]✅ {IlIIIIIlIlllIIIIlI}[/]', style='bold green', border_style='green'))
+        else:
+            llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]❕ {IlIIIIIlIlllIIIIlI}[/]', style='bold indian_red', border_style='indian_red'))
+        IIIIIllllIIlII.log_activity('Share Post', IlIIlIIIIlIIIlIlll, IlIIIIIlIlllIIIIlI)
+        llIIIIlIlllIllIlIl.input('[bold white]Press Enter to continue...[/]')
+
+def lIllIllIIllllIlIll():
+    """Main entry point of the application."""
+    try:
+        llllIllIIlIlIIIlll = lllIlIlllIIlIlllll()
+        llllIllIIlIlIIIlll.lIllIllIIllllIlIll()
+    except llllllllllllIII:
+        llIIIIlIlllIllIlIl.print(IllllIlIlIlIll('[bold white]❕ Program interrupted by user.[/]', style='bold indian_red', border_style='indian_red'))
+        IllIIIIlllllIl(0)
+    except lllllllllllllIl as llIIlIIlIIlIIlIIII:
+        llIIIIlIlllIllIlIl.print(IllllIlIlIlIll(f'[bold white]❕ An unexpected error occurred: {lllllllllllllII(llIIlIIlIIlIIlIIII)}[/]', style='bold indian_red', border_style='indian_red'))
+        lllIIIIlIIlIlIIIIl = lIllIIlIllIIII.now(llllllllIlllII.utc).strftime('%Y-%m-%d %H:%M:%S')
+        IIIIIllllIIlII.log_activity(f'System Error (UTC: {lllIIIIlIIlIlIIIIl}) by {sehraks1}', lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0), lllllllllllllII(llIIlIIlIIlIIlIIII))
+        IllIIIIlllllIl(1)
+if llllllllllllIIl == '__main__':
+    lIllIllIIllllIlIll()
