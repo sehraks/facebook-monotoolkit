@@ -1,495 +1,495 @@
 lllllllllllllll, llllllllllllllI, lllllllllllllIl, lllllllllllllII, llllllllllllIll, llllllllllllIlI, llllllllllllIIl, llllllllllllIII, lllllllllllIlll, lllllllllllIllI, lllllllllllIlIl = bool, enumerate, Exception, str, IndexError, open, __name__, KeyboardInterrupt, len, ValueError, int
 
-from os import makedirs as IlIIllIIllIllI, system as lIlllllIIIlllI, name as llIIIlllIlllII, chmod as IlIIllllllIIll
-from time import sleep as lIIlIIIllIlIIl
-from requests import Timeout as llIIllllIllIll, Session as lIllIIlIllIIll
-from re import search as IlIllIIIlIlIll
-from subprocess import Popen as lllIlIllIlIIll, PIPE as IlIIIIIllIllIl
-from sys import exit as llIlIIIlllIIII
-from datetime import datetime as lllIlIIllIllll, timezone as llllIllIlIlIII, timedelta as IIIllIlllllIIl
-from typing import Dict as IIIlIIIlllIlIl, Optional as llllllllIIlIII
-from rich.console import Console as lIllIlllIllIll
-from rich.panel import Panel as lIIllIIlIllllI
-from rich.table import Table as lIllllllIIlIlI
-from modules.cookie_manager import CookieManager as IllIlIllIIlIlI
-from modules.spam_sharing import SpamSharing as IlllllIllllIll
-from modules.utils import Utils as IlllIIlIIIlllI
-from modules.update_settings import UpdateSettings as IlIIlIllIIIlll
-from modules.fb_login import FacebookLogin as llIllllllIlllI
-from modules.cookie_database import CookieDatabase as IIllIlllIIlIIl
-from modules.fb_guard import FacebookGuard as IIllIlIIIlIllI
-lIllIIlIIlIIllIlIl = lIllIlllIllIll()
+from os import makedirs as llIlIIIIIIlIIl, system as lllIlIIIIIlIIl, name as IIlllIIlIIllll, chmod as llllIlllllIIll
+from time import sleep as IlIlIIllIlIIII
+from requests import Timeout as IlllllIllllIIl, Session as lIIIIIlIIlIIIl
+from re import search as llIIllIIllIIlI
+from subprocess import Popen as lIIIlllIlIIIII, PIPE as lllIllIllIlllI
+from sys import exit as IlllIlIlIlIIII
+from datetime import datetime as llllIlIlIIIlII, timezone as IIIllIlIlllIll, timedelta as IIIllIIIlllIlI
+from typing import Dict as IIIlIlIIIlIlIl, Optional as lIllIIIIIllIIl
+from rich.console import Console as llllllIlIIIllI
+from rich.panel import Panel as IllIllllIIlIIl
+from rich.table import Table as lllIIIlIllIIIl
+from modules.cookie_manager import CookieManager as lIIlIlllllIIll
+from modules.spam_sharing import SpamSharing as IlIIIIIlllllII
+from modules.utils import Utils as lIllIIIIlIIllI
+from modules.update_settings import UpdateSettings as lIIIlIllIIIlIl
+from modules.fb_login import FacebookLogin as IIIllIlllIlllI
+from modules.cookie_database import CookieDatabase as IIllIIlIIlIIIl
+from modules.fb_guard import FacebookGuard as IlllIIIIIllllI
+lIIIlIlllllllllIIl = llllllIlIIIllI()
 
-class lllIIIIIllllIlIIII:
+class lIIlIIllllllllIlll:
 
-    def __init__(lIIlllIIlllIIIlllI):
+    def __init__(IIIIIIIIlIllIlllll):
         """Initialize the Facebook MonoToolkit."""
-        lIIlllIIlllIIIlllI.lIlIlIIllllIllllll = None
-        lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI = None
+        IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = None
+        IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = None
         try:
-            with llllllllllllIlI('changelogs.txt', 'r') as lIlllllIIIIIllllIl:
-                IllllIIlllIlIIlIII = lIlllllIIIIIllllIl.readline().strip()
-                lIIlllIIlllIIIlllI.IllllIIlIlIllIIIIl = IllllIIlllIlIIlIII.replace('Version ', '')
+            with llllllllllllIlI('changelogs.txt', 'r') as lIllllIIlIIlIIlIlI:
+                llIIlIIllIIIlllIII = lIllllIIlIIlIIlIlI.readline().strip()
+                IIIIIIIIlIllIlllll.lIllIIIIlIlllIIlII = llIIlIIllIIIlllIII.replace('Version ', '')
         except:
-            lIIlllIIlllIIIlllI.IllllIIlIlIllIIIIl = 'X.XX'
-        lIIlllIIlllIIIlllI.lIlllllIlIlllllIll = 'Greegmon'
-        lIIlllIIlllIIIlllI.IIIlIIIIllIllIllll = 'Cerax'
-        IIIlIlllllIIllllIl = lllIlIIllIllll.now(llllIllIlIlIII(IIIllIlllllIIl(hours=8)))
-        lIIlllIIlllIIIlllI.IIllllIIllIllIllIl = IIIlIlllllIIllllIl.strftime('%B %d, %Y')
-        lIIlllIIlllIIIlllI.IIIllIllIIllIIIlll = IIIlIlllllIIllllIl.strftime('%I:%M %p')
-        lIIlllIIlllIIIlllI.IlIIllIlIIIlllIIll = 'sehraks'
-        lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII = IllIlIllIIlIlI()
-        lIIlllIIlllIIIlllI.lIIlllllIlIlIllIII = IlllllIllllIll()
-        lIIlllIIlllIIIlllI.lIlllIlIIlIlIIlIll = IlIIlIllIIIlll(lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl)
-        lIIlllIIlllIIIlllI.IllIlllIIlIlIIIIII = llIllllllIlllI()
-        lIIlllIIlllIIIlllI.lllIIlIIlIllIIlIll = IIllIlllIIlIIl(lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII)
-        lIIlllIIlllIIIlllI.lIlIIlIllIlllIIIlI = IIllIlIIIlIllI()
-        lIIlllIIlllIIIlllI.IIlIIlIlIIIIIIIIlI()
-        lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI = lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.get_current_account()
-        if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI:
-            lIIlllIIlllIIIlllI.IlllIIIlIIlllIlIII(lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI)
+            IIIIIIIIlIllIlllll.lIllIIIIlIlllIIlII = 'X.XX'
+        IIIIIIIIlIllIlllll.lIllIlIIllIllllIlI = 'Greegmon'
+        IIIIIIIIlIllIlllll.IIIIIIIIIlIlllIIll = 'Cerax'
+        lIllIIIllIlIlllIll = llllIlIlIIIlII.now(IIIllIlIlllIll(IIIllIIIlllIlI(hours=8)))
+        IIIIIIIIlIllIlllll.IIlllIIlIlIlIlIIll = lIllIIIllIlIlllIll.strftime('%B %d, %Y')
+        IIIIIIIIlIllIlllll.IllIllIIIIIIlIlIll = lIllIIIllIlIlllIll.strftime('%I:%M %p')
+        IIIIIIIIlIllIlllll.lIIIIlIIIIIllllIIl = 'sehraks'
+        IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI = lIIlIlllllIIll()
+        IIIIIIIIlIllIlllll.lIIIlIllIlIIIIIIll = IlIIIIIlllllII()
+        IIIIIIIIlIllIlllll.lIIllIIIIIlIIllIII = lIIIlIllIIIlIl(IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI)
+        IIIIIIIIlIllIlllll.llIIIllIlllIllIIll = IIIllIlllIlllI()
+        IIIIIIIIlIllIlllll.IIIIIIllIIlllIllll = IIllIIlIIlIIIl(IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI)
+        IIIIIIIIlIllIlllll.llIlIIlIlllIlllllI = IlllIIIIIllllI()
+        IIIIIIIIlIllIlllll.IlIIIIIllIIIlllIII()
+        IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_current_account()
+        if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
+            IIIIIIIIlIllIlllll.lIllIIIIlIIIIlllll(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll)
 
-    def IlllIIIlIIlllIlIII(lIIlllIIlllIIIlllI, IIlIIlIllIlIllIlll: IIIlIIIlllIlIl) -> None:
+    def lIllIIIIlIIIIlllll(IIIIIIIIlIllIlllll, IllllllIlllIIllIlI: IIIlIlIIIlIlIl) -> None:
         """Load account data for the current account."""
-        if IIlIIlIllIlIllIlll:
-            lIIlllIIlllIIIlllI.lIlIlIIllllIllllll = {'name': IIlIIlIllIlIllIlll.get('name', 'Unknown User'), 'user_id': IIlIIlIllIlIllIlll.get('user_id')}
+        if IllllllIlllIIllIlI:
+            IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = {'name': IllllllIlllIIllIlI.get('name', 'Unknown User'), 'user_id': IllllllIlllIIllIlI.get('user_id')}
         else:
-            lIIlllIIlllIIIlllI.lIlIlIIllllIllllll = None
+            IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = None
 
-    def IIlIIlIlIIIIIIIIlI(lIIlllIIlllIIIlllI):
+    def IlIIIIIllIIIlllIII(IIIIIIIIlIllIlllll):
         """Initialize necessary directories."""
-        IIIIlllIIlIIIIIlll = ['cookies-storage', 'logs']
-        for lIlIIIlIIllllIllll in IIIIlllIIlIIIIIlll:
+        IIllIlIIllIlIIlllI = ['cookies-storage', 'logs']
+        for lllllIIIllIlllIlll in IIllIlIIllIlIIlllI:
             try:
-                IlIIllIIllIllI(lIlIIIlIIllllIllll, exist_ok=lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1))
-                IlIIllllllIIll(lIlIIIlIIllllIllll, 448)
-            except lllllllllllllIl as IlllIIIIllIIllIlIl:
-                lIllIIlIIlIIllIlIl.print(f'[bold red]Error creating directory {lIlIIIlIIllllIllll}: {lllllllllllllII(IlllIIIIllIIllIlIl)}[/]')
+                llIlIIIIIIlIIl(lllllIIIllIlllIlll, exist_ok=lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1))
+                llllIlllllIIll(lllllIIIllIlllIlll, 448)
+            except lllllllllllllIl as IIllIlllIIIIIIllll:
+                lIIIlIlllllllllIIl.print(f'[bold red]Error creating directory {lllllIIIllIlllIlll}: {lllllllllllllII(IIllIlllIIIIIIllll)}[/]')
 
-    def lIIIIlIlllIIlIlIII(lIIlllIIlllIIIlllI):
+    def lllIllllllIlIlllIl(IIIIIIIIlIllIlllll):
         """Clear the terminal screen."""
-        lIlllllIIIlllI('cls' if IllllIlIlIllllIIll == 'nt' else 'clear')
+        lllIlIIIIIlIIl('cls' if lIllIlIIlIIIIIIlIl == 'nt' else 'clear')
 
-    def llllIlIIlIIlIlIIIl(lIIlllIIlllIIIlllI):
+    def IllIIIlIIlIIIlIIlI(IIIIIIIIlIllIlllll):
         """Display the tool banner."""
-        IIIlIlllllIIllllIl = lllIlIIllIllll.now(llllIllIlIlIII(IIIllIlllllIIl(hours=8)))
-        IlIlllIIIIIIllIIII = IIIlIlllllIIllllIl.strftime('%I:%M %p')
-        IIIlIlIllIIIlIIlIl = IIIlIlllllIIllllIl.strftime('%B %d, %Y')
-        IIllIIllIlIllllllI = lIIllIIlIllllI(f'[white]Original: {lIIlllIIlllIIIlllI.lIlllllIlIlllllIll}[/]\n[white]Modified by: {lIIlllIIlllIIIlllI.IIIlIIIIllIllIllll}[/]\n[white]Version: {lIIlllIIlllIIIlllI.IllllIIlIlIllIIIIl}[/]\n[white]Date: {IIIlIlIllIIIlIIlIl}[/]\n[white]Time: {IlIlllIIIIIIllIIII} GMT+8[/]', style='bold magenta', title='[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]', border_style='cyan')
-        lIllIIlIIlIIllIlIl.print(IIllIIllIlIllllllI)
+        lIllIIIllIlIlllIll = llllIlIlIIIlII.now(IIIllIlIlllIll(IIIllIIIlllIlI(hours=8)))
+        IlIlIlllllIlIIIIII = lIllIIIllIlIlllIll.strftime('%I:%M %p')
+        lIllIlIIllIIIlllll = lIllIIIllIlIlllIll.strftime('%B %d, %Y')
+        llllllIllIIIIlllIl = IllIllllIIlIIl(f'[white]Original: {IIIIIIIIlIllIlllll.lIllIlIIllIllllIlI}[/]\n[white]Modified by: {IIIIIIIIlIllIlllll.IIIIIIIIIlIlllIIll}[/]\n[white]Version: {IIIIIIIIlIllIlllll.lIllIIIIlIlllIIlII}[/]\n[white]Date: {lIllIlIIllIIIlllll}[/]\n[white]Time: {IlIlIlllllIlIIIIII} GMT+8[/]', style='bold magenta', title='[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]', border_style='cyan')
+        lIIIlIlllllllllIIl.print(llllllIllIIIIlllIl)
 
-    def lIIlllllIlIlIllIlI(lIIlllIIlllIIIlllI):
+    def IllllIlIIIIIIlIlII(IIIIIIIIlIllIlllll):
         """Check if cookie is available."""
-        if not lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Please login first using the Accounts Management option.[/]', style='bold indian_red', border_style='indian_red'))
-            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+        if not IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Please login first using the Accounts Management option.[/]', style='bold indian_red', border_style='indian_red'))
+            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
             return lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0)
         return lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1)
 
-    def lllIllIlIlIllIllIl(lIIlllIIlllIIIlllI):
+    def llIlIlIlIllIIllIlI(IIIIIIIIlIllIlllll):
         """Display and handle the main menu."""
         while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-            lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-            lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-            if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-            lIllIIlIlIIIlIlIIl = lIIllIIlIllllI('[bold white][1] Accounts Management[/]\n[bold white][2] Spam Sharing Post[/]\n[bold white][3] Profile Guard[/]\n[bold white][4] Settings[/]\n[bold red][5] Exit[/]', title='[bold white]𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨[/]', style='bold magenta', border_style='cyan')
-            lIllIIlIIlIIllIlIl.print(lIllIIlIlIIIlIlIIl)
-            lIIlIIlIllIIlIIIlI = lIllIIlIIlIIllIlIl.input('[bold yellow]Select an option (1-5): [/]')
-            lIIlIIlIllIIlIIIlI = lIIlIIlIllIIlIIIlI.strip()
-            if lIIlIIlIllIIlIIIlI == '1':
-                lIIlllIIlllIIIlllI.lIlllIlIlIlIlllIll()
-            elif lIIlIIlIllIIlIIIlI == '2':
-                if not lIIlllIIlllIIIlllI.lIIlllllIlIlIllIlI():
+            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+            lIIlllIlIlllIllIIl = IllIllllIIlIIl('[bold white][1] Accounts Management[/]\n[bold white][2] Spam Sharing Post[/]\n[bold white][3] Profile Guard[/]\n[bold white][4] Settings[/]\n[bold red][5] Exit[/]', title='[bold white]𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨[/]', style='bold magenta', border_style='cyan')
+            lIIIlIlllllllllIIl.print(lIIlllIlIlllIllIIl)
+            lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold yellow]Select an option (1-5): [/]')
+            lllIIIIllIIlIIlllI = lllIIIIllIIlIIlllI.strip()
+            if lllIIIIllIIlIIlllI == '1':
+                IIIIIIIIlIllIlllll.IIlllIllIlIIlllIlI()
+            elif lllIIIIllIIlIIlllI == '2':
+                if not IIIIIIIIlIllIlllll.IllllIlIIIIIIlIlII():
                     continue
-                lIIlllIIlllIIIlllI.lIIIlIIIllIIlllIll()
-            elif lIIlIIlIllIIlIIIlI == '3':
-                if not lIIlllIIlllIIIlllI.lIIlllllIlIlIllIlI():
+                IIIIIIIIlIllIlllll.llllIlIIlIIllllllI()
+            elif lllIIIIllIIlIIlllI == '3':
+                if not IIIIIIIIlIllIlllll.IllllIlIIIIIIlIlII():
                     continue
-                lIIlllIIlllIIIlllI.IIIIlIIIlIIlllIlIl()
-            elif lIIlIIlIllIIlIIIlI == '4':
-                lIIlllIIlllIIIlllI.llIllIlIIIIIIlIIII()
-            elif lIIlIIlIllIIlIIIlI == '5':
+                IIIIIIIIlIllIlllll.IlIIIIIllllllllIIl()
+            elif lllIIIIllIIlIIlllI == '4':
+                IIIIIIIIlIllIlllll.lIlllIllIIIllIIIll()
+            elif lllIIIIllIIlIIlllI == '5':
                 break
             else:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
 
-    def llIllIlIIIIIIlIIII(lIIlllIIlllIIIlllI):
+    def lIlllIllIIIllIIIll(IIIIIIIIlIllIlllll):
         """Handle settings menu."""
-        lIIlllIIlllIIIlllI.lIlllIlIIlIlIIlIll.display_settings_menu()
+        IIIIIIIIlIllIlllll.lIIllIIIIIlIIllIII.display_settings_menu()
 
-    def lIlllIlIlIlIlllIll(lIIlllIIlllIIIlllI):
+    def IIlllIllIlIIlllIlI(IIIIIIIIlIllIlllll):
         """Handle cookie management menu."""
         while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-            lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-            lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-            if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold yellow]🔑 𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]', style='bold yellow', border_style='yellow'))
-            lIllIIlIlIIIlIlIIl = lIIllIIlIllllI('[bold white][1] Enter your cookie[/]\n[bold white][2] Login your Facebook account[/]\n[bold white][3] Access your Facebook accounts[/]\n[bold white][4] Cookies & Tokens Database[/]\n[bold white][5] Back to Main Menu[/]', title='[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]', style='bold yellow', border_style='yellow')
-            lIllIIlIIlIIllIlIl.print(lIllIIlIlIIIlIlIIl)
-            lIIlIIlIllIIlIIIlI = lIllIIlIIlIIllIlIl.input('[bold yellow]Select an option: [/]')
-            lIIlIIlIllIIlIIIlI = lIIlIIlIllIIlIIIlI.strip()
-            if lIIlIIlIllIIlIIIlI == '1':
-                lIIlllIIlllIIIlllI.llllIIIlllllIIIIll()
-            elif lIIlIIlIllIIlIIIlI == '2':
-                lIIlllIIlllIIIlllI.lIllIIIIlIIIllIlIl()
-            elif lIIlIIlIllIIlIIIlI == '3':
-                if not lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.has_cookies():
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Add a cookie or login first.[/]', style='bold indian_red', border_style='indian_red'))
-                    lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold yellow]🔑 𝗔𝗖𝗖𝗢𝗨𝗡𝗧𝗦 𝗠𝗔𝗡𝗔𝗚𝗘𝗠𝗘𝗡𝗧[/]', style='bold yellow', border_style='yellow'))
+            lIIlllIlIlllIllIIl = IllIllllIIlIIl('[bold white][1] Enter your cookie[/]\n[bold white][2] Login your Facebook account[/]\n[bold white][3] Access your Facebook accounts[/]\n[bold white][4] Cookies & Tokens Database[/]\n[bold white][5] Back to Main Menu[/]', title='[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]', style='bold yellow', border_style='yellow')
+            lIIIlIlllllllllIIl.print(lIIlllIlIlllIllIIl)
+            lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold yellow]Select an option: [/]')
+            lllIIIIllIIlIIlllI = lllIIIIllIIlIIlllI.strip()
+            if lllIIIIllIIlIIlllI == '1':
+                IIIIIIIIlIllIlllll.lllIllIllIlIlIIIlI()
+            elif lllIIIIllIIlIIlllI == '2':
+                IIIIIIIIlIllIlllll.IlIlIIlllIIlIIllll()
+            elif lllIIIIllIIlIIlllI == '3':
+                if not IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.has_cookies():
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Add a cookie or login first.[/]', style='bold indian_red', border_style='indian_red'))
+                    lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
                     continue
-                lIIlllIIlllIIIlllI.llllIIllIlllIIlllI()
-            elif lIIlIIlIllIIlIIIlI == '4':
-                if not lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.has_cookies():
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Add a cookie or login first.[/]', style='bold indian_red', border_style='indian_red'))
-                    lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                IIIIIIIIlIllIlllll.IlIlllIlIlllIlIIII()
+            elif lllIIIIllIIlIIlllI == '4':
+                if not IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.has_cookies():
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Add a cookie or login first.[/]', style='bold indian_red', border_style='indian_red'))
+                    lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
                     continue
-                lIIlllIIlllIIIlllI.IlIlIIlIIIllllIIll()
-            elif lIIlIIlIllIIlIIIlI == '5':
+                IIIIIIIIlIllIlllll.IIIIIIIIlllllllIll()
+            elif lllIIIIllIIlIIlllI == '5':
                 break
             else:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
 
-    def lIllIIIIlIIIllIlIl(lIIlllIIlllIIIlllI):
+    def IlIlIIlllIIlIIllll(IIIIIIIIlIllIlllll):
         """Handle Facebook login functionality."""
-        lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-        lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-        lIlIIllIllllIlIlIl = lIIllIIlIllllI('[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobile numbers and usernames are currently not supported yet.[/]\n[bold indian_red]Caution:[/] [bold white]Refrain from using your main account, as doing so may cause lockout or suspension.[/]', title='[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]', style='bold yellow', border_style='yellow')
-        lIllIIlIIlIIllIlIl.print(lIlIIllIllllIlIlIl)
-        lIlllllIIlIllIllII = lIllIIlIIlIIllIlIl.input('[bold yellow]\U0001faaa Enter your credential: [/]')
-        lIlIlIlllllIlIIIll = lIllIIlIIlIIllIlIl.input('[bold yellow]🔑 Enter your password: [/]')
-        (lIlIIlllIlIllIIIII, IlIIIIlllIIlIlllll, lIlIlIIllllIllllll) = lIIlllIIlllIIIlllI.IllIlllIIlIlIIIIII.login(lIlllllIIlIllIllII.strip(), lIlIlIlllllIlIIIll.strip())
-        if lIlIIlllIlIllIIIII and lIlIlIIllllIllllll:
-            lIIlllIIlllIIIlllI.lIlIlIIllllIllllll = lIlIlIIllllIllllll
-            lIlIIlllIlIllIIIII = lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.add_cookie(lIlIlIIllllIllllll['cookie'], lIlIlIIllllIllllll['name'], lIlIlIIllllIllllll['token'])[0]
-            if lIlIIlllIlIllIIIII:
-                lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI = None
-                lIIIIlIlIlllIlIlII = lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.get_all_accounts()
-                for IIlIIlIllIlIllIlll in lIIIIlIlIlllIlIlII:
-                    if IIlIIlIllIlIllIlll['user_id'] == lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['user_id']:
-                        lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.set_current_account(IIlIIlIllIlIllIlll['id'])
-                        lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI = IIlIIlIllIlIllIlll
+        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+        IIIlIIIlIlIIllIlII = IllIllllIIlIIl('[bold yellow]Note:[/] [bold white]You can use either your email address or Facebook UID. Mobile numbers and usernames are currently not supported yet.[/]\n[bold indian_red]Caution:[/] [bold white]Refrain from using your main account, as doing so may cause lockout or suspension.[/]', title='[bold white]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗟𝗢𝗚𝗜𝗡[/]', style='bold yellow', border_style='yellow')
+        lIIIlIlllllllllIIl.print(IIIlIIIlIlIIllIlII)
+        llIlIIlIIllIIllIII = lIIIlIlllllllllIIl.input('[bold yellow]\U0001faaa Enter your credential: [/]')
+        IlllIIlIIlIlIIIlIl = lIIIlIlllllllllIIl.input('[bold yellow]🔑 Enter your password: [/]')
+        (lllIlllIIIlIllIIIl, lIllIIllIllIllIlll, IlIlllIIIlllIIIlll) = IIIIIIIIlIllIlllll.llIIIllIlllIllIIll.login(llIlIIlIIllIIllIII.strip(), IlllIIlIIlIlIIIlIl.strip())
+        if lllIlllIIIlIllIIIl and IlIlllIIIlllIIIlll:
+            IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = IlIlllIIIlllIIIlll
+            lllIlllIIIlIllIIIl = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.add_cookie(IlIlllIIIlllIIIlll['cookie'], IlIlllIIIlllIIIlll['name'], IlIlllIIIlllIIIlll['token'])[0]
+            if lllIlllIIIlIllIIIl:
+                IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = None
+                IIllIIllIlIllIlIlI = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_all_accounts()
+                for IllllllIlllIIllIlI in IIllIIllIlIllIlIlI:
+                    if IllllllIlllIIllIlI['user_id'] == IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['user_id']:
+                        IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.set_current_account(IllllllIlllIIllIlI['id'])
+                        IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = IllllllIlllIIllIlI
                         break
-        lIIlllIIlllIIIlllI.IllIlllIIlIlIIIIII.log_login_attempt(lIlllllIIlIllIllII, lIlIIlllIlIllIIIII, IlIIIIlllIIlIlllll)
-        lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+        IIIIIIIIlIllIlllll.llIIIllIlllIllIIll.log_login_attempt(llIlIIlIIllIIllIII, lllIlllIIIlIllIIIl, lIllIIllIllIllIlll)
+        lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
 
-    def llllIIIlllllIIIIll(lIIlllIIlllIIIlllI):
+    def lllIllIllIlIlIIIlI(IIIIIIIIlIllIlllll):
         """Handle adding a new cookie."""
-        lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-        lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-        llIlIIIlllIllIIIll = lIIllIIlIllllI('[bold yellow]Note:[/] [bold white]Use semi-colon separated format, cookie must contain c_user and xs values.[/]\n[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason.[/]', title='[bold white]𝗔𝗗𝗗 𝗬𝗢𝗨𝗥 𝗖𝗢𝗢𝗞𝗜𝗘[/]', style='bold yellow', border_style='yellow')
-        lIllIIlIIlIIllIlIl.print(llIlIIIlllIllIIIll)
-        lIlIlIIIlllIIllIII = lIllIIlIIlIIllIlIl.input('[bold yellow]🍪 Enter your cookie: [/]')
-        lIlIlIIIlllIIllIII = lIlIlIIIlllIIllIII.strip()
-        if not lIlIlIIIlllIIllIII:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Cookie cannot be empty![/]', style='bold indian_red', border_style='indian_red'))
-            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+        IIIIIIlIIlIIIlllll = IllIllllIIlIIl('[bold yellow]Note:[/] [bold white]Use semi-colon separated format, cookie must contain c_user and xs values.[/]\n[bold indian_red]Caution:[/] [bold white]JSON format is not supported for some reason.[/]', title='[bold white]𝗔𝗗𝗗 𝗬𝗢𝗨𝗥 𝗖𝗢𝗢𝗞𝗜𝗘[/]', style='bold yellow', border_style='yellow')
+        lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
+        lIIIIIIIIIIIIlIlIl = lIIIlIlllllllllIIl.input('[bold yellow]🍪 Enter your cookie: [/]')
+        lIIIIIIIIIIIIlIlIl = lIIIIIIIIIIIIlIlIl.strip()
+        if not lIIIIIIIIIIIIlIlIl:
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Cookie cannot be empty![/]', style='bold indian_red', border_style='indian_red'))
+            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
             return
-        lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]🔄 Validating cookie format...[/]', style='bold cyan', border_style='cyan'))
-        lIIlIIIllIlIIl(1)
-        if 'c_user=' not in lIlIlIIIlllIIllIII or 'xs=' not in lIlIlIIIlllIIllIII:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid cookie format! Cookie must contain c_user and xs values.[/]', style='bold indian_red', border_style='indian_red'))
-            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]🔄 Validating cookie format...[/]', style='bold cyan', border_style='cyan'))
+        IlIlIIllIlIIII(1)
+        if 'c_user=' not in lIIIIIIIIIIIIlIlIl or 'xs=' not in lIIIIIIIIIIIIlIlIl:
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid cookie format! Cookie must contain c_user and xs values.[/]', style='bold indian_red', border_style='indian_red'))
+            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
             return
-        lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]✅ Cookie format is valid![/]', style='bold green', border_style='green'))
-        lIIlIIIllIlIIl(1)
+        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]✅ Cookie format is valid![/]', style='bold green', border_style='green'))
+        IlIlIIllIlIIII(1)
         try:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI("[bold white]🔄 Getting account's token...[/]", style='bold cyan', border_style='cyan'))
-            lIIlIIIllIlIIl(1.5)
-            lIIIIlIllIIIIlIlII = lIllIIlIllIIll()
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl("[bold white]🔄 Getting account's token...[/]", style='bold cyan', border_style='cyan'))
+            IlIlIIllIlIIII(1.5)
+            lIIIllllIIlIlllIll = lIIIIIlIIlIIIl()
             try:
-                for IlIlIllIIIIlllIIll in lIlIlIIIlllIIllIII.split(';'):
-                    if '=' in IlIlIllIIIIlllIIll:
-                        (IllllIlIlIllllIIll, llllllllIIIIllIllI) = IlIlIllIIIIlllIIll.strip().split('=', 1)
-                        lIIIIlIllIIIIlIlII.cookies.set(IllllIlIlIllllIIll, llllllllIIIIllIllI)
-            except lllllllllllllIl as IlllIIIIllIIllIlIl:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]❕ Error parsing cookie: {lllllllllllllII(IlllIIIIllIIllIlIl)}[/]', style='bold indian_red', border_style='indian_red'))
-                lIIlIIIllIlIIl(1)
-            IlIIIIlIIlllIlIIII = {'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.9', 'Sec-Fetch-Site': 'none', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-User': '?1', 'Sec-Fetch-Dest': 'document', 'Upgrade-Insecure-Requests': '1'}
-            lllIllllIlllllllIl = None
-            lIIIllIIIIIlIIllll = [('Ads Manager', 'https://adsmanager.facebook.com/adsmanager/', 'accessToken="(EAA[A-Za-z0-9]+)"'), ('Business Manager', 'https://business.facebook.com/content_management', '"(EAA[A-Za-z0-9]+)"'), ('Feed Composer', 'https://www.facebook.com/composer/ocelot/async_loader/?publisher=feed', '"accessToken":"(EAA[A-Za-z0-9]+)"')]
-            for (llIlIIIlllIIllllIl, IIIIlIIIIIlIIlIllI, llIIllIlIIlIIIIIlI) in lIIIllIIIIIlIIllll:
+                for IlIlIIlllllllIIIII in lIIIIIIIIIIIIlIlIl.split(';'):
+                    if '=' in IlIlIIlllllllIIIII:
+                        (lIllIlIIlIIIIIIlIl, IllIllllllIlIIIIll) = IlIlIIlllllllIIIII.strip().split('=', 1)
+                        lIIIllllIIlIlllIll.cookies.set(lIllIlIIlIIIIIIlIl, IllIllllllIlIIIIll)
+            except lllllllllllllIl as IIllIlllIIIIIIllll:
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ Error parsing cookie: {lllllllllllllII(IIllIlllIIIIIIllll)}[/]', style='bold indian_red', border_style='indian_red'))
+                IlIlIIllIlIIII(1)
+            IIlIlIlIIIIllIlIII = {'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Mobile Safari/537.36', 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8', 'Accept-Language': 'en-US,en;q=0.9', 'Sec-Fetch-Site': 'none', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-User': '?1', 'Sec-Fetch-Dest': 'document', 'Upgrade-Insecure-Requests': '1'}
+            IlIIlIllIllIIIIIll = None
+            lllIIlIIIlllIIIllI = [('Ads Manager', 'https://adsmanager.facebook.com/adsmanager/', 'accessToken="(EAA[A-Za-z0-9]+)"'), ('Business Manager', 'https://business.facebook.com/content_management', '"(EAA[A-Za-z0-9]+)"'), ('Feed Composer', 'https://www.facebook.com/composer/ocelot/async_loader/?publisher=feed', '"accessToken":"(EAA[A-Za-z0-9]+)"')]
+            for (lIlIllIlIIIIIlIIII, IlIlIIIlIIIIIlIIll, llIIllIlIllllIIIII) in lllIIlIIIlllIIIllI:
                 try:
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]🔄 Trying {llIlIIIlllIIllllIl} method...[/]', style='bold cyan', border_style='cyan'))
-                    lIIlIIIllIlIIl(1)
-                    lIIlIllllIIIllIlIl = lIIIIlIllIIIIlIlII.get(IIIIlIIIIIlIIlIllI, headers=IlIIIIlIIlllIlIIII, timeout=30)
-                    if lIIlIllllIIIllIlIl.ok:
-                        lIIIllllIllIIIllIl = IlIllIIIlIlIll(llIIllIlIIlIIIIIlI, lIIlIllllIIIllIlIl.text)
-                        if lIIIllllIllIIIllIl:
-                            lllIllllIlllllllIl = lIIIllllIllIIIllIl.group(1)
-                            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]✅ Token found using {llIlIIIlllIIllllIl}![/]', style='bold green', border_style='green'))
-                            lIIlIIIllIlIIl(1)
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]🔄 Trying {lIlIllIlIIIIIlIIII} method...[/]', style='bold cyan', border_style='cyan'))
+                    IlIlIIllIlIIII(1)
+                    IIIlIllIIIlIlIIIIl = lIIIllllIIlIlllIll.get(IlIlIIIlIIIIIlIIll, headers=IIlIlIlIIIIllIlIII, timeout=30)
+                    if IIIlIllIIIlIlIIIIl.ok:
+                        lIlIIlllllllIlIlIl = llIIllIIllIIlI(llIIllIlIllllIIIII, IIIlIllIIIlIlIIIIl.text)
+                        if lIlIIlllllllIlIlIl:
+                            IlIIlIllIllIIIIIll = lIlIIlllllllIlIlIl.group(1)
+                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]✅ Token found using {lIlIllIlIIIIIlIIII}![/]', style='bold green', border_style='green'))
+                            IlIlIIllIlIIII(1)
                             break
-                except llIIllllIllIll:
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]❕ {llIlIIIlllIIllllIl} request timed out[/]', style='bold indian_red', border_style='indian_red'))
-                except lllllllllllllIl as IlllIIIIllIIllIlIl:
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]❕ Error with {llIlIIIlllIIllllIl}: {lllllllllllllII(IlllIIIIllIIllIlIl)}[/]', style='bold indian_red', border_style='indian_red'))
-            if lllIllllIlllllllIl:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold green]✅ Successfully retrieved token![/]', style='bold green', border_style='green'))
-                lIIlIIIllIlIIl(1)
+                except IlllllIllllIIl:
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ {lIlIllIlIIIIIlIIII} request timed out[/]', style='bold indian_red', border_style='indian_red'))
+                except lllllllllllllIl as IIllIlllIIIIIIllll:
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ Error with {lIlIllIlIIIIIlIIII}: {lllllllllllllII(IIllIlllIIIIIIllll)}[/]', style='bold indian_red', border_style='indian_red'))
+            if IlIIlIllIllIIIIIll:
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold green]✅ Successfully retrieved token![/]', style='bold green', border_style='green'))
+                IlIlIIllIlIIII(1)
             else:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Could not retrieve token. Continuing anyway...[/]', style='bold indian_red', border_style='indian_red'))
-                lIIlIIIllIlIIl(1)
-                lllIllllIlllllllIl = 'N/A'
-        except lllllllllllllIl as IlllIIIIllIIllIlIl:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]❕ Error during token extraction: {lllllllllllllII(IlllIIIIllIIllIlIl)}. Continuing anyway...[/]', style='bold indian_red', border_style='indian_red'))
-            lIIlIIIllIlIIl(1)
-            lllIllllIlllllllIl = 'N/A'
-        lllllIIllllIIIlIIl = None
-        if 'name=' not in lIlIlIIIlllIIllIII:
-            lllllIIllllIIIlIIl = lIllIIlIIlIIllIlIl.input('[bold yellow]💳 Enter your name: [/]').strip()
-            if not lllllIIllllIIIlIIl:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Please enter your Facebook account name[/]', style='bold indian_red', border_style='indian_red'))
-                lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Could not retrieve token. Continuing anyway...[/]', style='bold indian_red', border_style='indian_red'))
+                IlIlIIllIlIIII(1)
+                IlIIlIllIllIIIIIll = 'N/A'
+        except lllllllllllllIl as IIllIlllIIIIIIllll:
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ Error during token extraction: {lllllllllllllII(IIllIlllIIIIIIllll)}. Continuing anyway...[/]', style='bold indian_red', border_style='indian_red'))
+            IlIlIIllIlIIII(1)
+            IlIIlIllIllIIIIIll = 'N/A'
+        lIIllllIIlIIIllIlI = None
+        if 'name=' not in lIIIIIIIIIIIIlIlIl:
+            lIIllllIIlIIIllIlI = lIIIlIlllllllllIIl.input('[bold yellow]💳 Enter your name: [/]').strip()
+            if not lIIllllIIlIIIllIlI:
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Please enter your Facebook account name[/]', style='bold indian_red', border_style='indian_red'))
+                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
                 return
-        lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]🔄 Saving account data...[/]', style='bold cyan', border_style='cyan'))
-        lIIlIIIllIlIIl(1)
-        (lIlIIlllIlIllIIIII, IlIIIIlllIIlIlllll) = lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.add_cookie(lIlIlIIIlllIIllIII, lllllIIllllIIIlIIl, lllIllllIlllllllIl)
-        if lIlIIlllIlIllIIIII:
-            lIIIIlIlIlllIlIlII = lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.get_all_accounts()
-            lIIIlIIlllIllllllI = lIIIIlIlIlllIlIlII[-1]
-            lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI = lIIIlIIlllIllllllI
-            lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.set_current_account(lIIIlIIlllIllllllI['id'])
-            lIIlllIIlllIIIlllI.IlllIIIlIIlllIlIII(lIIIlIIlllIllllllI)
-            lIIlIIIllIlIIl(1)
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold green]✅ Cookie added successfully!\n👤 Account: {lIIIlIIlllIllllllI['name']}\n📩 UID: {lIIIlIIlllIllllllI['user_id']}[/]", style='bold green', border_style='green'))
+        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]🔄 Saving account data...[/]', style='bold cyan', border_style='cyan'))
+        IlIlIIllIlIIII(1)
+        (lllIlllIIIlIllIIIl, lIllIIllIllIllIlll) = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.add_cookie(lIIIIIIIIIIIIlIlIl, lIIllllIIlIIIllIlI, IlIIlIllIllIIIIIll)
+        if lllIlllIIIlIllIIIl:
+            IIllIIllIlIllIlIlI = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_all_accounts()
+            IIIllllIIIIllIlIII = IIllIIllIlIllIlIlI[-1]
+            IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = IIIllllIIIIllIlIII
+            IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.set_current_account(IIIllllIIIIllIlIII['id'])
+            IIIIIIIIlIllIlllll.lIllIIIIlIIIIlllll(IIIllllIIIIllIlIII)
+            IlIlIIllIlIIII(1)
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold green]✅ Cookie added successfully!\n👤 Account: {IIIllllIIIIllIlIII['name']}\n📩 UID: {IIIllllIIIIllIlIII['user_id']}[/]", style='bold green', border_style='green'))
         else:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]❕ {IlIIIIlllIIlIlllll}[/]', style='bold indian_red', border_style='indian_red'))
-        IIIlIlllllIIllllIl = lllIlIIllIllll.now(llllIllIlIlIII(IIIllIlllllIIl(hours=8)))
-        lllllIIlIIlIIllIll = IIIlIlllllIIllllIl.strftime('%B %d, %Y %I:%M %p')
-        IlllIIlIIIlllI.log_activity(f'Add Cookie (PH: {lllllIIlIIlIIllIll}) by {lIIlllIIlllIIIlllI.IlIIllIlIIIlllIIll}', lIlIIlllIlIllIIIII, IlIIIIlllIIlIlllll)
-        lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ {lIllIIllIllIllIlll}[/]', style='bold indian_red', border_style='indian_red'))
+        lIllIIIllIlIlllIll = llllIlIlIIIlII.now(IIIllIlIlllIll(IIIllIIIlllIlI(hours=8)))
+        lIllIlIIIlIllIIIIl = lIllIIIllIlIlllIll.strftime('%B %d, %Y %I:%M %p')
+        lIllIIIIlIIllI.log_activity(f'Add Cookie (PH: {lIllIlIIIlIllIIIIl}) by {IIIIIIIIlIllIlllll.lIIIIlIIIIIllllIIl}', lllIlllIIIlIllIIIl, lIllIIllIllIllIlll)
+        lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
 
-    def IIIIlIIIlIIlllIlIl(lIIlllIIlllIIIlllI):
+    def IlIIIIIllllllllIIl(IIIIIIIIlIllIlllll):
         """Handle Profile Guard operations."""
-        if not lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Please select an account first[/]', style='bold indian_red', border_style='indian_red'))
-            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+        if not IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Please select an account first[/]', style='bold indian_red', border_style='indian_red'))
+            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
             return
         while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-            lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-            lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI['name']}[/]", style='bold cyan', border_style='cyan'))
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold yellow]Note:[/] [bold white]Make sure you turn off first your Facebook lock profile before proceeding to Facebook Profile Guard.[/]\n\n[1] Activate your Facebook Profile Shield\n[2] Deactivate your Facebook Profile Shield\n[3] Back to Main Menu', title='[bold white]🛡️ 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗣𝗥𝗢𝗙𝗜𝗟𝗘 𝗚𝗨𝗔𝗥𝗗[/]', style='bold cyan', border_style='cyan'))
-            lIIlIIlIllIIlIIIlI = lIllIIlIIlIIllIlIl.input('[bold yellow]Enter your choice: [/]').strip()
-            if lIIlIIlIllIIlIIIlI == '1' or lIIlIIlIllIIlIIIlI == '2':
-                llIlIIlIIlIlllIIll = lIIlIIlIllIIlIIIlI == '1'
-                (lIlIIlllIlIllIIIII, IlIIIIlllIIlIlllll) = lIIlllIIlllIIIlllI.lIlIIlIllIlllIIIlI.toggle_profile_shield(lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI, llIlIIlIIlIlllIIll)
-                if lIlIIlllIlIllIIIII:
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold white]✅ {IlIIIIlllIIlIlllll}\nName: {lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI['name']}\nUID: {lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI['user_id']}[/]", style='bold green', border_style='green'))
+            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['name']}[/]", style='bold cyan', border_style='cyan'))
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold yellow]Note:[/] [bold white]Make sure you turn off first your Facebook lock profile before proceeding to Facebook Profile Guard.[/]\n\n[1] Activate your Facebook Profile Shield\n[2] Deactivate your Facebook Profile Shield\n[3] Back to Main Menu', title='[bold white]🛡️ 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗣𝗥𝗢𝗙𝗜𝗟𝗘 𝗚𝗨𝗔𝗥𝗗[/]', style='bold cyan', border_style='cyan'))
+            lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold yellow]Enter your choice: [/]').strip()
+            if lllIIIIllIIlIIlllI == '1' or lllIIIIllIIlIIlllI == '2':
+                llIllllIIIIllIIlll = lllIIIIllIIlIIlllI == '1'
+                (lllIlllIIIlIllIIIl, lIllIIllIllIllIlll) = IIIIIIIIlIllIlllll.llIlIIlIlllIlllllI.toggle_profile_shield(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll, llIllllIIIIllIIlll)
+                if lllIlllIIIlIllIIIl:
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]✅ {lIllIIllIllIllIlll}\nName: {IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['name']}\nUID: {IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['user_id']}[/]", style='bold green', border_style='green'))
                 else:
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]❕ {IlIIIIlllIIlIlllll}[/]', style='bold indian_red', border_style='indian_red'))
-                lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
-            elif lIIlIIlIllIIlIIIlI == '3':
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ {lIllIIllIllIllIlll}[/]', style='bold indian_red', border_style='indian_red'))
+                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+            elif lllIIIIllIIlIIlllI == '3':
                 break
             else:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid choice![/]', style='bold indian_red', border_style='indian_red'))
-                lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice![/]', style='bold indian_red', border_style='indian_red'))
+                lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
 
-    def llllIIllIlllIIlllI(lIIlllIIlllIIIlllI):
+    def IlIlllIlIlllIlIIII(IIIIIIIIlIllIlllll):
         """Handle cookie settings and storage menu."""
         while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-            lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-            lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-            if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-            lIIIIlIlIlllIlIlII = lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.get_all_accounts()
-            for (IIlIlIIIlllIIIIlll, IIlIIlIllIlIllIlll) in llllllllllllllI(lIIIIlIlIlllIlIlII, 1):
-                lIllIlIIlIIlIlIlIl = 'Logged in' if IIlIIlIllIlIllIlll == lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI else 'Logged out'
-                llllllIIIIlIIIIlll = 'green' if lIllIlIIlIIlIlIlIl == 'Logged in' else 'red'
-                IllIlIIllIllIIIIll = IIlIIlIllIlIllIlll.get('name', 'Unknown User')
-                llIlIIIlIIllIllIIl = lIIllIIlIllllI(f"[bold white]Name: {IllIlIIllIllIIIIll}[/]\n[bold white]UID: {IIlIIlIllIlIllIlll['user_id']}[/]\n[bold {llllllIIIIlIIIIlll}]Status: {lIllIlIIlIIlIlIlIl}[/]\n" + (f'[bold yellow][{IIlIlIIIlllIIIIlll}] Select[/]\n' if IIlIIlIllIlIllIlll != lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI else '') + f'[bold red][R{IIlIlIIIlllIIIIlll}] Remove[/]', title=f'[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {IIlIlIIIlllIIIIlll}[/]', style='bold yellow', border_style='yellow')
-                lIllIIlIIlIIllIlIl.print(llIlIIIlIIllIllIIl)
-            lIllIIlIIlIIllIlIl.print('[bold white][0] Back[/]\n')
-            lIIlIIlIllIIlIIIlI = lIllIIlIIlIIllIlIl.input('[bold yellow]Select an option: [/]')
-            lIIlIIlIllIIlIIIlI = lIIlIIlIllIIlIIIlI.strip().upper()
-            if lIIlIIlIllIIlIIIlI == '0':
+            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+            IIllIIllIlIllIlIlI = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_all_accounts()
+            for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
+                IIIIIlIIlIlIIlllIl = 'Logged in' if IllllllIlllIIllIlI == IIIIIIIIlIllIlllll.lllllIIIIlllIIllll else 'Logged out'
+                IIIllIlllIIIIIlIIl = 'green' if IIIIIlIIlIlIIlllIl == 'Logged in' else 'red'
+                llIIlllIllIIIlllll = IllllllIlllIIllIlI.get('name', 'Unknown User')
+                IlIllIlIlIlllIlIII = IllIllllIIlIIl(f"[bold white]Name: {llIIlllIllIIIlllll}[/]\n[bold white]UID: {IllllllIlllIIllIlI['user_id']}[/]\n[bold {IIIllIlllIIIIIlIIl}]Status: {IIIIIlIIlIlIIlllIl}[/]\n" + (f'[bold yellow][{llIIIIIllIlllllllI}] Select[/]\n' if IllllllIlllIIllIlI != IIIIIIIIlIllIlllll.lllllIIIIlllIIllll else '') + f'[bold red][R{llIIIIIllIlllllllI}] Remove[/]', title=f'[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {llIIIIIllIlllllllI}[/]', style='bold yellow', border_style='yellow')
+                lIIIlIlllllllllIIl.print(IlIllIlIlIlllIlIII)
+            lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
+            lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold yellow]Select an option: [/]')
+            lllIIIIllIIlIIlllI = lllIIIIllIIlIIlllI.strip().upper()
+            if lllIIIIllIIlIIlllI == '0':
                 break
-            if lIIlIIlIllIIlIIIlI.startswith('R'):
+            if lllIIIIllIIlIIlllI.startswith('R'):
                 try:
-                    IIlIlIIIlllIIIIlll = lllllllllllIlIl(lIIlIIlIllIIlIIIlI[1:]) - 1
-                    if 0 <= IIlIlIIIlllIIIIlll < lllllllllllIlll(lIIIIlIlIlllIlIlII):
-                        lIlIlllIIIIIIlIIll = lIIIIlIlIlllIlIlII[IIlIlIIIlllIIIIlll]
-                        if lIIlllIIlllIIIlllI.lIlIlIIllllIllllll and lIlIlllIIIIIIlIIll['user_id'] == lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['user_id']:
-                            IllIlIIllIllIIIIll = lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']
+                    llIIIIIllIlllllllI = lllllllllllIlIl(lllIIIIllIIlIIlllI[1:]) - 1
+                    if 0 <= llIIIIIllIlllllllI < lllllllllllIlll(IIllIIllIlIllIlIlI):
+                        lIllllIIIIIIIIllII = IIllIIllIlIllIlIlI[llIIIIIllIlllllllI]
+                        if IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll and lIllllIIIIIIIIllII['user_id'] == IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['user_id']:
+                            llIIlllIllIIIlllll = IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']
                         else:
-                            IllIlIIllIllIIIIll = 'Unknown User'
-                        IIIIIlIIlIlIIIlllI = lIllIIlIIlIIllIlIl.input(f'[bold red]Are you sure you want to remove {IllIlIIllIllIIIIll}? (y/N): [/]').strip().lower()
-                        if IIIIIlIIlIlIIIlllI == 'y':
-                            if lIlIlllIIIIIIlIIll == lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI:
-                                lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI = None
-                                lIIlllIIlllIIIlllI.lIlIlIIllllIllllll = None
-                            lIlIIlllIlIllIIIII = lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.remove_cookie(lIlIlllIIIIIIlIIll)
-                            if lIlIIlllIlIllIIIII:
-                                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold green]✅ Successfully removed account: {IllIlIIllIllIIIIll}[/]', style='bold green', border_style='green'))
+                            llIIlllIllIIIlllll = 'Unknown User'
+                        llIllIlIIIIllIIIIl = lIIIlIlllllllllIIl.input(f'[bold red]Are you sure you want to remove {llIIlllIllIIIlllll}? (y/N): [/]').strip().lower()
+                        if llIllIlIIIIllIIIIl == 'y':
+                            if lIllllIIIIIIIIllII == IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
+                                IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = None
+                                IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll = None
+                            lllIlllIIIlIllIIIl = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.remove_cookie(lIllllIIIIIIIIllII)
+                            if lllIlllIIIlIllIIIl:
+                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold green]✅ Successfully removed account: {llIIlllIllIIIlllll}[/]', style='bold green', border_style='green'))
                             else:
-                                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Failed to remove account![/]', style='bold indian_red', border_style='indian_red'))
+                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Failed to remove account![/]', style='bold indian_red', border_style='indian_red'))
                     else:
-                        lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid selection![/]', style='bold indian_red', border_style='indian_red'))
+                        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid selection![/]', style='bold indian_red', border_style='indian_red'))
                 except (lllllllllllIllI, llllllllllllIll):
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid input![/]', style='bold indian_red', border_style='indian_red'))
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid input![/]', style='bold indian_red', border_style='indian_red'))
             else:
                 try:
-                    lIlIIIlllllIIllIlI = lllllllllllIlIl(lIIlIIlIllIIlIIIlI) - 1
-                    if 0 <= lIlIIIlllllIIllIlI < lllllllllllIlll(lIIIIlIlIlllIlIlII):
-                        if lIIIIlIlIlllIlIlII[lIlIIIlllllIIllIlI] != lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI:
-                            lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI = lIIIIlIlIlllIlIlII[lIlIIIlllllIIllIlI]
-                            lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.set_current_account(lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI['id'])
-                            lIIlllIIlllIIIlllI.IlllIIIlIIlllIlIII(lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI)
-                            IllIlIIllIllIIIIll = lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI['name']
-                            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold green]✅ Successfully switched to account: {IllIlIIllIllIIIIll}[/]', style='bold green', border_style='green'))
+                    IIllIlIIlIlllIllll = lllllllllllIlIl(lllIIIIllIIlIIlllI) - 1
+                    if 0 <= IIllIlIIlIlllIllll < lllllllllllIlll(IIllIIllIlIllIlIlI):
+                        if IIllIIllIlIllIlIlI[IIllIlIIlIlllIllll] != IIIIIIIIlIllIlllll.lllllIIIIlllIIllll:
+                            IIIIIIIIlIllIlllll.lllllIIIIlllIIllll = IIllIIllIlIllIlIlI[IIllIlIIlIlllIllll]
+                            IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.set_current_account(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['id'])
+                            IIIIIIIIlIllIlllll.lIllIIIIlIIIIlllll(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll)
+                            llIIlllIllIIIlllll = IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['name']
+                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold green]✅ Successfully switched to account: {llIIlllIllIIIlllll}[/]', style='bold green', border_style='green'))
                         else:
-                            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ This account is already selected.[/]', style='bold indian_red', border_style='indian_red'))
+                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ This account is already selected.[/]', style='bold indian_red', border_style='indian_red'))
                     else:
-                        lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid selection![/]', style='bold indian_red', border_style='indian_red'))
+                        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid selection![/]', style='bold indian_red', border_style='indian_red'))
                 except lllllllllllIllI:
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid input![/]', style='bold indian_red', border_style='indian_red'))
-            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid input![/]', style='bold indian_red', border_style='indian_red'))
+            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
 
-    def IlIlIIlIIIllllIIll(lIIlllIIlllIIIlllI):
+    def IIIIIIIIlllllllIll(IIIIIIIIlIllIlllll):
         """Handle cookie database functionality."""
-        lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-        lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-        if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-        llIIIlllllIlIIIlll = lIIllIIlIllllI('[bold yellow]Note:[/] [bold white]You can manage all your stored cookies and tokens here[/]\n[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]', title='[bold white]𝗖𝗢𝗢𝗞𝗜𝗘𝗦 & 𝗧𝗢𝗞𝗘𝗡𝗦 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]', style='bold cyan', border_style='cyan')
-        lIllIIlIIlIIllIlIl.print(llIIIlllllIlIIIlll)
-        lIllIIlIlIIIlIlIIl = lIIllIIlIllllI('[bold white][1] View All Cookies & Tokens[/]\n[bold white][2] Back to Main Menu[/]', style='bold cyan', border_style='cyan')
-        lIllIIlIIlIIllIlIl.print(lIllIIlIlIIIlIlIIl)
-        lIIlIIlIllIIlIIIlI = lIllIIlIIlIIllIlIl.input('[bold cyan]Enter your choice: [/]')
-        if lIIlIIlIllIIlIIIlI == '1':
-            lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-            lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-            if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-            lIllIIlIIlIIllIlIl.print(llIIIlllllIlIIIlll)
-            lIIIIlIlIlllIlIlII = lIIlllIIlllIIIlllI.lllIlIllIIIIIIlIII.get_all_accounts()
-            for (IIlIlIIIlllIIIIlll, IIlIIlIllIlIllIlll) in llllllllllllllI(lIIIIlIlIlllIlIlII, 1):
-                IIIlIlllllIIllllIl = lllIlIIllIllll.now(llllIllIlIlIII(IIIllIlllllIIl(hours=8)))
-                IlllIllIIllllIIIIl = IIIlIlllllIIllllIl.strftime('%B %d, %Y')
-                IllIlIIllllIlIIIll = IIIlIlllllIIllllIl.strftime('%I:%M %p +8 GMT (PH)')
-                lIlIlIIIlllIIllIII = IIlIIlIllIlIllIlll['cookie']
-                llIllllIIlIIIlllIl = IIlIIlIllIlIllIlll.get('token', 'N/A')
-                IIIIIIlIlIlIlIlIlI = lIlIlIIIlllIIllIII[:20] + '...' + lIlIlIIIlllIIllIII[-10:] if lllllllllllIlll(lIlIlIIIlllIIllIII) > 30 else lIlIlIIIlllIIllIII
-                llllIlIlIlIIIIlIII = llIllllIIlIIIlllIl[:20] + '...' + llIllllIIlIIIlllIl[-10:] if lllllllllllIlll(llIllllIIlIIIlllIl) > 30 else llIllllIIlIIIlllIl
-                llIlIIIlllIllIIIll = lIIllIIlIllllI(f"[bold white]Name: {IIlIIlIllIlIllIlll.get('name', 'Unknown User')}[/]\n[bold white]Cookie: {IIIIIIlIlIlIlIlIlI}[/]\n[bold white]Token: {llllIlIlIlIIIIlIII}[/]\n[bold white]Added Date: {IlllIllIIllllIIIIl}[/]\n[bold white]Added Time: {IllIlIIllllIlIIIll}[/]\n\n[bold yellow][C{IIlIlIIIlllIIIIlll}] Copy cookie[/]\n[bold yellow][T{IIlIlIIIlllIIIIlll}] Copy token[/]", title=f'[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {IIlIlIIIlllIIIIlll}[/]', style='bold yellow', border_style='yellow')
-                lIllIIlIIlIIllIlIl.print(llIlIIIlllIllIIIll)
-            lIllIIlIIlIIllIlIl.print('[bold white][0] Back[/]\n')
+        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+        if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+        lllIIlIllllIIIIIII = IllIllllIIlIIl('[bold yellow]Note:[/] [bold white]You can manage all your stored cookies and tokens here[/]\n[bold indian_red]Caution:[/] [bold white]Deleting cookies cannot be undone[/]', title='[bold white]𝗖𝗢𝗢𝗞𝗜𝗘𝗦 & 𝗧𝗢𝗞𝗘𝗡𝗦 𝗗𝗔𝗧𝗔𝗕𝗔𝗦𝗘[/]', style='bold cyan', border_style='cyan')
+        lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
+        lIIlllIlIlllIllIIl = IllIllllIIlIIl('[bold white][1] View All Cookies & Tokens[/]\n[bold white][2] Back to Main Menu[/]', style='bold cyan', border_style='cyan')
+        lIIIlIlllllllllIIl.print(lIIlllIlIlllIllIIl)
+        lllIIIIllIIlIIlllI = lIIIlIlllllllllIIl.input('[bold cyan]Enter your choice: [/]')
+        if lllIIIIllIIlIIlllI == '1':
+            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+            lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
+            IIllIIllIlIllIlIlI = IIIIIIIIlIllIlllll.lIllllIlIIIIlIlllI.get_all_accounts()
+            for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
+                lIllIIIllIlIlllIll = llllIlIlIIIlII.now(IIIllIlIlllIll(IIIllIIIlllIlI(hours=8)))
+                IIIllIlIlIlIIlIIlI = lIllIIIllIlIlllIll.strftime('%B %d, %Y')
+                llllIIlIIIIIlIlIlI = lIllIIIllIlIlllIll.strftime('%I:%M %p +8 GMT (PH)')
+                lIIIIIIIIIIIIlIlIl = IllllllIlllIIllIlI['cookie']
+                lIIIIIIIIIIlIIIIll = IllllllIlllIIllIlI.get('token', 'N/A')
+                llllIllIIIIIIlIIIl = lIIIIIIIIIIIIlIlIl[:20] + '...' + lIIIIIIIIIIIIlIlIl[-10:] if lllllllllllIlll(lIIIIIIIIIIIIlIlIl) > 30 else lIIIIIIIIIIIIlIlIl
+                IlIlIIllIIlIlIllIl = lIIIIIIIIIIlIIIIll[:20] + '...' + lIIIIIIIIIIlIIIIll[-10:] if lllllllllllIlll(lIIIIIIIIIIlIIIIll) > 30 else lIIIIIIIIIIlIIIIll
+                IIIIIIlIIlIIIlllll = IllIllllIIlIIl(f"[bold white]Name: {IllllllIlllIIllIlI.get('name', 'Unknown User')}[/]\n[bold white]Cookie: {llllIllIIIIIIlIIIl}[/]\n[bold white]Token: {IlIlIIllIIlIlIllIl}[/]\n[bold white]Added Date: {IIIllIlIlIlIIlIIlI}[/]\n[bold white]Added Time: {llllIIlIIIIIlIlIlI}[/]\n\n[bold yellow][C{llIIIIIllIlllllllI}] Copy cookie[/]\n[bold yellow][T{llIIIIIllIlllllllI}] Copy token[/]", title=f'[bold yellow]📨 𝗔𝗖𝗖𝗢𝗨𝗡𝗧 {llIIIIIllIlllllllI}[/]', style='bold yellow', border_style='yellow')
+                lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
+            lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
             while lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 1):
-                lIlIIllIlllIlIlIIl = lIllIIlIIlIIllIlIl.input('[bold yellow]Select an option: [/]').strip().upper()
-                if lIlIIllIlllIlIlIIl == '0':
+                IIlllIIIlIIllIIllI = lIIIlIlllllllllIIl.input('[bold yellow]Select an option: [/]').strip().upper()
+                if IIlllIIIlIIllIIllI == '0':
                     break
-                if lIlIIllIlllIlIlIIl.startswith(('C', 'T')):
+                if IIlllIIIlIIllIIllI.startswith(('C', 'T')):
                     try:
-                        IIlIlIIIlllIIIIlll = lllllllllllIlIl(lIlIIllIlllIlIlIIl[1:]) - 1
-                        if 0 <= IIlIlIIIlllIIIIlll < lllllllllllIlll(lIIIIlIlIlllIlIlII):
+                        llIIIIIllIlllllllI = lllllllllllIlIl(IIlllIIIlIIllIIllI[1:]) - 1
+                        if 0 <= llIIIIIllIlllllllI < lllllllllllIlll(IIllIIllIlIllIlIlI):
                             try:
-                                lllIIllllIlIIIlIll = lIIIIlIlIlllIlIlII[IIlIlIIIlllIIIIlll]['cookie'] if lIlIIllIlllIlIlIIl.startswith('C') else lIIIIlIlIlllIlIlII[IIlIlIIIlllIIIIlll].get('token', '')
-                                IllIllIIlIllIlIIlI = 'Cookie' if lIlIIllIlllIlIlIIl.startswith('C') else 'Token'
-                                if not lllIIllllIlIIIlIll and IllIllIIlIllIlIIlI == 'Token':
-                                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ No token available for this account![/]', style='bold indian_red', border_style='indian_red'))
+                                IIIIIIlIIlIlIIIllI = IIllIIllIlIllIlIlI[llIIIIIllIlllllllI]['cookie'] if IIlllIIIlIIllIIllI.startswith('C') else IIllIIllIlIllIlIlI[llIIIIIllIlllllllI].get('token', '')
+                                lIIIlIIlllIIllIIll = 'Cookie' if IIlllIIIlIIllIIllI.startswith('C') else 'Token'
+                                if not IIIIIIlIIlIlIIIllI and lIIIlIIlllIIllIIll == 'Token':
+                                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ No token available for this account![/]', style='bold indian_red', border_style='indian_red'))
                                 else:
-                                    lIllllllIIIlIIlIIl = lllIlIllIlIIll(['termux-clipboard-set'], stdin=IlIIIIIllIllIl)
-                                    lIllllllIIIlIIlIIl.communicate(input=lllIIllllIlIIIlIll.encode())
-                                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]✅ {IllIllIIlIllIlIIlI} {IIlIlIIIlllIIIIlll + 1} copied to clipboard![/]', style='bold green', border_style='green'))
-                            except lllllllllllllIl as IlllIIIIllIIllIlIl:
-                                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Failed to copy to clipboard. Make sure Termux:API is installed.[/]', style='bold indian_red', border_style='indian_red'))
-                            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
-                            lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-                            lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-                            if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-                                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-                            lIllIIlIIlIIllIlIl.print(llIIIlllllIlIIIlll)
-                            for (IIlIlIIIlllIIIIlll, IIlIIlIllIlIllIlll) in llllllllllllllI(lIIIIlIlIlllIlIlII, 1):
-                                lIllIIlIIlIIllIlIl.print(llIlIIIlllIllIIIll)
-                            lIllIIlIIlIIllIlIl.print('[bold white][0] Back[/]\n')
+                                    IlIIlIlIIIIIIIlIIl = lIIIlllIlIIIII(['termux-clipboard-set'], stdin=lllIllIllIlllI)
+                                    IlIIlIlIIIIIIIlIIl.communicate(input=IIIIIIlIIlIlIIIllI.encode())
+                                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]✅ {lIIIlIIlllIIllIIll} {llIIIIIllIlllllllI + 1} copied to clipboard![/]', style='bold green', border_style='green'))
+                            except lllllllllllllIl as IIllIlllIIIIIIllll:
+                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Failed to copy to clipboard. Make sure Termux:API is installed.[/]', style='bold indian_red', border_style='indian_red'))
+                            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+                            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+                            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+                            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+                            lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
+                            for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
+                                lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
+                            lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
                             break
                         else:
-                            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
-                            lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-                            lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-                            if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-                                lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-                            lIllIIlIIlIIllIlIl.print(llIIIlllllIlIIIlll)
-                            for (IIlIlIIIlllIIIIlll, IIlIIlIllIlIllIlll) in llllllllllllllI(lIIIIlIlIlllIlIlII, 1):
-                                lIllIIlIIlIIllIlIl.print(llIlIIIlllIllIIIll)
-                            lIllIIlIIlIIllIlIl.print('[bold white][0] Back[/]\n')
+                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+                            IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+                            IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+                            if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+                                lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+                            lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
+                            for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
+                                lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
+                            lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
                     except lllllllllllIllI:
-                        lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                        lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
-                        lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-                        lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-                        if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-                            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-                        lIllIIlIIlIIllIlIl.print(llIIIlllllIlIIIlll)
-                        for (IIlIlIIIlllIIIIlll, IIlIIlIllIlIllIlll) in llllllllllllllI(lIIIIlIlIlllIlIlII, 1):
-                            lIllIIlIIlIIllIlIl.print(llIlIIIlllIllIIIll)
-                        lIllIIlIIlIIllIlIl.print('[bold white][0] Back[/]\n')
+                        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                        lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+                        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+                        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+                        if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+                            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+                        lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
+                        for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
+                            lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
+                        lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
                 else:
-                    lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-                    lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
-                    lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-                    lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-                    if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-                        lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-                    lIllIIlIIlIIllIlIl.print(llIIIlllllIlIIIlll)
-                    for (IIlIlIIIlllIIIIlll, IIlIIlIllIlIllIlll) in llllllllllllllI(lIIIIlIlIlllIlIlII, 1):
-                        lIllIIlIIlIIllIlIl.print(llIlIIIlllIllIIIll)
-                    lIllIIlIIlIIllIlIl.print('[bold white][0] Back[/]\n')
+                    lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+                    lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+                    IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+                    IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+                    if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+                        lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+                    lIIIlIlllllllllIIl.print(lllIIlIllllIIIIIII)
+                    for (llIIIIIllIlllllllI, IllllllIlllIIllIlI) in llllllllllllllI(IIllIIllIlIllIlIlI, 1):
+                        lIIIlIlllllllllIIl.print(IIIIIIlIIlIIIlllll)
+                    lIIIlIlllllllllIIl.print('[bold white][0] Back[/]\n')
             return
-        elif lIIlIIlIllIIlIIIlI == '2':
+        elif lllIIIIllIIlIIlllI == '2':
             return
         else:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
-            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
-            lIIlllIIlllIIIlllI.IlIlIIlIIIllllIIll()
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid choice! Please try again.[/]', style='bold indian_red', border_style='indian_red'))
+            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
+            IIIIIIIIlIllIlllll.IIIIIIIIlllllllIll()
 
-    def lIIIlIIIllIIlllIll(lIIlllIIlllIIIlllI):
+    def llllIlIIlIIllllllI(IIIIIIIIlIllIlllll):
         """Handle spam sharing functionality."""
-        lIIlllIIlllIIIlllI.lIIIIlIlllIIlIlIII()
-        lIIlllIIlllIIIlllI.llllIlIIlIIlIlIIIl()
-        if lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI and lIIlllIIlllIIIlllI.lIlIlIIllllIllllll:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {lIIlllIIlllIIIlllI.lIlIlIIllllIllllll['name']}[/]", style='bold cyan', border_style='cyan'))
-        IIlllIIllIIlIlllll = lIIllIIlIllllI("[bold yellow]Note:[/] [bold white]This code does not use Facebook's API for fewer restrictions.[/]\n[bold indian_red]Caution:[/] [bold white]Do not turn off your internet while the process is ongoing.[/]", title='[bold white]𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]', style='bold cyan', border_style='cyan')
-        lIllIIlIIlIIllIlIl.print(IIlllIIllIIlIlllll)
-        IIllIlllIlIlIllIIl = lIllIIlIIlIIllIlIl.input('[bold green]🔗 Enter the Facebook post URL: [/]')
-        IIllIlllIlIlIllIIl = IIllIlllIlIlIllIIl.strip()
-        if not IlllIIlIIIlllI.validate_url(IIllIlllIlIlIllIIl):
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Invalid Facebook URL![/]', style='bold indian_red', border_style='indian_red'))
-            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+        IIIIIIIIlIllIlllll.lllIllllllIlIlllIl()
+        IIIIIIIIlIllIlllll.IllIIIlIIlIIIlIIlI()
+        if IIIIIIIIlIllIlllll.lllllIIIIlllIIllll and IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll:
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {IIIIIIIIlIllIlllll.IlIlllIIIlllIIIlll['name']}[/]", style='bold cyan', border_style='cyan'))
+        IlllIlIlllIIIlllIl = IllIllllIIlIIl("[bold yellow]Note:[/] [bold white]This code does not use Facebook's API for fewer restrictions.[/]\n[bold indian_red]Caution:[/] [bold white]Do not turn off your internet while the process is ongoing.[/]", title='[bold white]𝗦𝗣𝗔𝗠 𝗣𝗢𝗦𝗧 𝗦𝗛𝗔𝗥𝗘𝗥[/]', style='bold cyan', border_style='cyan')
+        lIIIlIlllllllllIIl.print(IlllIlIlllIIIlllIl)
+        lIllIlIIlIIIIlllIl = lIIIlIlllllllllIIl.input('[bold green]🔗 Enter the Facebook post URL: [/]')
+        lIllIlIIlIIIIlllIl = lIllIlIIlIIIIlllIl.strip()
+        if not lIllIIIIlIIllI.validate_url(lIllIlIIlIIIIlllIl):
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Invalid Facebook URL![/]', style='bold indian_red', border_style='indian_red'))
+            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
             return
-        (lIlIIlllIlIllIIIII, IlIIIlIIIIIlIlllIl) = IlllIIlIIIlllI.validate_input('[bold green]Number of shares: [/]', lllllllllllIlIl, min_val=1, max_val=100000)
-        if not lIlIIlllIlIllIIIII:
-            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+        (lllIlllIIIlIllIIIl, IIlIIlllllIIlIlIll) = lIllIIIIlIIllI.validate_input('[bold green]Number of shares: [/]', lllllllllllIlIl, min_val=1, max_val=100000)
+        if not lllIlllIIIlIllIIIl:
+            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
             return
-        (lIlIIlllIlIllIIIII, IIIllIllIIIIIlIIlI) = IlllIIlIIIlllI.validate_input('[bold green]Delay between shares (seconds): [/]', lllllllllllIlIl, min_val=1, max_val=60)
-        if not lIlIIlllIlIllIIIII:
-            lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+        (lllIlllIIIlIllIIIl, llIIlIIllllIlIIIII) = lIllIIIIlIIllI.validate_input('[bold green]Delay between shares (seconds): [/]', lllllllllllIlIl, min_val=1, max_val=60)
+        if not lllIlllIIIlIllIIIl:
+            lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
             return
-        (lIlIIlllIlIllIIIII, IlIIIIlllIIlIlllll) = lIIlllIIlllIIIlllI.lIIlllllIlIlIllIII.share_post(lIIlllIIlllIIIlllI.llIIIIllIIlIlIIllI['cookie'], IIllIlllIlIlIllIIl, IlIIIlIIIIIlIlllIl, IIIllIllIIIIIlIIlI)
-        if lIlIIlllIlIllIIIII:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold green]✅ {IlIIIIlllIIlIlllll}[/]', style='bold green', border_style='green'))
+        (lllIlllIIIlIllIIIl, lIllIIllIllIllIlll) = IIIIIIIIlIllIlllll.lIIIlIllIlIIIIIIll.share_post(IIIIIIIIlIllIlllll.lllllIIIIlllIIllll['cookie'], lIllIlIIlIIIIlllIl, IIlIIlllllIIlIlIll, llIIlIIllllIlIIIII)
+        if lllIlllIIIlIllIIIl:
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold green]✅ {lIllIIllIllIllIlll}[/]', style='bold green', border_style='green'))
         else:
-            lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]❕ {IlIIIIlllIIlIlllll}[/]', style='bold indian_red', border_style='indian_red'))
-        IlllIIlIIIlllI.log_activity('Share Post', lIlIIlllIlIllIIIII, IlIIIIlllIIlIlllll)
-        lIllIIlIIlIIllIlIl.input('[bold white]Press Enter to continue...[/]')
+            lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ {lIllIIllIllIllIlll}[/]', style='bold indian_red', border_style='indian_red'))
+        lIllIIIIlIIllI.log_activity('Share Post', lllIlllIIIlIllIIIl, lIllIIllIllIllIlll)
+        lIIIlIlllllllllIIl.input('[bold white]Press Enter to continue...[/]')
 
-def lllIllIlIlIllIllIl():
+def llIlIlIlIllIIllIlI():
     """Main entry point of the application."""
     try:
-        lIllIIllIIIIIlIIll = lllIIIIIllllIlIIII()
-        lIllIIllIIIIIlIIll.lllIllIlIlIllIllIl()
+        IIIlllllllIIIllIII = lIIlIIllllllllIlll()
+        IIIlllllllIIIllIII.llIlIlIlIllIIllIlI()
     except llllllllllllIII:
-        lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI('[bold white]❕ Program interrupted by user.[/]', style='bold indian_red', border_style='indian_red'))
-        llIlIIIlllIIII(0)
-    except lllllllllllllIl as IlllIIIIllIIllIlIl:
-        lIllIIlIIlIIllIlIl.print(lIIllIIlIllllI(f'[bold white]❕ An unexpected error occurred: {lllllllllllllII(IlllIIIIllIIllIlIl)}[/]', style='bold indian_red', border_style='indian_red'))
-        IlIlIIllIIIlIIllll = lllIlIIllIllll.now(llllIllIlIlIII.utc).strftime('%Y-%m-%d %H:%M:%S')
-        IlllIIlIIIlllI.log_activity(f'System Error (UTC: {IlIlIIllIIIlIIllll}) by {sehraks1}', lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0), lllllllllllllII(IlllIIIIllIIllIlIl))
-        llIlIIIlllIIII(1)
+        lIIIlIlllllllllIIl.print(IllIllllIIlIIl('[bold white]❕ Program interrupted by user.[/]', style='bold indian_red', border_style='indian_red'))
+        IlllIlIlIlIIII(0)
+    except lllllllllllllIl as IIllIlllIIIIIIllll:
+        lIIIlIlllllllllIIl.print(IllIllllIIlIIl(f'[bold white]❕ An unexpected error occurred: {lllllllllllllII(IIllIlllIIIIIIllll)}[/]', style='bold indian_red', border_style='indian_red'))
+        IIIIlIlIlIlIIlIIII = llllIlIlIIIlII.now(IIIllIlIlllIll.utc).strftime('%Y-%m-%d %H:%M:%S')
+        lIllIIIIlIIllI.log_activity(f'System Error (UTC: {IIIIlIlIlIlIIlIIII}) by {sehraks}', lllllllllllllll(((1 & 0 ^ 0) & 0 ^ 1) & 0 ^ 1 ^ 1 ^ 0 | 0), lllllllllllllII(IIllIlllIIIIIIllll))
+        IlllIlIlIlIIII(1)
 if llllllllllllIIl == '__main__':
-    lllIllIlIlIllIllIl()
+    llIlIlIlIllIIllIlI()
