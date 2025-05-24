@@ -65,8 +65,34 @@ class FacebookMonoToolkit:
         self.current_account = self.cookie_manager.get_current_account()
         if self.current_account:
             self._load_account_data(self.current_account)
+            
+    def display_banner(self):
+        """Display the tool banner."""
+        # Convert UTC time to Philippines time (GMT+8)
+        philippines_time = datetime.now(timezone(timedelta(hours=8)))
+        current_time = philippines_time.strftime("%I:%M %p")
+        current_date = philippines_time.strftime("%Y-%m-%d")
 
+        console.print(Panel(r"""[bold red]●[bold yellow] ●[bold green] ●[/]
+        █▀▀ █▄▄   ▀█▀ █▀█ █▀█ █   █▄▀ ▀█▀ ▀█▀
+        █▀  █▄█    █  █▄█ █▄█ █▄▄ █ █ ▄█▄  █  
+       [bold green]                                      
+       [underline cyan]Facebook MonoToolkit - By sehraks1[/]""", 
+        width=63,
+        style="bold misty_rose1"
+    ))
     
+    console.print(Panel(
+        f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
+        f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
+        f"[white]Version: {self.VERSION}[/]\n"
+        f"[white]Date: {current_date}[/]\n"
+        f"[white]Time: {current_time} GMT+8[/]",
+        style="bold magenta",
+        title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
+        border_style="cyan"
+    ))
+
     def _load_account_data(self, account: Dict) -> None:
         """Load account data for the current account."""
         if account:
