@@ -109,16 +109,16 @@ class FacebookMonoToolkit:
         style="bold misty_rose1"
     ))
 
-        banner = Panel(
-            f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
-            f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
-            f"[white]Version: {self.VERSION}[/]\n"
-            f"[white]Date: {current_date}[/]\n"
-            f"[white]Time: {current_time} GMT+8[/]",
-            style="bold magenta",
-            title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
-            border_style="cyan"
-        )
+    banner = Panel(
+        f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
+        f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
+        f"[white]Version: {self.VERSION}[/]\n"
+        f"[white]Date: {current_date}[/]\n"
+        f"[white]Time: {current_time} GMT+8[/]",
+        style="bold magenta",
+        title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
+        border_style="cyan"
+    )
         console.print(banner)
 
     def check_cookie_required(self):
