@@ -59,22 +59,6 @@ class FacebookMonoToolkit:
         self.current_account = self.cookie_manager.get_current_account()
         if self.current_account:
             self._load_account_data(self.current_account)
-
-    def display_banner(self):
-        """Display the tool banner."""
-        # Get current UTC time
-        utc_time = datetime.now(timezone(timedelta(hours=0)))
-        current_time = utc_time.strftime("%H:%M:%S")
-        current_date = utc_time.strftime("%Y-%m-%d")
-        
-        console.print(Panel(r"""[bold red]●[bold yellow] ●[bold green] ●[/]
-█▀▀ █▄▄   ▀█▀ █▀█ █▀█ █   █▄▀ ▀█▀ ▀█▀
-█▀  █▄█    █  █▄█ █▄█ █▄▄ █ █ ▄█▄  █  
-[bold green]                                      
-       [underline cyan]Facebook MonoToolkit - By sehraks1[/]""", 
-            width=63,
-            style="bold misty_rose1"
-        ))
         
         console.print(Panel(
             f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
@@ -112,22 +96,34 @@ class FacebookMonoToolkit:
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def display_banner(self):
-        """Display the tool banner."""
-        philippines_time = datetime.now(timezone(timedelta(hours=8)))
-        current_time = philippines_time.strftime("%I:%M %p")
-        current_date = philippines_time.strftime("%B %d, %Y")
-        
-        banner = Panel(
-            f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
-            f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
-            f"[white]Version: {self.VERSION}[/]\n"
-            f"[white]Date: {current_date}[/]\n"
-            f"[white]Time: {current_time} GMT+8[/]",
-            style="bold magenta",
-            title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
-            border_style="cyan"
-        )
-        console.print(banner)
+    """Display the tool banner."""
+    # Get current UTC time
+    utc_time = datetime.now(timezone(timedelta(hours=0)))
+    current_time = utc_time.strftime("%H:%M:%S")
+    current_date = utc_time.strftime("%Y-%m-%d")
+    
+    # First banner panel with dots and ASCII art
+    console.print(Panel(
+        "[bold red]●[bold yellow] ●[bold green] ●[/]\n"
+        "█▀▀ █▄▄   ▀█▀ █▀█ █▀█ █   █▄▀ ▀█▀ ▀█▀\n"
+        "█▀  █▄█    █  █▄█ █▄█ █▄▄ █ █ ▄█▄  █  \n"
+        "[bold green]                                      \n"
+        "       [underline cyan]Facebook MonoToolkit - By sehraks1[/]", 
+        width=63,
+        style="bold misty_rose1"
+    ))
+    
+    # Second banner panel with information
+    console.print(Panel(
+        f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
+        f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
+        f"[white]Version: {self.VERSION}[/]\n"
+        f"[white]Date: {current_date}[/]\n"
+        f"[white]Time: {current_time} UTC[/]",
+        style="bold magenta",
+        title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
+        border_style="cyan"
+    ))
 
     def check_cookie_required(self):
         """Check if cookie is available."""
