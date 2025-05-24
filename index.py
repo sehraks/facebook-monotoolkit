@@ -93,33 +93,21 @@ class FacebookMonoToolkit:
 
     def display_banner(self):
         """Display the tool banner."""
-        # TIMEZONE SA PINAS
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
         current_time = philippines_time.strftime("%I:%M %p")
         current_date = philippines_time.strftime("%B %d, %Y")
-    
-    # First banner panel with dots and ASCII art
-    console.print(Panel(
-        "[bold red]●[bold yellow] ●[bold green] ●[/]\n"
-        "█▀▀ █▄▄   ▀█▀ █▀█ █▀█ █   █▄▀ ▀█▀ ▀█▀\n"
-        "█▀  █▄█    █  █▄█ █▄█ █▄▄ █ █ ▄█▄  █  \n"
-        "[bold green]                                      \n"
-        "       [underline cyan]Facebook MonoToolkit - By Cerax[/]", 
-        width=63,
-        style="bold misty_rose1"
-    ))
-
-    banner = Panel(
-        f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
-        f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
-        f"[white]Version: {self.VERSION}[/]\n"
-        f"[white]Date: {current_date}[/]\n"
-        f"[white]Time: {current_time} GMT+8[/]",
-        style="bold magenta",
-        title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
-        border_style="cyan"
-    )
-    console.print(banner)
+        
+        banner = Panel(
+            f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
+            f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
+            f"[white]Version: {self.VERSION}[/]\n"
+            f"[white]Date: {current_date}[/]\n"
+            f"[white]Time: {current_time} GMT+8[/]",
+            style="bold magenta",
+            title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
+            border_style="cyan"
+        )
+        console.print(banner)
 
     def check_cookie_required(self):
         """Check if cookie is available."""
