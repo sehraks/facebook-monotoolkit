@@ -43,12 +43,23 @@ class FacebookMonoToolkit:
             
         self.ORIGINAL_AUTHOR = "Greegmon"
         self.MODIFIED_BY = "Cerax"
-        
+
+    def display_banner(self):
+        """Display the tool banner."""
         # Get current Philippines time (GMT+8)
         philippines_time = datetime.now(timezone(timedelta(hours=8)))
         self.LAST_UPDATED = philippines_time.strftime("%B %d, %Y")
         self.CURRENT_TIME = philippines_time.strftime("%I:%M %p")
         self.CURRENT_USER = "sehraks"  # Updated user login
+
+        console.print(Panel(r"""[bold red]●[bold yellow] ●[bold green] ●[/]
+        █▀▀ █▄▄   ▀█▀ █▀█ █▀█ █   █▄▀ ▀█▀ ▀█▀
+        █▀  █▄█    █  █▄█ █▄█ █▄▄ █ █ ▄█▄  █  
+       [bold green]                                      
+       [underline cyan]Facebook MonoToolkit - By sehraks[/]""", 
+        width=63,
+        style="bold misty_rose1"
+    ))
         
         # Initialize components
         self.cookie_manager = CookieManager()
@@ -65,22 +76,6 @@ class FacebookMonoToolkit:
         self.current_account = self.cookie_manager.get_current_account()
         if self.current_account:
             self._load_account_data(self.current_account)
-            
-    def display_banner(self):
-        """Display the tool banner."""
-        # Convert UTC time to Philippines time (GMT+8)
-        philippines_time = datetime.now(timezone(timedelta(hours=8)))
-        current_time = philippines_time.strftime("%I:%M %p")
-        current_date = philippines_time.strftime("%Y-%m-%d")
-
-        console.print(Panel(r"""[bold red]●[bold yellow] ●[bold green] ●[/]
-        █▀▀ █▄▄   ▀█▀ █▀█ █▀█ █   █▄▀ ▀█▀ ▀█▀
-        █▀  █▄█    █  █▄█ █▄█ █▄▄ █ █ ▄█▄  █  
-       [bold green]                                      
-       [underline cyan]Facebook MonoToolkit - By sehraks1[/]""", 
-        width=63,
-        style="bold misty_rose1"
-    ))
     
     console.print(Panel(
         f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
