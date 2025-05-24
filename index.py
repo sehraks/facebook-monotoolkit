@@ -96,11 +96,11 @@ class FacebookMonoToolkit:
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def display_banner(self):
-    """Display the tool banner."""
-    # Get current UTC time
-    utc_time = datetime.now(timezone(timedelta(hours=0)))
-    current_time = utc_time.strftime("%H:%M:%S")
-    current_date = utc_time.strftime("%Y-%m-%d")
+        """Display the tool banner."""
+        # Get current UTC time
+        utc_time = datetime.now(timezone(timedelta(hours=0)))
+        current_time = utc_time.strftime("%H:%M:%S")
+        current_date = utc_time.strftime("%Y-%m-%d")
     
     # First banner panel with dots and ASCII art
     console.print(Panel(
