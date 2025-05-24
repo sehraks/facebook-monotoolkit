@@ -42,8 +42,7 @@ console = Console(
         no_color=False,
         quiet=False,
         _environ={},
-        legacy_windows=False,
-        font_family="Sans"
+        legacy_windows=False
 )
 
 class FacebookMonoToolkit:
