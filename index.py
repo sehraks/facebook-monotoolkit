@@ -119,7 +119,7 @@ class FacebookMonoToolkit:
         title="[bold yellow]𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗠𝗢𝗡𝗢𝗧𝗢𝗢𝗟𝗞𝗜𝗧[/]",
         border_style="cyan"
     )
-        console.print(banner)
+    console.print(banner)
 
     def check_cookie_required(self):
         """Check if cookie is available."""
