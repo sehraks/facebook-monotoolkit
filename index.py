@@ -10,6 +10,8 @@ import re
 import time
 from datetime import datetime, timezone, timedelta
 from typing import Dict, Optional
+from rich.columns import Columns
+from rich import print as Println
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -23,8 +25,27 @@ from modules.fb_login import FacebookLogin
 from modules.cookie_database import CookieDatabase
 from modules.fb_guard import FacebookGuard
 
-# Initialize rich console
-console = Console()
+# Console configuration
+console = Console(
+        color_system="auto",
+        force_terminal=True,
+        force_interactive=True,
+        highlight=True,
+        record=True,
+        safe_box=True,
+        markup=True,
+        emoji=True,
+        width=None,
+        style="bold default",
+        tab_size=8,
+        soft_wrap=False,
+        no_color=False,
+        quiet=False,
+        _environ={},
+        legacy_windows=False,
+        safe_box=True,
+        font_family="Sans"
+)
 
 class FacebookMonoToolkit:
     def __init__(self):
@@ -98,6 +119,7 @@ class FacebookMonoToolkit:
         current_date = philippines_time.strftime("%B %d, %Y")
         
         banner = Panel(
+            f"[bold red]●[bold yellow] ●[bold green] ●[/]\n"
             f"[white]Original: {self.ORIGINAL_AUTHOR}[/]\n"
             f"[white]Modified by: {self.MODIFIED_BY}[/]\n"
             f"[white]Version: {self.VERSION}[/]\n"
@@ -146,7 +168,7 @@ class FacebookMonoToolkit:
             )
             console.print(menu_panel)
 
-            choice = console.input("[bold yellow]Select an option (1-5): [/]")
+            choice = console.input("[bold white]Select an option: [/]")
             choice = choice.strip()
 
             if choice == "1":
@@ -206,7 +228,7 @@ class FacebookMonoToolkit:
                 )
                 console.print(menu_panel)
 
-                choice = console.input("[bold yellow]Select an option: [/]")
+                choice = console.input("[bold white]Select an option: [/]")
                 choice = choice.strip()
 
                 if choice == "1":
@@ -256,8 +278,8 @@ class FacebookMonoToolkit:
         )
         console.print(login_panel)
 
-        email = console.input("[bold yellow]🪪 Enter your credential: [/]")
-        password = console.input("[bold yellow]🔑 Enter your password: [/]")
+        email = console.input("[bold white]🪪 Enter your credential: [/]")
+        password = console.input("[bold white]🔑 Enter your password: [/]")
 
         # Attempt login with delay handling being managed by fb_login.py
         success, message, account_data = self.fb_login.login(email.strip(), password.strip())
