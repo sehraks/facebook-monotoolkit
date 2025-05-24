@@ -146,20 +146,19 @@ class FacebookMonoToolkit:
         while True:
             self.clear_screen()
             self.display_banner()
-            
+
             if self.current_account and self.account_data:
                 console.print(Panel(
-                    f"[bold cyan]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                    f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
                     style="bold cyan",
                     border_style="cyan"
                 ))
 
             menu_panel = Panel(
-                "[bold white][1] Accounts Management[/]\n"
-                "[bold white][2] Spam Sharing Post[/]\n"
-                "[bold white][3] Profile Guard[/]\n"
-                "[bold white][4] Settings[/]\n"
-                "[bold red][5] Exit[/]",
+                "[bold green]1[/] [bold white]Accounts Management[/]\n"
+                "[bold green]2[/] [bold white]Facebook Tools[/]\n"
+                "[bold green]3[/] [bold white]Settings[/]\n"
+                "[bold green]4[/] [bold white]Logout ([/][bold red]Exit[/][bold white])[/]",
                 title="[bold white]𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨[/]",
                 style="bold magenta",
                 border_style="cyan"
@@ -174,14 +173,10 @@ class FacebookMonoToolkit:
             elif choice == "2":
                 if not self.check_cookie_required():
                     continue
-                self.spam_sharing_menu()
+                self.facebook_tools_menu()
             elif choice == "3":
-                if not self.check_cookie_required():
-                    continue
-                self.handle_profile_guard()
-            elif choice == "4":
                 self.settings_menu()
-            elif choice == "5":
+            elif choice == "4":
                 break
             else:
                 console.print(Panel(
@@ -190,6 +185,56 @@ class FacebookMonoToolkit:
                     border_style="indian_red"
                 ))
                 console.input("[bold white]Press Enter to continue...[/]")
+
+    def facebook_tools_menu(self):
+        """Display and handle Facebook tools menu."""
+        while True:
+            self.clear_screen()
+            self.display_banner()
+
+            # Update: Current date-time and user info
+            current_time = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S")
+
+            # Account info panel
+            console.print(Panel(
+                f"[bold white]💠 𝗦𝗘𝗟𝗘𝗖𝗧𝗘𝗗 𝗔𝗖𝗖𝗢𝗨𝗡𝗧: {self.account_data['name']}[/]",
+                style="bold cyan",
+                border_style="cyan"
+            ))
+
+            # Tools description panel
+            description_panel = Panel(
+                "[bold yellow]ℹ️ Developer's Note:[/] [bold white]Facebook MonoToolkit is a powerful suite of tools "
+                "designed to enhance your Facebook experience. Features include Spam Sharing for automated content "
+                "distribution and Profile Shield for advanced account protection. Use these tools responsibly![/]",
+                title="[bold white]🛠️ 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗧𝗢𝗢𝗟𝗦[/]",
+                style="bold cyan",
+                border_style="cyan"
+            )
+            console.print(description_panel)
+
+            # Tools menu
+            console.print("[bold green]1[/] [bold white]Spam Sharing Post[/]")
+            console.print("[bold green]2[/] [bold white]Profile Shield[/]")
+            console.print("[bold green]3[/] [bold white]Back to Main Menu[/]")
+
+            choice = console.input("[bold white]Select your option: [/]")
+            choice = choice.strip()
+
+            if choice == "1":
+                self.spam_sharing_menu()
+            elif choice == "2":
+                self.handle_profile_guard()
+            elif choice == "3":
+                return  # This will exit the while loop and return to main menu
+            else:
+                console.print(Panel(
+                    "[bold white]❕ Invalid choice! Please try again.[/]", 
+                    style="bold indian_red",
+                    border_style="indian_red"
+                ))
+                console.input("[bold white]Press Enter to continue...[/]")
+                continue
 
     def settings_menu(self):
         """Handle settings menu."""
