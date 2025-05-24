@@ -155,10 +155,10 @@ class FacebookMonoToolkit:
                 ))
 
             menu_panel = Panel(
-                "[bold green]1[/] [bold white]Accounts Management[/]\n"
-                "[bold green]2[/] [bold white]Facebook Tools[/]\n"
-                "[bold green]3[/] [bold white]Settings[/]\n"
-                "[bold green]4[/] [bold white]Logout ([/][bold red]Exit[/][bold white])[/]",
+                "[bold green]1[/]. [bold white]Accounts Management[/]\n"
+                "[bold green]2[/]. [bold white]Facebook Tools[/]\n"
+                "[bold green]3[/]. [bold white]Settings[/]\n"
+                "[bold green]4[/]. [bold white]Logout ([/][bold red]Exit[/][bold white])[/]",
                 title="[bold white]𝗠𝗔𝗜𝗡 𝗠𝗘𝗡𝗨[/]",
                 style="bold magenta",
                 border_style="cyan"
@@ -204,19 +204,25 @@ class FacebookMonoToolkit:
 
             # Tools description panel
             description_panel = Panel(
-                "[bold yellow]ℹ️ Developer's Note:[/] [bold white]Facebook MonoToolkit is a powerful suite of tools "
+                "[bold yellow] ℹ️ Developer's Note:[/] [bold white]Facebook MonoToolkit is a powerful suite of tools "
                 "designed to enhance your Facebook experience. Features include Spam Sharing for automated content "
                 "distribution and Profile Shield for advanced account protection. Use these tools responsibly![/]",
-                title="[bold white]🛠️ 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗧𝗢𝗢𝗟𝗦[/]",
+                title="[bold white] 🛠️ 𝗙𝗔𝗖𝗘𝗕𝗢𝗢𝗞 𝗧𝗢𝗢𝗟𝗦[/]",
                 style="bold cyan",
                 border_style="cyan"
             )
             console.print(description_panel)
 
-            # Tools menu
-            console.print("[bold green]1[/] [bold white]Spam Sharing Post[/]")
-            console.print("[bold green]2[/] [bold white]Profile Shield[/]")
-            console.print("[bold green]3[/] [bold white]Back to Main Menu[/]")
+            # Tools menu with panel
+            tools_menu = Panel(
+                "[bold green]1[/]. [bold white]Spam Sharing Post[/]\n"
+                "[bold green]2[/]. [bold white]Profile Shield[/]\n"
+                "[bold green]3[/]. [bold white]Back to Main Menu[/]",
+                title="[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]",
+                style="bold misty_rose1",
+                border_style="misty_rose1"
+            )
+            console.print(tools_menu)
 
             choice = console.input("[bold white]Select your option: [/]")
             choice = choice.strip()
@@ -258,16 +264,16 @@ class FacebookMonoToolkit:
                         style="bold yellow",
                         border_style="yellow"
                 ))
-
+                
                 menu_panel = Panel(
-                        "[bold white][1] Enter your cookie[/]\n"
-                        "[bold white][2] Login your Facebook account[/]\n"
-                        "[bold white][3] Access your Facebook accounts[/]\n"
-                        "[bold white][4] Cookies & Tokens Database[/]\n"
-                        "[bold white][5] Back to Main Menu[/]",
+                        "[bold green]1[/]. [bold white]Enter your cookie[/]\n"
+                        "[bold green]2[/]. [bold white]Login your Facebook account[/]\n"
+                        "[bold green]3[/]. [bold white]Access your Facebook accounts[/]\n"
+                        "[bold green]4[/]. [bold white]Cookies & Tokens Database[/]\n"
+                        "[bold green]5[/]. [bold white]Back to Main Menu[/]",
                         title="[bold white]𝗦𝗘𝗟𝗘𝗖𝗧 𝗬𝗢𝗨𝗥 𝗖𝗛𝗢𝗜𝗖𝗘[/]",
-                        style="bold yellow",
-                        border_style="yellow"
+                        style="bold misty_rose1",
+                        border_style="misty_rose1"
                 )
                 console.print(menu_panel)
 
