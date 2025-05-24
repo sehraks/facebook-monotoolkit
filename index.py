@@ -43,7 +43,6 @@ console = Console(
         quiet=False,
         _environ={},
         legacy_windows=False,
-        safe_box=True,
         font_family="Sans"
 )
 
